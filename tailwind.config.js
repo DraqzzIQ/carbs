@@ -4,14 +4,9 @@ const { hairlineWidth } = require('nativewind/theme');
 module.exports = {
   darkMode: 'class',
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
-  presets: [require('nativewind/presetx')],
+  presets: [require('nativewind/preset')],
   theme: {
     extend: {
-      // fontFamily: {
-      //   'poppins-regular': ['Poppins_400Regular'],
-      //   'poppins-medium': ['Poppins_500Medium'],
-      //   'poppins-semibold': ['Poppins_600SemiBold'],
-      // },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
