@@ -44,12 +44,18 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#ffffff",
-          "image": "./assets/images/splash-light-icon.png",
+          "image": "./assets/images/splash-icon-light.png",
           "dark": {
             "image": "./assets/images/splash-icon-dark.png",
             "backgroundColor": "#000000"
           },
           "imageWidth": 200
+        }
+      ],
+      [
+        "expo-dev-client",
+        {
+          "launchMode": "most-recent"
         }
       ]
     ],
