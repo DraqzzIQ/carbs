@@ -13,8 +13,6 @@
     "postinstall": "npx tailwindcss -i ./global.css -o ./node_modules/.cache/nativewind/global.css"
   },
   "dependencies": {
-    "@expo-google-fonts/inter": "^0.3.0",
-    "@expo-google-fonts/poppins": "^0.3.1",
     "@radix-ui/react-progress": "^1.1.4",
     "@radix-ui/react-tooltip": "^1.2.4",
     "@react-navigation/native": "^7.0.0",
@@ -27,6 +25,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "expo": "^52.0.25",
+    "expo-dev-client": "~5.0.20",
     "expo-font": "~13.0.4",
     "expo-linking": "~7.0.4",
     "expo-navigation-bar": "~4.0.7",
@@ -39,17 +38,15 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.9",
-    "react-native-reanimated": "~3.16.1",
+    "react-native-reanimated": "3.16.2",
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.4.0",
     "react-native-svg": "15.8.0",
     "react-native-web": "~0.19.13",
     "tailwind-merge": "^2.2.1",
-    "tailwindcss": "3.3.5",
+    "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
-    "undefined": "@expo-google-fonts/poppins�",
-    "zustand": "^4.4.7",
-    "expo-dev-client": "~5.0.20"
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

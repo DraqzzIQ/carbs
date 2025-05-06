@@ -55,7 +55,7 @@ export default function RootLayout() {
                 <Stack.Screen
                     name='index'
                     options={{
-                        headerShown: false,
+                        headerShown: true,
                         title: 'BetterYazio',
                         headerRight: () => <ThemeToggle/>,
                     }}
