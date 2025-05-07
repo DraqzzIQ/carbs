@@ -41,7 +41,7 @@ export default function Screen() {
                 <View className='flex-row w-full space-x-3'>
                     <Text className='text-xl font-semibold'>Today</Text>
                     <CalendarIcon/>
-                    <div className='grow'/>
+                    <View className='grow'/>
                     <View className='flex-row'>
                         <FlameIcon/>
                         <Text className='text-l font-semibold text-primary'>17</Text>
@@ -65,7 +65,7 @@ export default function Screen() {
                                 <Text
                                     className='font-semibold text-gray-500 dark:text-gray-300 text-xs'>{carbs} / {maxCarbs} g</Text>
                             </View>
-                            <div className='grow'/>
+                            <View className='grow'/>
                             <View className='h-2 w-1/4 items-center'>
                                 <Text className='mb-1 font-semibold'>Protein</Text>
                                 <Progress value={protein / maxProtein * 100}
@@ -73,7 +73,7 @@ export default function Screen() {
                                 <Text
                                     className='font-semibold text-gray-500 dark:text-gray-300 text-xs'>{protein} / {maxProtein} g</Text>
                             </View>
-                            <div className="grow"/>
+                            <View className="grow"/>
                             <View className='h-2 w-1/4 items-center'>
                                 <Text className='mb-1 font-semibold'>Fat</Text>
                                 <Progress value={fat / maxFat * 100} className='h-2 bg-gray-400 dark:bg-gray-600'/>
@@ -93,7 +93,7 @@ export default function Screen() {
                                 <Text
                                     className='font-semibold text-gray-500 dark:text-gray-300 text-xs w-full'>{formatNumber(breakfast)} / {formatNumber(maxBreakfast)} kcal</Text>
                             </View>
-                            <div className='grow'/>
+                            <View className='grow'/>
                             <PlusIcon className='h-7 w-7 cursor-pointer text-primary'/>
                         </View>
                         <View className='flex-row items-center'>
@@ -104,7 +104,7 @@ export default function Screen() {
                                 <Text
                                     className='font-semibold text-gray-500 dark:text-gray-300 text-xs w-full'>{formatNumber(lunch)} / {formatNumber(maxLunch)} kcal</Text>
                             </View>
-                            <div className='grow'/>
+                            <View className='grow'/>
                             <PlusIcon className='h-7 w-7 cursor-pointer text-primary'/>
                         </View>
                         <View className='flex-row items-center'>
@@ -116,7 +116,7 @@ export default function Screen() {
                                 <Text
                                     className='font-semibold text-gray-500 dark:text-gray-300 text-xs w-full'>{formatNumber(dinner)} / {formatNumber(maxDinner)} kcal</Text>
                             </View>
-                            <div className='grow'/>
+                            <View className='grow'/>
                             <PlusIcon className='h-7 w-7 cursor-pointer text-primary'/>
                         </View>
                         {displaySnacks && <View className='flex-row items-center'>
@@ -128,7 +128,7 @@ export default function Screen() {
                                 <Text
                                     className='font-semibold text-gray-500 dark:text-gray-300 text-xs w-full'>{formatNumber(snacks)} / {formatNumber(maxSnacks)} kcal</Text>
                             </View>
-                            <div className='grow'/>
+                            <View className='grow'/>
                             <PlusIcon className='h-7 w-7 cursor-pointer text-primary'/>
                         </View>}
                     </Card>

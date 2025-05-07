@@ -16,7 +16,8 @@
         "dark": "./assets/images/ios-dark.png",
         "light": "./assets/images/ios-light.png",
         "tinted": "./assets/images/ios-tinted.png"
-      }
+      },
+      "bundleIdentifier": "com.draqzziq.betteryazio"
     },
     "android": {
       "adaptiveIcon": {
@@ -32,14 +33,6 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-font",
-        {
-          "fonts": [
-            "node_modules/@expo-google-fonts/inter/Inter_900Black.ttf"
-          ]
-        }
-      ],
       [
         "expo-splash-screen",
         {

@@ -24,6 +24,7 @@
     "@rn-primitives/types": "~1.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "eas-cli": "^16.4.0",
     "expo": "^52.0.25",
     "expo-dev-client": "~5.0.20",
     "expo-font": "~13.0.4",
