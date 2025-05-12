@@ -13,15 +13,15 @@
     "ios": {
       "supportsTablet": true,
       "icon": {
-        "dark": "./assets/images/ios-dark.png",
-        "light": "./assets/images/ios-light.png",
-        "tinted": "./assets/images/ios-tinted.png"
+        "dark": "./assets/images/ios_dark.png",
+        "light": "./assets/images/ios_light.png",
+        "tinted": "./assets/images/ios_tinted.png"
       },
       "bundleIdentifier": "com.draqzziq.betteryazio"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/adaptive_icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.draqzziq.betteryazio"
@@ -37,9 +37,9 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#ffffff",
-          "image": "./assets/images/splash-icon-light.png",
+          "image": "./assets/images/splash_icon_light.png",
           "dark": {
-            "image": "./assets/images/splash-icon-dark.png",
+            "image": "./assets/images/splash_icon_dark.png",
             "backgroundColor": "#000000"
           },
           "imageWidth": 200

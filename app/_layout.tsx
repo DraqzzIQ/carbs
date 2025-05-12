@@ -4,12 +4,12 @@ import {DarkTheme, DefaultTheme, Theme, ThemeProvider} from '@react-navigation/n
 import {Stack} from 'expo-router';
 import {StatusBar} from 'expo-status-bar';
 import * as React from 'react';
-import {Platform} from 'react-native';
+import {Platform, View} from 'react-native';
 import {NAV_THEME} from '~/lib/constants';
 import {useColorScheme} from '~/lib/useColorScheme';
-import {PortalHost} from '@rn-primitives/portal';
 import {ThemeToggle} from '~/components/ThemeToggle';
 import {setAndroidNavigationBar} from '~/lib/android-navigation-bar';
+import {SettingsProvider} from '~/contexts/AppSettingsContext';
 
 const LIGHT_THEME: Theme = {
     ...DefaultTheme,
@@ -49,20 +49,33 @@ export default function RootLayout() {
     }
 
     return (
-        <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-            <StatusBar style={isDarkColorScheme ? 'light' : 'dark'}/>
-            <Stack>
-                <Stack.Screen
-                    name='index'
-                    options={{
-                        headerShown: false,
-                        title: 'BetterYazio',
-                        headerRight: () => <ThemeToggle/>,
-                    }}
-                />
-            </Stack>
-            <PortalHost/>
-        </ThemeProvider>
+        <SettingsProvider>
+            <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+                <View className='h-8 bg-secondary'/>
+                <StatusBar style={isDarkColorScheme ? 'light' : 'dark'}/>
+                <Stack>
+                    <Stack.Screen
+                        name='index'
+                        options={{
+                            headerShown: false,
+                        }}
+                    />
+                    <Stack.Screen
+                        name='settings/index'
+                        options={{
+                            headerTitleAlign: 'center',
+                            headerShown: true,
+                            title: 'Settings',
+                            headerBackButtonDisplayMode: 'minimal',
+                            headerStyle: {
+                                backgroundColor: (isDarkColorScheme ? 'black' : '#f4f4f5'),
+                            },
+                            headerRight: () => <ThemeToggle/>,
+                        }}
+                    />
+                </Stack>
+            </ThemeProvider>
+        </SettingsProvider>
     );
 }
 
