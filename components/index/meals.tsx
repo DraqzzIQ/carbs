@@ -91,7 +91,11 @@ function MealBar({
                     </Text>
                 </View>
                 <View className='grow'/>
-                <PlusIcon className='h-7 w-7 text-primary'/>
+                <TouchableOpacity onPress={() => router.push(`/meal/add?mealName=${name}&date=1`)}>
+                    <View className='w-10 h-10 items-center justify-center'>
+                        <PlusIcon className='h-7 w-7 text-primary'/>
+                    </View>
+                </TouchableOpacity>
             </View>
         </TouchableOpacity>
     );

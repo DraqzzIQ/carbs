@@ -14,7 +14,9 @@ export const Header = () => {
                 <Text className='text-xl font-semibold text-primary'>17</Text>
             </View>
             <TouchableOpacity onPress={() => router.push('/settings')}>
-                <SettingsIcon className='text-primary'/>
+                <View className='w-10 h-10 items-center justify-center'>
+                    <SettingsIcon className='text-primary'/>
+                </View>
             </TouchableOpacity>
         </View>
     );

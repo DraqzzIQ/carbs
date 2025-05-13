@@ -12,7 +12,7 @@ export default function SettingsScreen() {
     const {
         maxCarbs, maxProtein, maxFat,
         maxBreakfast, maxLunch, maxDinner, maxSnacks,
-        displaySnacks, darkMode,
+        displaySnacks,
         setSettings
     } = useSettings();
 
