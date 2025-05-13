@@ -7,7 +7,7 @@ import * as React from 'react';
 import {Platform, View} from 'react-native';
 import {NAV_THEME} from '~/lib/constants';
 import {useColorScheme} from '~/lib/useColorScheme';
-import {ThemeToggle} from '~/components/ThemeToggle';
+import {ThemeToggle} from '~/components/theme-toggle';
 import {setAndroidNavigationBar} from '~/lib/android-navigation-bar';
 import {SettingsProvider} from '~/contexts/AppSettingsContext';
 

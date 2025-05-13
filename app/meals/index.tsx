@@ -1,7 +1,7 @@
 import {Animated} from 'react-native';
 import * as React from 'react';
 import ScrollView = Animated.ScrollView;
-import {KeyboardShift} from "~/components/KeyboardShift";
+import {KeyboardShift} from "~/components/keyboard-shift";
 import {Stack, useLocalSearchParams} from 'expo-router';
 
 export default function SettingsScreen() {

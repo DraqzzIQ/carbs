@@ -4,9 +4,9 @@ import {Text} from '~/components/ui/text';
 import {Input} from '~/components/ui/input';
 import {Switch} from '~/components/ui/switch';
 import {useSettings} from '~/contexts/AppSettingsContext';
-import {formatNumber} from '~/util';
+import {formatNumber} from '~/utils/util';
 import ScrollView = Animated.ScrollView;
-import {KeyboardShift} from "~/components/KeyboardShift";
+import {KeyboardShift} from "~/components/keyboard-shift";
 
 export default function SettingsScreen() {
     const {

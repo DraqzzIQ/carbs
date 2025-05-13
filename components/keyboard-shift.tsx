@@ -2,11 +2,11 @@ import * as React from 'react'
 import {KeyboardAvoidingView, Platform} from 'react-native'
 import { useHeaderHeight } from '@react-navigation/elements'
 
-type Props = {
+type KeyboardShiftProps = {
     children: React.ReactNode
 }
 
-export const KeyboardShift = ({ children }: Props) => {
+export const KeyboardShift = ({ children }: KeyboardShiftProps) => {
     const height = useHeaderHeight()
 
     return (
