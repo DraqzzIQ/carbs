@@ -6,11 +6,11 @@ import {formatNumber, formatPercentage} from "~/utils/util";
 import * as React from "react";
 
 type SummaryProps = {
-    calories: number,
-    maxCalories: number,
-    maxCarbs: number,
-    maxProtein: number,
-    maxFat: number
+    calories: number;
+    maxCalories: number;
+    maxCarbs: number;
+    maxProtein: number;
+    maxFat: number;
 }
 
 export const Summary = ({calories, maxCalories, maxCarbs, maxProtein, maxFat}: SummaryProps) => {

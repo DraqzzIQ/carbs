@@ -74,7 +74,18 @@ export default function RootLayout() {
                         }}
                     />
                     <Stack.Screen
-                        name='meals/index'
+                        name='meal/index'
+                        options={{
+                            headerTitleAlign: 'center',
+                            headerShown: true,
+                            headerBackButtonDisplayMode: 'minimal',
+                            headerStyle: {
+                                backgroundColor: (isDarkColorScheme ? 'black' : '#f4f4f5'),
+                            },
+                        }}
+                    />
+                    <Stack.Screen
+                        name='meal/add/index'
                         options={{
                             headerTitleAlign: 'center',
                             headerShown: true,
