@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {View, TouchableOpacity} from 'react-native';
-import {useRouter} from 'expo-router';
+import {router} from 'expo-router';
 import {
     CalendarIcon, CandyIcon, CoffeeIcon,
     FlameIcon, PlusIcon, SandwichIcon,
@@ -25,8 +25,6 @@ export default function Screen() {
     const [lunch, setLunch] = React.useState(10);
     const [dinner, setDinner] = React.useState(1000);
     const [snacks, setSnacks] = React.useState(9);
-
-    const router = useRouter();
 
     const maxCalories = maxBreakfast + maxLunch + maxDinner + (displaySnacks ? maxSnacks : 0);
     const calories = breakfast + lunch + dinner + (displaySnacks ? snacks : 0);
@@ -95,7 +93,7 @@ export default function Screen() {
                         ].map((meal, index, arr) => (
                             <React.Fragment key={meal.name}>
                                 <MealBar {...meal} />
-                                {(index < arr.length - 1 || displaySnacks) && <Separator />}
+                                {(index < arr.length - 1 || displaySnacks) && <Separator/>}
                             </React.Fragment>
                         ))}
                         {displaySnacks && (
@@ -131,17 +129,19 @@ function MealBar({
     icon: React.ReactNode, name: string, consumed: number, max: number
 }) {
     return (
-        <View className='flex-row items-center'>
-            {icon}
-            <View className='items-center w-2/3'>
-                <Text className='mb-1 font-semibold w-full'>{name}</Text>
-                <Progress value={(consumed / max) * 100} className='h-2 bg-gray-400 dark:bg-gray-600'/>
-                <Text className='text-xs text-gray-500 dark:text-gray-300 font-semibold w-full'>
-                    {consumed} / {max} kcal
-                </Text>
+        <TouchableOpacity onPress={() => router.push(`/meals?mealName=${name}`)}>
+            <View className='flex-row items-center'>
+                {icon}
+                <View className='items-center w-2/3'>
+                    <Text className='mb-1 font-semibold w-full'>{name}</Text>
+                    <Progress value={(consumed / max) * 100} className='h-2 bg-gray-400 dark:bg-gray-600'/>
+                    <Text className='text-xs text-gray-500 dark:text-gray-300 font-semibold w-full'>
+                        {consumed} / {max} kcal
+                    </Text>
+                </View>
+                <View className='grow'/>
+                <PlusIcon className='h-7 w-7 text-primary'/>
             </View>
-            <View className='grow'/>
-            <PlusIcon className='h-7 w-7 text-primary'/>
-        </View>
+        </TouchableOpacity>
     );
 }

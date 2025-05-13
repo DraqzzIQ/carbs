@@ -73,6 +73,17 @@ export default function RootLayout() {
                             headerRight: () => <ThemeToggle/>,
                         }}
                     />
+                    <Stack.Screen
+                        name='meals/index'
+                        options={{
+                            headerTitleAlign: 'center',
+                            headerShown: true,
+                            headerBackButtonDisplayMode: 'minimal',
+                            headerStyle: {
+                                backgroundColor: (isDarkColorScheme ? 'black' : '#f4f4f5'),
+                            },
+                        }}
+                    />
                 </Stack>
             </ThemeProvider>
         </SettingsProvider>
