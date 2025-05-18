@@ -57,7 +57,8 @@
           "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
           "enableCodeScanner": true
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

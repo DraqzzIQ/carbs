@@ -10,6 +10,7 @@ import {useColorScheme} from '~/lib/useColorScheme';
 import {ThemeToggle} from '~/components/theme-toggle';
 import {setAndroidNavigationBar} from '~/lib/android-navigation-bar';
 import {SettingsProvider} from '~/contexts/AppSettingsContext';
+import 'expo-dev-client';
 
 const LIGHT_THEME: Theme = {
     ...DefaultTheme,
