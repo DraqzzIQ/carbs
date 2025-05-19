@@ -17,14 +17,21 @@
         "light": "./assets/images/ios_light.png",
         "tinted": "./assets/images/ios_tinted.png"
       },
-      "bundleIdentifier": "com.draqzziq.betteryazio"
+      "bundleIdentifier": "com.draqzziq.betteryazio",
+      "infoPlist": {
+        "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive_icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.draqzziq.betteryazio"
+      "package": "com.draqzziq.betteryazio",
+      "permissions": [
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "bundler": "metro",
