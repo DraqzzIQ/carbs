@@ -1,14 +1,14 @@
-import {ScrollView, View} from "react-native";
-import {Card} from "~/components/ui/card";
-import {Text} from "~/components/ui/text";
-import * as React from "react";
+import {ScrollView, View} from 'react-native';
+import {Card} from '~/components/ui/card';
+import {Text} from '~/components/ui/text';
+import * as React from 'react';
 
 type MealDetailProps = {}
 
 export const MealDetails = ({}: MealDetailProps) => {
     return (
         <ScrollView className='h-full bg-secondary'>
-            <Card className='p-3'>
+            <Card className='p-3 bg-secondary'>
                 <View className='flex-1 flex-row justify-between'>
                     <View>
                         <Text>
@@ -44,7 +44,7 @@ export const MealDetails = ({}: MealDetailProps) => {
                     </View>
                 </View>
             </Card>
-            <Card className='mt-7 p-3'>
+            <Card className='mt-7 p-3 bg-secondary'>
 
             </Card>
         </ScrollView>

@@ -1,9 +1,9 @@
-import {Text} from "~/components/ui/text";
-import {Card} from "~/components/ui/card";
-import {View} from "react-native";
-import {Progress} from "~/components/ui/progress";
-import {formatNumber, formatPercentage} from "~/utils/util";
-import * as React from "react";
+import {Text} from '~/components/ui/text';
+import {Card} from '~/components/ui/card';
+import {View} from 'react-native';
+import {Progress} from '~/components/ui/progress';
+import {formatNumber} from '~/utils/util';
+import * as React from 'react';
 
 type SummaryProps = {
     calories: number;
@@ -24,15 +24,15 @@ export const Summary = ({calories, maxCalories, maxCarbs, maxProtein, maxFat}: S
                               className='h-2 bg-gray-400 dark:bg-gray-600'/>
                     <Text className='font-semibold text-sm text-gray-500 dark:text-gray-300'>
                         {formatNumber(calories)} / {formatNumber(maxCalories)} kcal
-                        ({formatPercentage(calories / maxCalories * 100)}%)
+                        ({formatNumber(calories / maxCalories * 100)}%)
                     </Text>
                 </View>
                 <View className='flex-row h-6 w-full'>
-                    <MacroBar label="Carbs" consumed={200} max={maxCarbs}/>
+                    <MacroBar label='Carbs' consumed={200} max={maxCarbs}/>
                     <View className='grow'/>
-                    <MacroBar label="Protein" consumed={78} max={maxProtein}/>
+                    <MacroBar label='Protein' consumed={78} max={maxProtein}/>
                     <View className='grow'/>
-                    <MacroBar label="Fat" consumed={9} max={maxFat}/>
+                    <MacroBar label='Fat' consumed={9} max={maxFat}/>
                 </View>
             </Card>
         </>
@@ -48,7 +48,7 @@ function MacroBar({label, consumed, max}: { label: string, consumed: number, max
                 {consumed} / {max} g
             </Text>
             <Text className='font-semibold text-gray-500 dark:text-gray-300 text-xs text-center'>
-                ({formatPercentage(consumed / max * 100)}%)
+                ({formatNumber(consumed / max * 100)}%)
             </Text>
         </View>
     );

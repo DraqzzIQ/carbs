@@ -1,5 +1,6 @@
-import {ProductsSearchResult} from "~/api/types/ProductsSearchResult";
+import {mapApiProductToProductsSearchResult, ProductsSearchResult} from '~/api/types/ProductsSearchResult';
 import {getLocales} from 'expo-localization';
+import {getStaticSettings} from "~/contexts/AppSettingsContext";
 
 const BASE_URL = 'https://yzapi.yazio.com/v20/';
 
@@ -10,10 +11,8 @@ const yazioRequest = (
     const url = new URL(endpoint, BASE_URL);
 
     const locales = getLocales();
-    url.searchParams.append('countries', locales[0].regionCode ?? 'DE');
+    url.searchParams.append('countries', getStaticSettings().countryCode);
     url.searchParams.append('locales', locales[0].languageTag);
-
-    console.log(locales)
 
     // why would they need this?
     url.searchParams.append('sex', 'male')
@@ -33,11 +32,11 @@ const yazioRequest = (
 export const yazioSearchProducts = async (
     searchQuery: string,
 ): Promise<ProductsSearchResult[]> => {
-    const request = yazioRequest('products/search', {
-        query: searchQuery,
-    });
+    const request = yazioRequest(
+        'products/search',
+        {query: searchQuery}
+    );
 
-    console.log(request);
     const response = await fetch(request);
 
     if (!response.ok) {
@@ -46,5 +45,5 @@ export const yazioSearchProducts = async (
     }
 
     const data = await response.json();
-    return data as ProductsSearchResult[];
+    return data.map(mapApiProductToProductsSearchResult);
 }

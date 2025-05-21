@@ -1,10 +1,8 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {createContext, useContext, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Appearance } from 'react-native';
+import {getLocales} from 'expo-localization';
 
 const STORAGE_KEY = 'APP_SETTINGS';
-
-type ThemePreference = 'light' | 'dark' | 'system';
 
 type Settings = {
     maxCarbs: number;
@@ -15,38 +13,34 @@ type Settings = {
     maxDinner: number;
     maxSnacks: number;
     displaySnacks: boolean;
-    darkMode: ThemePreference;
+    countryCode: string;
 };
 
 type SettingsContextType = Settings & {
     setSettings: (updates: Partial<Settings>) => void;
     isLoaded: boolean;
-    resolvedTheme: 'light' | 'dark';
 };
 
 const defaultSettings: Settings = {
     maxCarbs: 250,
-    maxProtein: 150,
+    maxProtein: 160,
     maxFat: 70,
-    maxBreakfast: 700,
-    maxLunch: 800,
-    maxDinner: 600,
+    maxBreakfast: 600,
+    maxLunch: 700,
+    maxDinner: 500,
     maxSnacks: 200,
     displaySnacks: true,
-    darkMode: 'system',
+    countryCode: getLocales()[0].regionCode ?? 'DE',
 };
+
+let staticSettings: Settings = defaultSettings;
+export const getStaticSettings = () => staticSettings;
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
-export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const [settings, setSettingsState] = useState<Settings>(defaultSettings);
     const [isLoaded, setIsLoaded] = useState(false);
-
-    const systemColorScheme = Appearance.getColorScheme();
-    const resolvedTheme: 'light' | 'dark' =
-        settings.darkMode === 'system'
-            ? systemColorScheme === 'dark' ? 'dark' : 'light'
-            : settings.darkMode;
 
     useEffect(() => {
         (async () => {
@@ -54,7 +48,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 const stored = await AsyncStorage.getItem(STORAGE_KEY);
                 if (stored) {
                     const parsed = JSON.parse(stored);
-                    setSettingsState(prev => ({ ...prev, ...parsed }));
+                    const updated = {...defaultSettings, ...parsed};
+                    setSettingsState(updated);
+                    staticSettings = updated;
                 }
             } catch (e) {
                 console.warn('Failed to load settings', e);
@@ -66,11 +62,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     const setSettings = (updates: Partial<Settings>) => {
         setSettingsState((prev) => {
-            const updated = { ...prev, ...updates };
+            const updated = {...prev, ...updates};
 
-            // Sync theme with NativeWind
-            if (updates.darkMode !== undefined) {
-            }
+            staticSettings = updated;
 
             AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
             return updated;
@@ -78,7 +72,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     return (
-        <SettingsContext.Provider value={{ ...settings, setSettings, isLoaded, resolvedTheme }}>
+        <SettingsContext.Provider value={{...settings, setSettings, isLoaded}}>
             {children}
         </SettingsContext.Provider>
     );

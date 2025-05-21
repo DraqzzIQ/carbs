@@ -1,0 +1,7 @@
+- [ ] widgets (live activity?)
+- [ ] custom products
+- [ ] custom products ui
+- [ ] edit / delete custom products
+- [ ] ui: search result detail add page
+- [ ] ui: meal detail page (swipe to delete item)
+- [ ] ui: meal detail edit page

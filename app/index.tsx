@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {View} from 'react-native';
 import {useSettings} from '~/contexts/AppSettingsContext';
-import {Header} from "~/components/index/header";
-import {Summary} from "~/components/index/summary";
-import {Meals} from "~/components/index/meals";
+import {Header} from '~/components/index/header';
+import {Summary} from '~/components/index/summary';
+import {Meals} from '~/components/index/meals';
 
 export default function Screen() {
     const {
@@ -23,16 +23,13 @@ export default function Screen() {
     return (
         <View className='w-full items-center h-full bg-secondary'>
             <View className='flex-1 items-center p-4 text-primary w-full max-w-xl'>
-
                 <Header/>
-
                 <View className='w-full'>
                     <Summary calories={calories}
                              maxCalories={maxCalories}
                              maxCarbs={maxCarbs}
                              maxProtein={maxProtein}
                              maxFat={maxFat}/>
-
                     <Meals breakfast={breakfast}
                            maxBreakfast={maxBreakfast}
                            lunch={lunch}

@@ -1,12 +1,12 @@
-import {Text} from "~/components/ui/text";
-import {Card} from "~/components/ui/card";
-import {CandyIcon, CoffeeIcon, PlusIcon, SandwichIcon, UtensilsIcon} from "lucide-nativewind";
-import * as React from "react";
-import {Separator} from "~/components/ui/separator";
-import {TouchableOpacity, View} from "react-native";
-import {Progress} from "~/components/ui/progress";
-import {formatPercentage} from "~/utils/util";
-import {router} from "expo-router";
+import {Text} from '~/components/ui/text';
+import {Card} from '~/components/ui/card';
+import {CandyIcon, CoffeeIcon, PlusIcon, SandwichIcon, UtensilsIcon} from 'lucide-nativewind';
+import * as React from 'react';
+import {Separator} from '~/components/ui/separator';
+import {TouchableOpacity, View} from 'react-native';
+import {Progress} from '~/components/ui/progress';
+import {formatNumber} from '~/utils/util';
+import {router} from 'expo-router';
 
 type MealsProps = {
     breakfast: number;
@@ -38,19 +38,19 @@ export const Meals = ({
                 {[
                     {
                         icon: <CoffeeIcon className='mr-3 w-7 h-7 text-primary'/>,
-                        name: "Breakfast",
+                        name: 'Breakfast',
                         consumed: breakfast,
                         max: maxBreakfast,
                     },
                     {
                         icon: <SandwichIcon className='mr-3 w-7 h-7 text-primary'/>,
-                        name: "Lunch",
+                        name: 'Lunch',
                         consumed: lunch,
                         max: maxLunch,
                     },
                     {
                         icon: <UtensilsIcon className='mr-3 w-7 h-7 text-primary'/>,
-                        name: "Dinner",
+                        name: 'Dinner',
                         consumed: dinner,
                         max: maxDinner,
                     },
@@ -63,7 +63,7 @@ export const Meals = ({
                 {displaySnacks && (
                     <MealBar
                         icon={<CandyIcon className='mr-3 w-7 h-7 text-primary'/>}
-                        name="Snacks"
+                        name='Snacks'
                         consumed={snacks}
                         max={maxSnacks}
                     />
@@ -87,7 +87,7 @@ function MealBar({
                     <Text className='mb-1 font-semibold w-full'>{name}</Text>
                     <Progress value={(consumed / max) * 100} className='h-2 bg-gray-400 dark:bg-gray-600'/>
                     <Text className='text-xs text-gray-500 dark:text-gray-300 font-semibold w-full'>
-                        {consumed} / {max} kcal ({formatPercentage(consumed / max * 100)}%)
+                        {consumed} / {max} kcal ({formatNumber(consumed / max * 100)}%)
                     </Text>
                 </View>
                 <View className='grow'/>
