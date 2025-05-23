@@ -1,7 +1,5 @@
 import {integer, real, sqliteTable, text} from "drizzle-orm/sqlite-core";
 
-export const DATABASE_NAME = 'food.db';
-
 export const foods = sqliteTable('foods', {
     id: integer('id').primaryKey({autoIncrement: true}),
     isCustom: integer('is_custom', {mode: 'boolean'}).notNull(),
