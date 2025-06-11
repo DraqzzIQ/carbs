@@ -6,15 +6,17 @@ import {Card} from '~/components/ui/card';
 import {ClockFadingIcon, PlusIcon, VerifiedIcon} from 'lucide-nativewind';
 import {formatNumber} from '~/utils/util';
 import {Separator} from "~/components/ui/separator";
+import {router} from "expo-router";
 
 type SearchProductsProps = {
     products: ProductsSearchResult[];
     loading: boolean;
     notFound: boolean;
     onAddProduct: (product: ProductsSearchResult) => void;
+    meal: string;
 };
 
-export const SearchProducts = ({products, loading, notFound, onAddProduct}: SearchProductsProps) => {
+export const SearchProducts = ({products, loading, notFound, onAddProduct, meal}: SearchProductsProps) => {
     return loading ? (
         <View className='flex-1 items-center justify-center mt-10'>
             <Text className='text-primary text-lg font-semibold'>Loading...</Text>
@@ -32,19 +34,20 @@ export const SearchProducts = ({products, loading, notFound, onAddProduct}: Sear
     ) : (
         <View className='pb-10'>
             {products.map((product) => (
-                <SearchProduct key={product.productId} product={product} onAddProduct={onAddProduct}/>
+                <SearchProduct key={product.productId} product={product} meal={meal} onAddProduct={onAddProduct}/>
             ))}
         </View>
     )));
 };
 
 function SearchProduct({
-                           product, onAddProduct
+                           product, meal, onAddProduct
                        }: {
-    product: ProductsSearchResult, onAddProduct: (product: ProductsSearchResult) => void
+    product: ProductsSearchResult, meal: string, onAddProduct: (product: ProductsSearchResult) => void
 }) {
     return (
-        <TouchableOpacity>
+        <TouchableOpacity
+            onPress={() => router.push(`/meal/add/details?mealName=${meal}&date=1&productId=${product.productId}`)}>
             <Card className='flex items-start justify-between px-3 py-2 bg-secondary rounded-lg mb-2'>
                 <View className='flex-row items-center'>
                     <Text className='text-primary font-semibold max-w-[90%] flex-shrink'>

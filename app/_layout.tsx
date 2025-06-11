@@ -13,11 +13,9 @@ import {SettingsProvider} from '~/contexts/AppSettingsContext';
 import {setBackgroundColorAsync} from "expo-system-ui";
 import {PortalHost} from "@rn-primitives/portal";
 import {useMigrations} from "drizzle-orm/expo-sqlite/migrator";
-import {drizzle} from 'drizzle-orm/expo-sqlite/driver';
 import migrations from "~/drizzle/migrations";
-import {useDrizzleStudio} from "expo-drizzle-studio-plugin";
 import 'expo-dev-client';
-import {db, expoDb} from "~/db/client";
+import {db} from "~/db/client";
 
 const LIGHT_THEME: Theme = {
     ...DefaultTheme,
@@ -103,6 +101,17 @@ export default function RootLayout() {
                         />
                         <Stack.Screen
                             name='meal/add/index'
+                            options={{
+                                headerTitleAlign: 'center',
+                                headerShown: true,
+                                headerBackButtonDisplayMode: 'minimal',
+                                headerStyle: {
+                                    backgroundColor: (isDarkColorScheme ? 'black' : '#f4f4f5'),
+                                },
+                            }}
+                        />
+                        <Stack.Screen
+                            name='meal/add/details/index'
                             options={{
                                 headerTitleAlign: 'center',
                                 headerShown: true,

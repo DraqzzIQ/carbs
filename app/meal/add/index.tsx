@@ -10,7 +10,6 @@ import {SearchProducts} from '~/components/index/meal/add/search-products';
 import {ProductsSearchResult} from '~/api/types/ProductsSearchResult';
 import {yazioSearchProducts} from '~/api/yazio';
 import {KeyboardShift} from "~/components/keyboard-shift";
-import {useSettings} from "~/contexts/AppSettingsContext";
 import {FloatingActionButton} from "~/components/floating-action-button";
 
 export default function AddToMealScreen() {
@@ -91,7 +90,7 @@ export default function AddToMealScreen() {
             <View className='p-4 bg-secondary h-full'>
                 <Stack.Screen
                     options={{
-                        title: `Add to ${meal}`,
+                        title: `${meal}`,
                         headerRight: () => (
                             <Text className='text-primary text-2xl h-full w-8'>{addedCount}</Text>)
                     }}
@@ -137,7 +136,7 @@ export default function AddToMealScreen() {
                         </View>
                     ) : (
                         <SearchProducts products={products} loading={loading} notFound={noResults}
-                                        onAddProduct={onAddProduct}/>
+                                        onAddProduct={onAddProduct} meal={meal}/>
                     ))}
                 </ScrollView>
                 <FloatingActionButton onPress={() => {
