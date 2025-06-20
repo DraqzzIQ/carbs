@@ -1,21 +1,22 @@
-import * as React from 'react'
-import {KeyboardAvoidingView, Platform} from 'react-native'
-import {useHeaderHeight} from '@react-navigation/elements'
+import { KeyboardAvoidingView, Platform } from "react-native";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { ReactNode } from "react";
 
 type KeyboardShiftProps = {
-    children: React.ReactNode
-}
+  children: ReactNode;
+};
 
-export const KeyboardShift = ({children}: KeyboardShiftProps) => {
-    const height = useHeaderHeight()
+export const KeyboardShift = ({ children }: KeyboardShiftProps) => {
+  const height = useHeaderHeight();
 
-    return (
-        <KeyboardAvoidingView
-            className='bg-secondary'
-            keyboardVerticalOffset={height + 25}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            enabled>
-            {children}
-        </KeyboardAvoidingView>
-    )
-}
+  return (
+    <KeyboardAvoidingView
+      className="bg-secondary"
+      keyboardVerticalOffset={height + 25}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      enabled
+    >
+      {children}
+    </KeyboardAvoidingView>
+  );
+};

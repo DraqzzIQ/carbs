@@ -8,6 +8,34 @@
       "when": 1747847341721,
       "tag": "0000_illegal_rafael_vega",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1749908348129,
+      "tag": "0001_freezing_mandarin",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1750033084607,
+      "tag": "0002_eager_proudstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1750036233174,
+      "tag": "0003_thick_giant_girl",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1750116516451,
+      "tag": "0004_melodic_grandmaster",
+      "breakpoints": true
     }
   ]
 }
