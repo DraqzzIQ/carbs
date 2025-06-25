@@ -10,7 +10,7 @@ import { ServingDto } from "~/api/types/FoodDetails";
 import { formatServing, getDefaultServing } from "~/utils/serving";
 import { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
-import { Input } from "~/components/ui/input";
+import { NumericInput } from "~/components/numeric-input";
 
 type ServingSelectorProps = {
   servingOptions?: ServingDto[];
@@ -55,12 +55,12 @@ export const ServingSelector = ({
 
   return (
     <View className="flex-1 flex-row w-full">
-      <Input
+      <NumericInput
         selectTextOnFocus={true}
         keyboardType="numeric"
         className="w-1/4 bg-secondary"
-        value={servingQuantity.toString()}
-        onChangeText={(value) => onServingQuantityChange(Number(value) || 0)}
+        defaultValue={servingQuantity.toString()}
+        onValueChange={(value) => onServingQuantityChange(value)}
       />
       <Select
         className="w-3/4"
