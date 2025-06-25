@@ -135,7 +135,7 @@ export default function ProductDetailScreen() {
               food,
             );
           }
-          router.dismiss(edit ? 1 : 2);
+          router.dismiss(1);
         }}
       >
         {edit ? (

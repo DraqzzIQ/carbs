@@ -1,6 +1,6 @@
 import { Animated, TouchableOpacity, View, Keyboard } from "react-native";
 import ScrollView = Animated.ScrollView;
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import {
   SearchIcon,
   XIcon,
@@ -69,6 +69,22 @@ export default function AddToMealScreen() {
       }
     },
   });
+
+  const navigation = useNavigation();
+  useEffect(() => {
+    return navigation.addListener("focus", () => {
+      setSearchQuery("");
+      setProducts([]);
+      setAddedCount(0);
+      setBarCodeScannerOpen(false);
+      setIsTorchEnabled(false);
+      if (!hasPermission) {
+        (async () => {
+          await requestPermission();
+        })();
+      }
+    });
+  }, [navigation]);
 
   if (!device) {
     return;
