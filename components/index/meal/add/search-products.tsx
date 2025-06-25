@@ -1,6 +1,6 @@
 import { Text } from "~/components/ui/text";
 import { TouchableOpacity, View } from "react-native";
-import { ProductsSearchResult } from "~/api/types/ProductsSearchResult";
+import { FoodSearchResult } from "~/api/types/FoodSearchResult";
 import { Card } from "~/components/ui/card";
 import {
   ClockFadingIcon,
@@ -13,12 +13,13 @@ import { Separator } from "~/components/ui/separator";
 import { router } from "expo-router";
 import { useState } from "react";
 import Animated, { FadeOut, LightSpeedInLeft } from "react-native-reanimated";
+import { formatServing } from "~/utils/serving";
 
 type SearchProductsProps = {
-  products: ProductsSearchResult[];
+  products: FoodSearchResult[];
   loading: boolean;
   notFound: boolean;
-  onAddProduct: (product: ProductsSearchResult) => Promise<void>;
+  onAddProduct: (product: FoodSearchResult) => Promise<void>;
   meal: string;
   date: string;
 };
@@ -76,14 +77,14 @@ function SearchProduct({
   date,
   onAddProduct,
 }: {
-  product: ProductsSearchResult;
+  product: FoodSearchResult;
   meal: string;
   date: string;
-  onAddProduct: (product: ProductsSearchResult) => Promise<void>;
+  onAddProduct: (product: FoodSearchResult) => Promise<void>;
 }) {
   const [loading, setLoading] = useState(false);
 
-  async function localOnAddProduct(product: ProductsSearchResult) {
+  async function localOnAddProduct(product: FoodSearchResult) {
     setLoading(true);
     await onAddProduct(product);
     setLoading(false);
@@ -93,7 +94,7 @@ function SearchProduct({
     <TouchableOpacity
       onPress={() =>
         router.push(
-          `/meal/add/details?mealName=${meal}&date=${date}&productId=${product.productId}`,
+          `/meal/add/product?edit=false&productId=${product.productId}&date=${date}&mealName=${meal}`,
         )
       }
     >
@@ -161,13 +162,4 @@ function SearchProduct({
       </Card>
     </TouchableOpacity>
   );
-}
-
-function formatServing(serving: string) {
-  serving = serving[0].toUpperCase() + serving.slice(1);
-  const parts = serving.split(".");
-  if (parts.length > 1) {
-    return parts[0] + ", " + parts[1];
-  }
-  return serving;
 }

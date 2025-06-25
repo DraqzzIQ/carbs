@@ -20,7 +20,9 @@ import Animated, {
   FadeOut,
 } from "react-native-reanimated";
 import { Trash2Icon } from "lucide-nativewind";
-import { removeMealProduct } from "~/utils/querying";
+import { removeFoodFromMeal } from "~/utils/querying";
+import { router } from "expo-router";
+import { mapMealsToNutritionFacts } from "~/utils/mapMealsToNutritionFacts";
 
 type MealDetailProps = {
   date: string;
@@ -92,7 +94,10 @@ export const MealDetails = ({ date, mealType }: MealDetailProps) => {
             {currentDayMeals.map((meal) => (
               <MealItem meal={meal} key={meal.id} />
             ))}
-            <NutritionFacts meals={currentDayMeals} className="pt-1" />
+            <NutritionFacts
+              foods={mapMealsToNutritionFacts(currentDayMeals)}
+              className="pt-1"
+            />
           </View>
         )}
       </ScrollView>
@@ -122,7 +127,7 @@ const RightAction = ({
     <TouchableOpacity
       className="flex w-full flex-row items-center pr-4 bg-[#ff526b] h-full justify-center"
       onPress={async () => {
-        await removeMealProduct(mealId);
+        await removeFoodFromMeal(mealId);
       }}
     >
       <View className="flex-grow" />
@@ -146,68 +151,76 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
   const [width, setWidth] = useState(0);
 
   return (
-    <View
-      className="mt-1.5 rounded-lg overflow-hidden"
-      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+    <TouchableOpacity
+      onPress={async () => {
+        router.push(
+          `/meal/add/product?edit=true&mealId=${meal.id}&date=${meal.date}&mealName=${meal.mealType}`,
+        );
+      }}
     >
-      <ReanimatedSwipeable
-        renderRightActions={(_, translation) =>
-          renderRightActions(translation, meal.id, width)
-        }
+      <View
+        className="mt-1.5 rounded-lg overflow-hidden"
+        onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
       >
-        <Card className="p-3 bg-secondary ">
-          <View className="flex-row">
-            <View>
-              <Text className="font-semibold">{meal.food.name}</Text>
-              <Text className="text-sm">
-                {meal.food.producer ? meal.food.producer + ", " : ""}
-                {meal.servingQuantity}{" "}
-                {meal.servingQuantity > 1 ? "servings" : "serving"} (
-                {meal.amount} {meal.food.baseUnit})
-              </Text>
-            </View>
-            <View className="flex-grow" />
-            <Text className="">
-              {formatNumber(
-                meal.food.energy * meal.servingQuantity * meal.amount,
-              )}{" "}
-              kcal
-            </Text>
-          </View>
-          <View className="flex-row justify-between mt-1">
-            <View className="items-center">
-              <Text className="text-xs font-semibold">
+        <ReanimatedSwipeable
+          renderRightActions={(_, translation) =>
+            renderRightActions(translation, meal.id, width)
+          }
+        >
+          <Card className="p-3 bg-secondary ">
+            <View className="flex-row">
+              <View>
+                <Text className="font-semibold">{meal.food.name}</Text>
+                <Text className="text-sm">
+                  {meal.food.producer ? meal.food.producer + ", " : ""}
+                  {meal.servingQuantity}{" "}
+                  {meal.servingQuantity > 1 ? "servings" : "serving"} (
+                  {meal.amount} {meal.food.baseUnit})
+                </Text>
+              </View>
+              <View className="flex-grow" />
+              <Text className="">
                 {formatNumber(
-                  meal.food.carb * meal.servingQuantity * meal.amount,
-                  1,
+                  meal.food.energy * meal.servingQuantity * meal.amount,
                 )}{" "}
-                g
+                kcal
               </Text>
-              <Text className="text-xs">Carbs</Text>
             </View>
-            <View className="items-center">
-              <Text className="text-xs font-semibold">
-                {formatNumber(
-                  meal.food.protein * meal.servingQuantity * meal.amount,
-                  1,
-                )}{" "}
-                g
-              </Text>
-              <Text className="text-xs">Protein</Text>
+            <View className="flex-row justify-between mt-1">
+              <View className="items-center">
+                <Text className="text-xs font-semibold">
+                  {formatNumber(
+                    meal.food.carb * meal.servingQuantity * meal.amount,
+                    1,
+                  )}{" "}
+                  g
+                </Text>
+                <Text className="text-xs">Carbs</Text>
+              </View>
+              <View className="items-center">
+                <Text className="text-xs font-semibold">
+                  {formatNumber(
+                    meal.food.protein * meal.servingQuantity * meal.amount,
+                    1,
+                  )}{" "}
+                  g
+                </Text>
+                <Text className="text-xs">Protein</Text>
+              </View>
+              <View className="items-center">
+                <Text className="text-xs font-semibold">
+                  {formatNumber(
+                    meal.food.fat * meal.servingQuantity * meal.amount,
+                    1,
+                  )}{" "}
+                  g
+                </Text>
+                <Text className="text-xs">Fat</Text>
+              </View>
             </View>
-            <View className="items-center">
-              <Text className="text-xs font-semibold">
-                {formatNumber(
-                  meal.food.fat * meal.servingQuantity * meal.amount,
-                  1,
-                )}{" "}
-                g
-              </Text>
-              <Text className="text-xs">Fat</Text>
-            </View>
-          </View>
-        </Card>
-      </ReanimatedSwipeable>
-    </View>
+          </Card>
+        </ReanimatedSwipeable>
+      </View>
+    </TouchableOpacity>
   );
 }

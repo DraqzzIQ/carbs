@@ -10,7 +10,7 @@ export function getStreakCount(streakDays: Streak[]): number {
   }
 
   streakDays.sort((a, b) => {
-    return convertDayFormatToDate(b.day) - convertDayFormatToDate(a.day);
+    return +convertDayFormatToDate(b.day) - +convertDayFormatToDate(a.day);
   });
 
   const today = getCurrentDayFormattedDate();

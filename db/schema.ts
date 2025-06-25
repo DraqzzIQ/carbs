@@ -1,5 +1,6 @@
 import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { relations, sql } from "drizzle-orm";
+import { ServingDto } from "~/api/types/FoodDetails";
 
 // servingQuantity is the number of servings in the food item
 // amount is the amount of the food item
@@ -11,9 +12,13 @@ export const foods = sqliteTable("foods", {
   updatedAt: text("updated_at"),
   isCustom: integer("is_custom", { mode: "boolean" }).notNull(),
   isVerified: integer("is_verified", { mode: "boolean" }).notNull(),
+  hasEan: integer("has_ean", { mode: "boolean" }).notNull(),
+  eans: text("eans").$type<string[]>(),
   name: text("name").notNull(),
   producer: text("producer"),
+  category: text("category").notNull(),
   baseUnit: text("base_unit").notNull(),
+  servings: text("servings", { mode: "json" }).notNull().$type<ServingDto[]>(),
   energy: real("energy").notNull(),
   protein: real("protein").notNull(),
   carb: real("carb").notNull(),
@@ -112,15 +117,6 @@ export const recents = sqliteTable("recents", {
   serving: text("serving").notNull(),
 });
 
-export const servings = sqliteTable("servings", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  foodId: text("food_id")
-    .notNull()
-    .references(() => foods.id),
-  serving: text("serving").notNull(),
-  amount: integer("amount").notNull(),
-});
-
 export const streaks = sqliteTable("streaks", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   day: text("day").notNull(),
@@ -130,14 +126,12 @@ export type Food = typeof foods.$inferSelect;
 export type Meal = typeof meals.$inferSelect;
 export type Favorite = typeof favorites.$inferSelect;
 export type Recent = typeof recents.$inferSelect;
-export type Serving = typeof servings.$inferSelect;
 export type Streak = typeof streaks.$inferSelect;
 
 export const foodsRelations = relations(foods, ({ many }) => ({
   meals: many(meals),
   favorites: many(favorites),
   recents: many(recents),
-  servings: many(servings),
 }));
 
 export const mealsRelations = relations(meals, ({ one }) => ({
@@ -157,13 +151,6 @@ export const favoritesRelations = relations(favorites, ({ one }) => ({
 export const recentsRelations = relations(recents, ({ one }) => ({
   food: one(foods, {
     fields: [recents.foodId],
-    references: [foods.id],
-  }),
-}));
-
-export const servingsRelations = relations(servings, ({ one }) => ({
-  food: one(foods, {
-    fields: [servings.foodId],
     references: [foods.id],
   }),
 }));

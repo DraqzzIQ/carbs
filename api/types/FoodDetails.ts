@@ -58,15 +58,15 @@ export const NutrientsSchema = z.object({
   "vitamin.e": z.number().optional(),
   "vitamin.k": z.number().optional(),
 });
-export type Nutrients = z.infer<typeof NutrientsSchema>;
+export type NutrientsDto = z.infer<typeof NutrientsSchema>;
 
 export const ServingSchema = z.object({
   serving: z.string(),
   amount: z.number().positive(),
 });
-export type Serving = z.infer<typeof ServingSchema>;
+export type ServingDto = z.infer<typeof ServingSchema>;
 
-export const ProductDetailsSchema = z.object({
+export const FoodDetailsSchema = z.object({
   id: z.string().uuid(),
   is_custom: z.boolean(),
   name: z.string(),
@@ -84,19 +84,19 @@ export const ProductDetailsSchema = z.object({
   language: z.string(),
   countries: z.array(z.string()),
 });
-export type ProductDetails = z.infer<typeof ProductDetailsSchema>;
+export type FoodDetailsDto = z.infer<typeof FoodDetailsSchema>;
 
-export function mapApiProductDetailsToFood(
-  apiProduct: any,
+export function mapApiFoodDetails(
+  apiFood: any,
   productId: string,
-): ProductDetails | null {
-  const result = ProductDetailsSchema.safeParse({
-    ...apiProduct,
+): FoodDetailsDto | null {
+  const result = FoodDetailsSchema.safeParse({
+    ...apiFood,
     id: productId,
     is_custom: false,
   });
   if (!result.success) {
-    console.error("Failed to parse product details:", result.error);
+    console.error("Failed to parse product product:", result.error);
     return null;
   }
   return result.data;

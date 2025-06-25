@@ -1,6 +1,6 @@
 export enum MealType {
-  BREAKFAST = "breakfast",
-  LUNCH = "lunch",
-  DINNER = "dinner",
-  SNACK = "snack",
+    BREAKFAST = "Breakfast",
+    LUNCH = "Lunch",
+    DINNER = "Dinner",
+    SNACK = "Snack",
 }

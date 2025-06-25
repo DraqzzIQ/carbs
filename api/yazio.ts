@@ -1,13 +1,10 @@
 import {
-  mapApiProductToProductsSearchResult,
-  ProductsSearchResult,
-} from "~/api/types/ProductsSearchResult";
+  mapApiFoodToFoodsSearchResult,
+  FoodSearchResult,
+} from "~/api/types/FoodSearchResult";
 import { getLocales } from "expo-localization";
 import { getStaticSettings } from "~/contexts/AppSettingsContext";
-import {
-  mapApiProductDetailsToFood,
-  ProductDetails,
-} from "~/api/types/ProductDetails";
+import { mapApiFoodDetails, FoodDetailsDto } from "~/api/types/FoodDetails";
 
 const BASE_URL = "https://yzapi.yazio.com/v20/";
 
@@ -37,10 +34,10 @@ const yazioRequest = (
   });
 };
 
-export const yazioSearchProducts = async (
+export const yazioSearchFoods = async (
   searchQuery: string,
   options?: { signal?: AbortSignal },
-): Promise<ProductsSearchResult[]> => {
+): Promise<FoodSearchResult[]> => {
   const request = yazioRequest(
     "products/search",
     { query: searchQuery },
@@ -55,12 +52,12 @@ export const yazioSearchProducts = async (
   }
 
   const data = await response.json();
-  return data.map(mapApiProductToProductsSearchResult);
+  return data.map(mapApiFoodToFoodsSearchResult);
 };
 
-export const yazioGetProductDetails = async (
+export const yazioGetFoodDetails = async (
   productId: string,
-): Promise<ProductDetails | null> => {
+): Promise<FoodDetailsDto | null> => {
   const request = yazioRequest(`products/${productId}`);
 
   const response = await fetch(request);
@@ -71,5 +68,5 @@ export const yazioGetProductDetails = async (
   }
 
   const data = await response.json();
-  return mapApiProductDetailsToFood(data, productId);
+  return mapApiFoodDetails(data, productId);
 };

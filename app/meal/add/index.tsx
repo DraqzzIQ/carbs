@@ -17,12 +17,12 @@ import {
 import { Input } from "~/components/ui/input";
 import { Text } from "~/components/ui/text";
 import { SearchProducts } from "~/components/index/meal/add/search-products";
-import { ProductsSearchResult } from "~/api/types/ProductsSearchResult";
-import { yazioSearchProducts } from "~/api/yazio";
+import { FoodSearchResult } from "~/api/types/FoodSearchResult";
+import { yazioSearchFoods } from "~/api/yazio";
 import { KeyboardShift } from "~/components/keyboard-shift";
 import { FloatingActionButton } from "~/components/floating-action-button";
 import { useEffect, useState } from "react";
-import { addProductToMeal } from "~/utils/querying";
+import { addFoodToMeal } from "~/utils/querying";
 import { MealType } from "~/types/MealType";
 
 export default function AddToMealScreen() {
@@ -33,7 +33,7 @@ export default function AddToMealScreen() {
   const device = useCameraDevice("back");
   const [barCodeScannerOpen, setBarCodeScannerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [products, setProducts] = useState<ProductsSearchResult[]>([]);
+  const [products, setProducts] = useState<FoodSearchResult[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isTorchEnabled, setIsTorchEnabled] = useState(false);
   const [addedCount, setAddedCount] = useState(0);
@@ -96,7 +96,7 @@ export default function AddToMealScreen() {
 
     setLoading(true);
     try {
-      const response = await yazioSearchProducts(query, { signal });
+      const response = await yazioSearchFoods(query, { signal });
       setProducts(response);
     } catch (error) {
       if (error instanceof Error && error.name !== "AbortError") {
@@ -108,16 +108,19 @@ export default function AddToMealScreen() {
     }
   };
 
-  async function onAddProduct(product: ProductsSearchResult) {
-    await addProductToMeal(
-      meal.toLowerCase() as MealType,
-      product.productId,
-      1,
-      product.amount,
-      product.serving,
-      date,
-    );
-    setAddedCount((prevCount) => prevCount + 1);
+  async function onAddProduct(food: FoodSearchResult) {
+    if (
+      await addFoodToMeal(
+        meal as MealType,
+        food.productId,
+        1,
+        food.amount,
+        food.serving,
+        date,
+      )
+    ) {
+      setAddedCount((prevCount) => prevCount + 1);
+    }
   }
 
   return (
@@ -136,6 +139,7 @@ export default function AddToMealScreen() {
         <View className="flex-row justify-center items-center border border-muted-foreground px-4 rounded-lg bg-secondary">
           <SearchIcon className="text-primary" />
           <Input
+            selectTextOnFocus={true}
             className="flex-1 ml-4 border-0 bg-secondary"
             placeholder="Search Product"
             onChangeText={(text: string) => onSearchQueryChange(text)}

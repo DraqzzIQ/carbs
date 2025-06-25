@@ -1,4 +1,4 @@
-import { Animated } from "react-native";
+import { Animated, View } from "react-native";
 import ScrollView = Animated.ScrollView;
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { MealDetails } from "~/components/index/meal/meal-details";
@@ -18,8 +18,12 @@ export default function MealScreen() {
           title: `${name}`,
         }}
       />
-      <ScrollView className="p-3 bg-secondary h-full">
-        <MealDetails date={date} mealType={name.toLowerCase() as MealType} />
+      <ScrollView
+        className="p-3 bg-secondary h-full"
+        showsVerticalScrollIndicator={false}
+      >
+        <MealDetails date={date} mealType={name as MealType} />
+        <View className="mb-20" />
       </ScrollView>
       <FloatingActionButton
         onPress={() => router.push(`/meal/add?mealName=${name}&date=${date}`)}

@@ -15,6 +15,7 @@ import { runOnJS } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { NutritionFacts } from "~/components/index/meal/NutritionFacts";
 import { mealDetailsQuery } from "~/db/queries/mealDetailsQuery";
+import { mapMealsToNutritionFacts } from "~/utils/mapMealsToNutritionFacts";
 
 export default function Screen() {
   const {
@@ -87,9 +88,9 @@ export default function Screen() {
   //endregion
 
   return (
-    <ScrollView>
+    <ScrollView className="bg-secondary" showsVerticalScrollIndicator={false}>
       <GestureDetector gesture={panGesture}>
-        <View className="w-full items-center h-full bg-secondary">
+        <View className="w-full items-center h-full">
           <View className="flex-1 items-center p-4 text-primary w-full max-w-xl">
             <Header date={dateString} />
             <View className="w-full">
@@ -109,7 +110,10 @@ export default function Screen() {
                 maxSnacks={maxSnacks}
                 displaySnacks={displaySnacks}
               />
-              <NutritionFacts meals={currentDayMeals} className="mt-20" />
+              <NutritionFacts
+                foods={mapMealsToNutritionFacts(currentDayMeals)}
+                className="mt-20"
+              />
             </View>
           </View>
         </View>

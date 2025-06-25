@@ -1,0 +1,104 @@
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
+import { ServingDto } from "~/api/types/FoodDetails";
+import { formatServing, getDefaultServing } from "~/utils/serving";
+import { useEffect, useState } from "react";
+import { FlatList, View } from "react-native";
+import { Input } from "~/components/ui/input";
+
+type ServingSelectorProps = {
+  servingOptions?: ServingDto[];
+  defaultServing?: ServingDto;
+  defaultServingQuantity?: number;
+  servingQuantity: number;
+  onServingChange: (serving: ServingDto) => void;
+  onServingQuantityChange: (quantity: number) => void;
+  baseUnit: string;
+};
+
+export const ServingSelector = ({
+  servingOptions,
+  defaultServing,
+  defaultServingQuantity,
+  servingQuantity,
+  onServingChange,
+  onServingQuantityChange,
+  baseUnit,
+}: ServingSelectorProps) => {
+  const [options, setOptions] = useState<ServingDto[]>([]);
+
+  useEffect(() => {
+    if (!servingOptions) {
+      return;
+    }
+    const options = [
+      ...servingOptions,
+      { serving: getDefaultServing(baseUnit), amount: 1 },
+    ];
+    setOptions(options);
+
+    onServingChange(defaultServing ?? options[0]);
+    onServingQuantityChange(
+      defaultServingQuantity ?? (options[0].amount === 1 ? 100 : 1),
+    );
+  }, [servingOptions]);
+
+  if (options.length === 0) {
+    return;
+  }
+
+  return (
+    <View className="flex-1 flex-row w-full">
+      <Input
+        selectTextOnFocus={true}
+        keyboardType="numeric"
+        className="w-1/4 bg-secondary"
+        value={servingQuantity.toString()}
+        onChangeText={(value) => onServingQuantityChange(Number(value) || 0)}
+      />
+      <Select
+        className="w-3/4"
+        defaultValue={{
+          label: `${formatServing((defaultServing ?? options[0]).serving)} (${(defaultServing ?? options[0]).amount} ${baseUnit})`,
+          value: (defaultServing ?? options[0]).serving,
+        }}
+      >
+        <SelectTrigger className="bg-secondary">
+          <SelectValue
+            className="text-primary font-medium"
+            placeholder="Select Serving"
+          />
+        </SelectTrigger>
+        <SelectContent>
+          <FlatList
+            data={options}
+            keyExtractor={(item) => item.serving}
+            renderItem={({ item }) => (
+              <SelectItem
+                label={`${formatServing(item.serving)} (${item.amount} ${baseUnit})`}
+                value={item.serving}
+                onPress={() => {
+                  onServingChange(item);
+                  onServingQuantityChange(item.amount === 1 ? 100 : 1);
+                }}
+              />
+            )}
+            showsVerticalScrollIndicator={false}
+            style={{ height: "100%" }}
+            ItemSeparatorComponent={WrappedSelectSeparator}
+          />
+        </SelectContent>
+      </Select>
+    </View>
+  );
+};
+
+const WrappedSelectSeparator = () => (
+  <SelectSeparator className="bg-border w-full h-[1px]" />
+);

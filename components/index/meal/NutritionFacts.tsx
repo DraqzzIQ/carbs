@@ -1,9 +1,9 @@
 import { View } from "react-native";
 import { useMemo } from "react";
-import { MealDetailsQueryType } from "~/db/queries/mealDetailsQuery";
 import { formatNumber } from "~/utils/formatting";
 import { cn } from "~/lib/utils";
 import { Text } from "~/components/ui/text";
+import { Food } from "~/db/schema";
 
 const nutritionTemplate = {
   energy: { value: 0, unit: "kcal" },
@@ -133,27 +133,26 @@ const nutritionGroups: Record<
 };
 
 type NutritionFactsProps = {
-  meals: MealDetailsQueryType;
+  foods: (Food & { amount: number; servingQuantity: number })[];
   className?: string;
 };
 
-export const NutritionFacts = ({ meals, className }: NutritionFactsProps) => {
-  if (meals.length === 0) {
+export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
+  if (foods.length === 0) {
     return <View />;
   }
 
   const totalNutrition = useMemo(() => {
     const totals = JSON.parse(JSON.stringify(nutritionTemplate));
-    meals.forEach((meal) => {
-      const food = meal.food;
-      const quantity = meal.servingQuantity * meal.amount;
+    foods.forEach((food) => {
+      const quantity = food.servingQuantity * food.amount;
       Object.keys(totals).forEach((key) => {
         totals[key as keyof typeof totals].value +=
           ((food as any)[key] ?? 0) * quantity;
       });
     });
     return totals;
-  }, [meals]);
+  }, [foods]);
 
   return (
     <>

@@ -1,11 +1,11 @@
 import { MealType } from "~/types/MealType";
-import { yazioGetProductDetails } from "~/api/yazio";
-import { ProductDetails } from "~/api/types/ProductDetails";
+import { yazioGetFoodDetails } from "~/api/yazio";
+import { FoodDetailsDto, ServingDto } from "~/api/types/FoodDetails";
 import { db } from "~/db/client";
-import { foods, meals, servings, streaks } from "~/db/schema";
+import { Food, foods, meals, streaks } from "~/db/schema";
 import { and, eq } from "drizzle-orm";
 
-export async function removeMealProduct(mealId: number) {
+export async function removeFoodFromMeal(mealId: number) {
   try {
     await db.delete(meals).where(and(eq(meals.id, mealId)));
   } catch (error) {
@@ -13,72 +13,99 @@ export async function removeMealProduct(mealId: number) {
   }
 }
 
-export async function addProductToMeal(
+export async function addFoodToMeal(
   meal: MealType,
-  productId: string,
+  foodId: string,
   servingQuantity: number,
   amount: number,
   serving: string,
   date: string,
-  food: ProductDetails | undefined = undefined,
-) {
+  food: Food | undefined = undefined,
+): Promise<boolean> {
   if (food === undefined) {
-    food = (await yazioGetProductDetails(productId)) ?? undefined;
-  }
-  if (food === undefined) {
-    console.error(`Couldn't add Product with ID ${productId}.`);
-    return;
+    food = await getAndSaveFood(foodId);
+    if (food === undefined) {
+      console.error(`Couldn't add Product with ID ${foodId}.`);
+      return false;
+    }
   }
 
   await updateStreak(date);
-  await addOrUpdateProduct(food);
+
   try {
     await db.insert(meals).values({
       foodId: food.id,
-      servingQuantity,
-      amount,
+      servingQuantity: servingQuantity,
+      amount: amount,
       serving: serving,
       mealType: meal,
       date: date,
     });
   } catch (error) {
     console.error(
-      `Error adding product to meal: ${meal}, product ID: ${productId}`,
+      `Error adding product to meal: ${meal}, product ID: ${foodId}`,
       error,
     );
+    return false;
   }
+  return true;
 }
 
-async function addOrUpdateProduct(food: ProductDetails) {
+export async function getAndSaveFood(
+  foodId: string,
+): Promise<Food | undefined> {
+  const food = (await yazioGetFoodDetails(foodId)) ?? undefined;
+  if (!food) {
+    console.error(`Couldn't find Product with ID ${foodId}.`);
+    return undefined;
+  }
+
+  const lastUpdatedAt = await getFoodUpdatedAt(foodId);
+  if (lastUpdatedAt === undefined) {
+    await addFood(food);
+  } else if (lastUpdatedAt !== food.updated_at) {
+    await updateFood(food);
+  }
+
+  return (await getSavedFood(foodId)) ?? undefined;
+}
+
+async function addFood(food: FoodDetailsDto) {
   try {
-    const existingProduct = !!(await db.query.foods.findFirst({
-      columns: { id: true },
-      where: eq(foods.id, food.id),
-    }));
-
-    if (!existingProduct) {
-      await db
-        .insert(foods)
-        .values({ ...getProductProperties(food), id: food.id });
-      await insertServings(food.id, food.servings);
-      return;
-    }
-
-    const updatedAt = await db.query.foods.findFirst({
-      columns: { updatedAt: true },
-      where: eq(foods.id, food.id),
-    });
-    if (updatedAt?.updatedAt === food.updated_at) {
-      return;
-    }
-    await db.update(foods).set(getProductProperties(food));
-    await db.delete(servings).where(eq(servings.foodId, food.id));
-    await insertServings(food.id, food.servings);
+    await db
+      .insert(foods)
+      .values({ ...getProductProperties(food), id: food.id });
   } catch (error) {
     console.error(
       `Error adding or updating product with ID ${food.id}:`,
       error,
     );
+  }
+}
+
+export async function updateFood(food: FoodDetailsDto) {
+  try {
+    await db
+      .update(foods)
+      .set(getProductProperties(food))
+      .where(eq(foods.id, food.id));
+  } catch (error) {
+    console.error(`Error updating food with ID ${food.id}:`, error);
+  }
+}
+
+export async function getFoodUpdatedAt(
+  foodId: string,
+): Promise<string | null | undefined> {
+  try {
+    const result = await db.query.foods.findFirst({
+      columns: { updatedAt: true },
+      where: eq(foods.id, foodId),
+    });
+    return result?.updatedAt;
+  } catch (error) {
+    console.error(`Error checking if food exists with ID ${foodId}:`, error);
+    return undefined;
   }
 }
 
@@ -96,38 +123,50 @@ async function updateStreak(date: string) {
   }
 }
 
-async function insertServings(
-  foodId: string,
-  foodServings: { serving: string; amount: number }[],
-) {
+export async function getSavedFood(foodId: string) {
   try {
-    await db.insert(servings).values([
-      {
-        foodId: foodId,
-        serving: "100-serving",
-        amount: 100,
-      },
-      ...foodServings.map((serving) => ({
-        foodId: foodId,
-        serving: serving.serving,
-        amount: serving.amount,
-      })),
-    ]);
+    return await db.query.foods.findFirst({
+      where: eq(foods.id, foodId),
+    });
   } catch (error) {
-    console.error(
-      `Error inserting servings for product with ID ${foodId}:`,
-      error,
-    );
+    console.error(`Error getting saved food with ID ${foodId}:`, error);
+    return null;
   }
 }
 
-function getProductProperties(food: ProductDetails): {
+export async function updateMeal(
+  mealId: number,
+  servingQuantity: number,
+  amount: number,
+  serving: string,
+  mealType: MealType,
+) {
+  try {
+    await db
+      .update(meals)
+      .set({
+        amount: amount,
+        servingQuantity: servingQuantity,
+        serving: serving,
+        mealType: mealType,
+      })
+      .where(eq(meals.id, mealId));
+  } catch (error) {
+    console.error(`Error updating meal with ID ${mealId}:`, error);
+  }
+}
+
+function getProductProperties(food: FoodDetailsDto): {
   updatedAt: string | null;
   isCustom: boolean;
   isVerified: boolean;
+  hasEan: boolean;
+  eans?: string[];
   name: string;
   producer: string | null;
+  category: string;
   baseUnit: string;
+  servings: ServingDto[];
   energy: number;
   protein: number;
   carb: number;
@@ -186,9 +225,13 @@ function getProductProperties(food: ProductDetails): {
     updatedAt: food.updated_at,
     isCustom: food.is_custom,
     isVerified: food.is_verified,
+    hasEan: food.has_ean,
+    eans: food.eans,
     name: food.name,
     producer: food.producer,
+    category: food.category,
     baseUnit: food.base_unit,
+    servings: food.servings,
     energy: food.nutrients["energy.energy"],
     protein: food.nutrients["nutrient.protein"],
     carb: food.nutrients["nutrient.carb"],

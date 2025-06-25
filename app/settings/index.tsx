@@ -5,9 +5,10 @@ import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { useSettings } from "~/contexts/AppSettingsContext";
 import { formatNumber } from "~/utils/formatting";
-import ScrollView = Animated.ScrollView;
 import { KeyboardShift } from "~/components/keyboard-shift";
 import { CountryDropdown } from "~/components/country-dropdown";
+import { MealType } from "~/types/MealType";
+import ScrollView = Animated.ScrollView;
 
 export default function SettingsScreen() {
   const {
@@ -36,13 +37,18 @@ export default function SettingsScreen() {
         </Text>
 
         {[
-          { label: "Breakfast", value: maxBreakfast, key: "maxBreakfast" },
-          { label: "Lunch", value: maxLunch, key: "maxLunch" },
-          { label: "Dinner", value: maxDinner, key: "maxDinner" },
+          {
+            label: MealType.BREAKFAST,
+            value: maxBreakfast,
+            key: "maxBreakfast",
+          },
+          { label: MealType.LUNCH, value: maxLunch, key: "maxLunch" },
+          { label: MealType.DINNER, value: maxDinner, key: "maxDinner" },
         ].map(({ label, value, key }) => (
           <View key={label} className="mt-3">
             <Text className="font-semibold text-sm">{label} (kcal)</Text>
             <Input
+              selectTextOnFocus={true}
               keyboardType="numeric"
               value={value.toString()}
               onChangeText={(text) => setSettings({ [key]: Number(text) || 0 })}
@@ -60,8 +66,9 @@ export default function SettingsScreen() {
         </View>
 
         <View className="mt-2">
-          <Text className="font-semibold text-sm">Snacks (kcal)</Text>
+          <Text className="font-semibold text-sm">{MealType.SNACK} (kcal)</Text>
           <Input
+            selectTextOnFocus={true}
             editable={displaySnacks}
             keyboardType="numeric"
             value={maxSnacks.toString()}
@@ -85,6 +92,7 @@ export default function SettingsScreen() {
           <View key={label} className="mt-2">
             <Text className="text-sm">{label} (g)</Text>
             <Input
+              selectTextOnFocus={true}
               keyboardType="numeric"
               value={value.toString()}
               onChangeText={(text) => setSettings({ [key]: Number(text) || 0 })}

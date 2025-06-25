@@ -19,7 +19,7 @@ import { PortalHost } from "@rn-primitives/portal";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "~/drizzle/migrations";
 import "expo-dev-client";
-import { db } from "~/db/client";
+import { db, expoDb } from "~/db/client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -42,6 +42,7 @@ export default function RootLayout() {
   const hasMounted = useRef(false);
   const { colorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
+  const { success, error } = useMigrations(db, migrations);
 
   useIsomorphicLayoutEffect(() => {
     if (hasMounted.current) {
@@ -57,11 +58,17 @@ export default function RootLayout() {
     hasMounted.current = true;
   }, []);
 
-  const { success, error } = useMigrations(db, migrations);
-  if (!success && error) {
-    console.error("Error running migrations", error);
+  useEffect(() => {
+    if (!success) {
+      console.error("Error running migrations", error);
+      return;
+    }
+    console.info("Successfully ran migrations");
+  }, [success, error]);
+
+  if (__DEV__) {
+    useDrizzleStudio(expoDb);
   }
-  useDrizzleStudio(db);
 
   if (!isColorSchemeLoaded) {
     return null;
@@ -119,7 +126,7 @@ export default function RootLayout() {
                 }}
               />
               <Stack.Screen
-                name="meal/add/details/index"
+                name="meal/add/product/index"
                 options={{
                   headerTitleAlign: "center",
                   headerShown: true,
