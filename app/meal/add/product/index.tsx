@@ -8,10 +8,11 @@ import { HeaderMealDropdown } from "~/components/index/meal/add/product/header-m
 import { MealType } from "~/types/MealType";
 import { Food } from "~/db/schema";
 import { addFoodToMeal, getAndSaveFood, updateMeal } from "~/utils/querying";
-import { NutritionFacts } from "~/components/index/meal/NutritionFacts";
+import { NutritionFacts } from "~/components/index/meal/nutrition-facts";
 import { PlusIcon, SaveIcon } from "lucide-nativewind";
 import { FloatingActionButton } from "~/components/floating-action-button";
 import { ServingSelector } from "~/components/index/meal/add/product/serving-selector";
+import { MacroHeader } from "~/components/index/meal/macro-header";
 
 export default function ProductDetailScreen() {
   const params = useLocalSearchParams();
@@ -26,6 +27,9 @@ export default function ProductDetailScreen() {
   const [servingQuantity, setServingQuantity] = useState<number>(1);
   const [amount, setAmount] = useState<number>(100);
   const [serving, setServing] = useState<string>("Gram");
+  const [macroFactor, setMacroFactor] = useState<number>(
+    amount * servingQuantity,
+  );
   const [mealType, setMealType] = useState<MealType>(mealName as MealType);
 
   useEffect(() => {
@@ -77,6 +81,12 @@ export default function ProductDetailScreen() {
         className="p-4 bg-secondary h-full"
         showsVerticalScrollIndicator={false}
       >
+        <MacroHeader
+          energy={food.energy * macroFactor}
+          carbs={food.carb * macroFactor}
+          protein={food.protein * macroFactor}
+          fat={food.fat * macroFactor}
+        />
         <Text className="text-primary text-2xl text-center font-semibold">
           {food.name}
         </Text>
@@ -90,10 +100,12 @@ export default function ProductDetailScreen() {
           onServingChange={(serving) => {
             setAmount(serving.amount);
             setServing(serving.serving);
+            setMacroFactor(serving.amount * servingQuantity);
           }}
-          onServingQuantityChange={(servingQuantity) =>
-            setServingQuantity(servingQuantity)
-          }
+          onServingQuantityChange={(servingQuantity) => {
+            setServingQuantity(servingQuantity);
+            setMacroFactor(amount * servingQuantity);
+          }}
           baseUnit={food.baseUnit}
         />
         <NutritionFacts

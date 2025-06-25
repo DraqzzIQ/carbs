@@ -13,7 +13,7 @@ import { useNavigation } from "expo-router";
 import { getDateSlug } from "~/utils/formatting";
 import { runOnJS } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { NutritionFacts } from "~/components/index/meal/NutritionFacts";
+import { NutritionFacts } from "~/components/index/meal/nutrition-facts";
 import { mealDetailsQuery } from "~/db/queries/mealDetailsQuery";
 import { mapMealsToNutritionFacts } from "~/utils/mapMealsToNutritionFacts";
 

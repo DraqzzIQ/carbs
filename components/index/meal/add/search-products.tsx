@@ -114,7 +114,9 @@ function SearchProduct({
             onPress={async () => await localOnAddProduct(product)}
           >
             {loading ? (
-              <LoaderCircleIcon className="text-primary animate-spin" />
+              <View className="animate-spin">
+                <LoaderCircleIcon className="text-primary" />
+              </View>
             ) : (
               <PlusIcon className="text-primary" />
             )}

@@ -9,7 +9,7 @@ import {
   mealDetailsQuery,
   MealDetailsQueryType,
 } from "~/db/queries/mealDetailsQuery";
-import { NutritionFacts } from "~/components/index/meal/NutritionFacts";
+import { NutritionFacts } from "~/components/index/meal/nutrition-facts";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import Animated, {
   SharedValue,
@@ -23,6 +23,7 @@ import { Trash2Icon } from "lucide-nativewind";
 import { removeFoodFromMeal } from "~/utils/querying";
 import { router } from "expo-router";
 import { mapMealsToNutritionFacts } from "~/utils/mapMealsToNutritionFacts";
+import { MacroHeader } from "~/components/index/meal/macro-header";
 
 type MealDetailProps = {
   date: string;
@@ -61,35 +62,13 @@ export const MealDetails = ({ date, mealType }: MealDetailProps) => {
   return (
     <Animated.View entering={LightSpeedInLeft} exiting={FadeOut}>
       <ScrollView className="h-full bg-secondary mb-6">
-        <Card className="p-2 mb-1 bg-secondary border-2 border-foreground">
-          <View className="flex-1 flex-row justify-between">
-            <View className="items-center">
-              <Text className="font-semibold">
-                {formatNumber(mealData.totalCalories)} kcal
-              </Text>
-              <Text className="text-xs">Calories</Text>
-            </View>
-            <View className="items-center">
-              <Text className="font-semibold">
-                {formatNumber(mealData.totalCarbs, 1)} g
-              </Text>
-              <Text className="text-xs">Carbs</Text>
-            </View>
-            <View className="items-center">
-              <Text className="font-semibold">
-                {formatNumber(mealData.totalProtein, 1)} g
-              </Text>
-              <Text className="text-xs">Protein</Text>
-            </View>
-            <View className="items-center">
-              <Text className="font-semibold">
-                {formatNumber(mealData.totalFat, 1)} g
-              </Text>
-              <Text className="text-xs">Fat</Text>
-            </View>
-          </View>
-        </Card>
-        {currentDayMeals.length > 0 && (
+        <MacroHeader
+          energy={mealData.totalCalories}
+          carbs={mealData.totalCarbs}
+          protein={mealData.totalProtein}
+          fat={mealData.totalFat}
+        />
+        {currentDayMeals.length > 0 ? (
           <View>
             {currentDayMeals.map((meal) => (
               <MealItem meal={meal} key={meal.id} />
@@ -99,6 +78,10 @@ export const MealDetails = ({ date, mealType }: MealDetailProps) => {
               className="pt-1"
             />
           </View>
+        ) : (
+          <Text className="text-center text-muted-foreground mt-4">
+            Nothing added yet.
+          </Text>
         )}
       </ScrollView>
     </Animated.View>
