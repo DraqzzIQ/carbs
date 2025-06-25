@@ -98,7 +98,7 @@ export default function RootLayout() {
                   title: "Settings",
                   headerBackButtonDisplayMode: "minimal",
                   headerStyle: {
-                    backgroundColor: isDarkColorScheme ? "black" : "#f4f4f5",
+                    backgroundColor: isDarkColorScheme ? "black" : "white",
                   },
                   headerRight: () => <ThemeToggle />,
                 }}
@@ -110,7 +110,7 @@ export default function RootLayout() {
                   headerShown: true,
                   headerBackButtonDisplayMode: "minimal",
                   headerStyle: {
-                    backgroundColor: isDarkColorScheme ? "black" : "#f4f4f5",
+                    backgroundColor: isDarkColorScheme ? "black" : "white",
                   },
                 }}
               />
@@ -121,7 +121,7 @@ export default function RootLayout() {
                   headerShown: true,
                   headerBackButtonDisplayMode: "minimal",
                   headerStyle: {
-                    backgroundColor: isDarkColorScheme ? "black" : "#f4f4f5",
+                    backgroundColor: isDarkColorScheme ? "black" : "white",
                   },
                 }}
               />
@@ -132,7 +132,7 @@ export default function RootLayout() {
                   headerShown: true,
                   headerBackButtonDisplayMode: "minimal",
                   headerStyle: {
-                    backgroundColor: isDarkColorScheme ? "black" : "#f4f4f5",
+                    backgroundColor: isDarkColorScheme ? "black" : "white",
                   },
                 }}
               />
