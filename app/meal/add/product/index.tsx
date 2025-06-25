@@ -27,9 +27,6 @@ export default function ProductDetailScreen() {
   const [servingQuantity, setServingQuantity] = useState<number>(1);
   const [amount, setAmount] = useState<number>(100);
   const [serving, setServing] = useState<string>("Gram");
-  const [macroFactor, setMacroFactor] = useState<number>(
-    amount * servingQuantity,
-  );
   const [mealType, setMealType] = useState<MealType>(mealName as MealType);
 
   useEffect(() => {
@@ -81,39 +78,40 @@ export default function ProductDetailScreen() {
         className="p-4 bg-secondary h-full"
         showsVerticalScrollIndicator={false}
       >
-        <MacroHeader
-          energy={food.energy * macroFactor}
-          carbs={food.carb * macroFactor}
-          protein={food.protein * macroFactor}
-          fat={food.fat * macroFactor}
-        />
         <Text className="text-primary text-2xl text-center font-semibold">
           {food.name}
         </Text>
-        <ServingSelector
-          servingOptions={food.servings}
-          defaultServing={
-            edit ? { serving: meal!.serving, amount: meal!.amount } : undefined
-          }
-          defaultServingQuantity={edit ? meal!.servingQuantity : undefined}
-          servingQuantity={servingQuantity}
-          onServingChange={(serving) => {
-            setAmount(serving.amount);
-            setServing(serving.serving);
-            setMacroFactor(serving.amount * servingQuantity);
-          }}
-          onServingQuantityChange={(servingQuantity) => {
-            setServingQuantity(servingQuantity);
-            setMacroFactor(amount * servingQuantity);
-          }}
-          baseUnit={food.baseUnit}
+        <Text className="text-muted-foreground text-xl text-center font-semibold mb-8">
+          {food.producer}
+        </Text>
+        <MacroHeader
+          energy={food.energy * amount * servingQuantity}
+          carbs={food.carb * amount * servingQuantity}
+          protein={food.protein * amount * servingQuantity}
+          fat={food.fat * amount * servingQuantity}
         />
         <NutritionFacts
           foods={[{ ...food, amount, servingQuantity }]}
-          className="mt-1"
+          className="mt-8"
         />
-        <View className="mb-24" />
+        <View className="mb-36" />
       </ScrollView>
+      <ServingSelector
+        servingOptions={food.servings}
+        defaultServing={
+          edit ? { serving: meal!.serving, amount: meal!.amount } : undefined
+        }
+        defaultServingQuantity={edit ? meal!.servingQuantity : undefined}
+        servingQuantity={servingQuantity}
+        onServingChange={(serving) => {
+          setAmount(serving.amount);
+          setServing(serving.serving);
+        }}
+        onServingQuantityChange={(servingQuantity) => {
+          setServingQuantity(servingQuantity);
+        }}
+        baseUnit={food.baseUnit}
+      />
       <FloatingActionButton
         onPress={async () => {
           if (edit) {
@@ -137,6 +135,7 @@ export default function ProductDetailScreen() {
           }
           router.dismiss(1);
         }}
+        bottom="bottom-20"
       >
         {edit ? (
           <SaveIcon className="text-secondary h-9 w-9" />

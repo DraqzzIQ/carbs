@@ -9,8 +9,9 @@ import {
 import { ServingDto } from "~/api/types/FoodDetails";
 import { formatServing, getDefaultServing } from "~/utils/serving";
 import { useEffect, useState } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList } from "react-native";
 import { NumericInput } from "~/components/numeric-input";
+import { Card } from "~/components/ui/card";
 
 type ServingSelectorProps = {
   servingOptions?: ServingDto[];
@@ -54,8 +55,10 @@ export const ServingSelector = ({
   }
 
   return (
-    <View className="flex-1 flex-row w-full">
+    <Card className="flex-1 flex-row w-full z-10 left-0 right-0 bottom-0 absolute p-2">
       <NumericInput
+        allowNegative={false}
+        allowDecimal={true}
         selectTextOnFocus={true}
         keyboardType="numeric"
         className="w-1/4 bg-secondary"
@@ -95,7 +98,7 @@ export const ServingSelector = ({
           />
         </SelectContent>
       </Select>
-    </View>
+    </Card>
   );
 };
 

@@ -78,8 +78,6 @@ export default function AddToMealScreen() {
   const navigation = useNavigation();
   useEffect(() => {
     return navigation.addListener("focus", () => {
-      setSearchQuery("");
-      setProducts([]);
       setAddedCount(0);
       setBarCodeScannerOpen(false);
       setIsTorchEnabled(false);

@@ -7,7 +7,7 @@ import { Food } from "~/db/schema";
 
 const nutritionTemplate = {
   energy: { value: 0, unit: "kcal" },
-  carbs: { value: 0, unit: "g" },
+  carb: { value: 0, unit: "g" },
   protein: { value: 0, unit: "g" },
   dietaryFiber: { value: 0, unit: "g" },
   sugar: { value: 0, unit: "g" },
@@ -66,7 +66,7 @@ const nutritionGroups: Record<
   { title?: string; keys: (keyof typeof nutritionTemplate)[] }
 > = {
   General: {
-    keys: ["energy", "carbs", "protein", "dietaryFiber", "sugar"],
+    keys: ["energy", "carb", "protein", "dietaryFiber", "sugar"],
   },
   Fat: {
     title: "Fat",
@@ -148,7 +148,7 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
       const quantity = food.servingQuantity * food.amount;
       Object.keys(totals).forEach((key) => {
         totals[key as keyof typeof totals].value +=
-          ((food as any)[key] ?? 0) * quantity;
+          ((food as any)[key.replace("totalF", "f")] ?? 0) * quantity;
       });
     });
     return totals;

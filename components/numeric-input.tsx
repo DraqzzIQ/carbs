@@ -19,10 +19,11 @@ export const NumericInput = ({
 
   const onTextChange = (text: string) => {
     text = text.replace(",", ".");
-    text.replace(
-      `/[^0-9${allowNegative ? "-" : ""}${allowDecimal ? "." : ""}]/g`,
-      "",
+    const pattern = new RegExp(
+      `[^0-9${allowNegative ? "-" : ""}${allowDecimal ? "\\." : ""}]`,
+      "g",
     );
+    text = text.replace(pattern, "");
 
     if (allowNegative && text.includes("-")) {
       text = (text[0] === "-" ? "-" : "") + text.replace(/-/g, "");
