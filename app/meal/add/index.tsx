@@ -1,6 +1,11 @@
 import { Animated, TouchableOpacity, View, Keyboard } from "react-native";
 import ScrollView = Animated.ScrollView;
-import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
+import {
+  router,
+  Stack,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 import {
   SearchIcon,
   XIcon,
@@ -65,7 +70,7 @@ export default function AddToMealScreen() {
           data = data.substring(1);
         }
         setSearchQuery(data);
-        await searchProducts(data);
+        await searchProducts(data, true);
       }
     },
   });
@@ -96,7 +101,7 @@ export default function AddToMealScreen() {
   };
 
   let abortController: AbortController | null = null;
-  const searchProducts = async (query: string) => {
+  const searchProducts = async (query: string, scanned: boolean = false) => {
     if (abortController) {
       abortController.abort();
     }
@@ -113,6 +118,11 @@ export default function AddToMealScreen() {
     setLoading(true);
     try {
       const response = await yazioSearchFoods(query, { signal });
+      if (response.length === 1 && scanned) {
+        router.push(
+          `/meal/add/product?edit=false&productId=${response[0].productId}&date=${date}&mealName=${meal}`,
+        );
+      }
       setProducts(response);
     } catch (error) {
       if (error instanceof Error && error.name !== "AbortError") {
