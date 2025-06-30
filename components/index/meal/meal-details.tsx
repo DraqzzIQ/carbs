@@ -16,8 +16,6 @@ import Animated, {
   useAnimatedStyle,
   interpolate,
   Extrapolation,
-  LightSpeedInLeft,
-  FadeOut,
 } from "react-native-reanimated";
 import { Trash2Icon } from "lucide-nativewind";
 import { removeFoodFromMeal } from "~/utils/querying";
@@ -60,31 +58,29 @@ export const MealDetails = ({ date, mealType }: MealDetailProps) => {
   }, [currentDayMeals]);
 
   return (
-    <Animated.View entering={LightSpeedInLeft} exiting={FadeOut}>
-      <ScrollView className="h-full bg-secondary mb-6">
-        <MacroHeader
-          energy={mealData.totalCalories}
-          carbs={mealData.totalCarbs}
-          protein={mealData.totalProtein}
-          fat={mealData.totalFat}
-        />
-        {currentDayMeals.length > 0 ? (
-          <View>
-            {currentDayMeals.map((meal) => (
-              <MealItem meal={meal} key={meal.id} />
-            ))}
-            <NutritionFacts
-              foods={mapMealsToNutritionFacts(currentDayMeals)}
-              className="pt-1"
-            />
-          </View>
-        ) : (
-          <Text className="text-center text-muted-foreground mt-4">
-            Nothing added yet.
-          </Text>
-        )}
-      </ScrollView>
-    </Animated.View>
+    <ScrollView className="h-full bg-secondary mb-6">
+      <MacroHeader
+        energy={mealData.totalCalories}
+        carbs={mealData.totalCarbs}
+        protein={mealData.totalProtein}
+        fat={mealData.totalFat}
+      />
+      {currentDayMeals.length > 0 ? (
+        <View>
+          {currentDayMeals.map((meal) => (
+            <MealItem meal={meal} key={meal.id} />
+          ))}
+          <NutritionFacts
+            foods={mapMealsToNutritionFacts(currentDayMeals)}
+            className="pt-1"
+          />
+        </View>
+      ) : (
+        <Text className="text-center text-muted-foreground mt-4">
+          Nothing added yet.
+        </Text>
+      )}
+    </ScrollView>
   );
 };
 
