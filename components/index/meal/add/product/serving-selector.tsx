@@ -78,7 +78,7 @@ export const ServingSelector = ({
             placeholder="Select Serving"
           />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent side="top">
           <FlatList
             data={options}
             keyExtractor={(item) => item.serving}
