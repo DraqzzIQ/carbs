@@ -66,7 +66,7 @@ export const ServingSelector = ({
         onValueChange={(value) => onServingQuantityChange(value)}
       />
       <Select
-        className="w-3/4"
+        className="w-3/4 ml-1"
         defaultValue={{
           label: `${formatServing((defaultServing ?? options[0]).serving)} (${(defaultServing ?? options[0]).amount} ${baseUnit})`,
           value: (defaultServing ?? options[0]).serving,
