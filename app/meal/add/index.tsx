@@ -181,7 +181,7 @@ export default function AddToMealScreen() {
         >
           {barCodeScannerOpen ? (
             <View className="items-center">
-              <View className="min-h-56 w-full my-10">
+              <View className="min-h-56 w-full my-10 border border-border rounded-lg overflow-hidden">
                 <Camera
                   codeScanner={codeScanner}
                   style={{ flex: 1 }}
