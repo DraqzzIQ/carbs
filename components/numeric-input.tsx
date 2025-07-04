@@ -6,6 +6,7 @@ type NumericInputProps = {
   allowNegative?: boolean;
   allowDecimal?: boolean;
   defaultValue?: string;
+  selectTextOnFocus?: boolean;
 } & ComponentProps<typeof Input>;
 
 export const NumericInput = ({
@@ -13,9 +14,15 @@ export const NumericInput = ({
   allowNegative,
   allowDecimal,
   defaultValue,
+  selectTextOnFocus,
   ...rest
 }: NumericInputProps) => {
   const [text, setText] = useState(defaultValue || "");
+  const [selection, setSelection] = useState<{ start: number; end: number }>({
+    start: 0,
+    end: text.length,
+  });
+  const [focused, setFocused] = useState(false);
 
   const onTextChange = (text: string) => {
     text = text.replace(",", ".");
@@ -50,5 +57,21 @@ export const NumericInput = ({
     }
   };
 
-  return <Input value={text} onChangeText={onTextChange} {...rest} />;
+  return (
+    <Input
+      value={text}
+      onChangeText={onTextChange}
+      selection={selection}
+      onSelectionChange={(e) => {
+        if (selectTextOnFocus && !focused) return;
+        setSelection(e.nativeEvent.selection);
+      }}
+      onFocus={() => {
+        if (!selectTextOnFocus) return;
+        setSelection({ start: 0, end: text.length });
+        setFocused(true);
+      }}
+      {...rest}
+    />
+  );
 };
