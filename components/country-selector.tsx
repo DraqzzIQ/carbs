@@ -14,7 +14,7 @@ import { useMemo, useState } from "react";
 
 type CountryDropdownProps = {};
 
-export const CountryDropdown = ({}: CountryDropdownProps) => {
+export const CountrySelector = ({}: CountryDropdownProps) => {
   const settings = useSettings();
   const insets = useSafeAreaInsets();
   const contentInsets = {

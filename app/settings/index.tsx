@@ -6,7 +6,7 @@ import { Switch } from "~/components/ui/switch";
 import { useSettings } from "~/contexts/AppSettingsContext";
 import { formatNumber } from "~/utils/formatting";
 import { KeyboardShift } from "~/components/keyboard-shift";
-import { CountryDropdown } from "~/components/country-dropdown";
+import { CountrySelector } from "~/components/country-selector";
 import { MealType } from "~/types/MealType";
 import ScrollView = Animated.ScrollView;
 
@@ -101,7 +101,7 @@ export default function SettingsScreen() {
           </View>
         ))}
         <Text className="font-semibold text-sm mt-3">Food Database</Text>
-        <CountryDropdown />
+        <CountrySelector />
       </ScrollView>
     </KeyboardShift>
   );

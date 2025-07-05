@@ -29,6 +29,7 @@ import { FloatingActionButton } from "~/components/floating-action-button";
 import { useEffect, useState } from "react";
 import { addFoodToMeal } from "~/utils/querying";
 import { MealType } from "~/types/MealType";
+import { DropdownMenu } from "~/components/ui/dropdown-menu";
 
 export default function AddToMealScreen() {
   const params = useLocalSearchParams();
@@ -41,7 +42,6 @@ export default function AddToMealScreen() {
   const [products, setProducts] = useState<FoodSearchResult[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isTorchEnabled, setIsTorchEnabled] = useState(false);
-  const [addedCount, setAddedCount] = useState(0);
   const noResults = products.length === 0 && searchQuery !== "";
 
   useEffect(() => {
@@ -78,7 +78,6 @@ export default function AddToMealScreen() {
   const navigation = useNavigation();
   useEffect(() => {
     return navigation.addListener("focus", () => {
-      setAddedCount(0);
       setBarCodeScannerOpen(false);
       setIsTorchEnabled(false);
       if (!hasPermission) {
@@ -133,18 +132,14 @@ export default function AddToMealScreen() {
   };
 
   async function onAddProduct(food: FoodSearchResult) {
-    if (
-      await addFoodToMeal(
-        meal as MealType,
-        food.productId,
-        1,
-        food.amount,
-        food.serving,
-        date,
-      )
-    ) {
-      setAddedCount((prevCount) => prevCount + 1);
-    }
+    await addFoodToMeal(
+      meal as MealType,
+      food.productId,
+      1,
+      food.amount,
+      food.serving,
+      date,
+    );
   }
 
   return (
@@ -153,11 +148,7 @@ export default function AddToMealScreen() {
         <Stack.Screen
           options={{
             title: `${meal}`,
-            headerRight: () => (
-              <Text className="text-primary text-2xl h-full w-8">
-                {addedCount}
-              </Text>
-            ),
+            headerRight: () => <DropdownMenu></DropdownMenu>,
           }}
         />
         <View className="flex-row justify-center items-center border border-muted-foreground px-4 rounded-lg bg-secondary">
