@@ -9,11 +9,20 @@ export function getDefaultServing(baseUnit: string): string {
   }
 }
 
-export function formatServing(serving: string) {
+export function formatServing(
+  serving: string,
+  amount: number,
+  baseUnit: string,
+): string {
   serving = serving[0].toUpperCase() + serving.slice(1);
   const parts = serving.split(".");
   if (parts.length > 1) {
-    return parts[0] + ", " + parts[1];
+    serving = parts[0] + ", " + parts[1];
   }
+
+  if (serving !== "Gram" && serving !== "Milliliter") {
+    return `${serving} (${amount} ${baseUnit})`;
+  }
+
   return serving;
 }

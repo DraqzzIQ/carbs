@@ -22,6 +22,7 @@ import { removeFoodFromMeal } from "~/utils/querying";
 import { router } from "expo-router";
 import { mapMealsToNutritionFacts } from "~/utils/mapMealsToNutritionFacts";
 import { MacroHeader } from "~/components/index/meal/macro-header";
+import { getDefaultServing } from "~/utils/serving";
 
 type MealDetailProps = {
   date: string;
@@ -153,8 +154,11 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
                 <Text className="text-sm">
                   {meal.food.producer ? meal.food.producer + ", " : ""}
                   {meal.servingQuantity}{" "}
-                  {meal.servingQuantity > 1 ? "servings" : "serving"} (
-                  {meal.amount} {meal.food.baseUnit})
+                  {meal.amount === 1
+                    ? getDefaultServing(meal.food.baseUnit)
+                    : `${
+                        meal.servingQuantity > 1 ? "servings" : "serving"
+                      } (${meal.amount} ${meal.food.baseUnit})`}
                 </Text>
               </View>
               <View className="flex-grow" />

@@ -68,7 +68,7 @@ export const ServingSelector = ({
       <Select
         className="w-3/4 ml-1"
         defaultValue={{
-          label: `${formatServing((defaultServing ?? options[0]).serving)} (${(defaultServing ?? options[0]).amount} ${baseUnit})`,
+          label: `${formatServing((defaultServing ?? options[0]).serving, (defaultServing ?? options[0]).amount, baseUnit)}`,
           value: (defaultServing ?? options[0]).serving,
         }}
       >
@@ -84,11 +84,11 @@ export const ServingSelector = ({
             keyExtractor={(item) => item.serving}
             renderItem={({ item }) => (
               <SelectItem
-                label={`${formatServing(item.serving)} (${item.amount} ${baseUnit})`}
+                label={formatServing(item.serving, item.amount, baseUnit)}
                 value={item.serving}
                 onPress={() => {
                   onServingChange(item);
-                  onServingQuantityChange(item.amount === 1 ? 100 : 1);
+                  onServingQuantityChange(1);
                 }}
               />
             )}
