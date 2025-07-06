@@ -2,7 +2,7 @@ import { MealType } from "~/types/MealType";
 import { yazioGetFoodDetails } from "~/api/yazio";
 import { FoodDetailsDto, ServingDto } from "~/api/types/FoodDetails";
 import { db } from "~/db/client";
-import { Food, foods, meals, streaks } from "~/db/schema";
+import { Food, foods, meals, recents, streaks } from "~/db/schema";
 import { and, eq } from "drizzle-orm";
 
 export async function removeFoodFromMeal(mealId: number) {
@@ -31,6 +31,7 @@ export async function addFoodToMeal(
   }
 
   await updateStreak(date);
+  await updateOrAddRecent(foodId, servingQuantity, amount, serving);
 
   try {
     await db.insert(meals).values({
@@ -70,86 +71,6 @@ export async function getAndSaveFood(
   return (await getSavedFood(foodId)) ?? undefined;
 }
 
-async function addFood(food: FoodDetailsDto) {
-  try {
-    await db
-      .insert(foods)
-      .values({ ...getProductProperties(food), id: food.id });
-  } catch (error) {
-    console.error(
-      `Error adding or updating product with ID ${food.id}:`,
-      error,
-    );
-  }
-}
-
-export async function addCustomFood(food: Food) {
-  try {
-    await db.insert(foods).values(food);
-  } catch (error) {
-    console.error(`Error adding custom food with ID ${food.id}:`, error);
-  }
-}
-
-export async function updateFood(food: FoodDetailsDto) {
-  try {
-    await db
-      .update(foods)
-      .set(getProductProperties(food))
-      .where(eq(foods.id, food.id));
-  } catch (error) {
-    console.error(`Error updating food with ID ${food.id}:`, error);
-  }
-}
-
-export async function updateCustomFood(food: Food) {
-  try {
-    await db.update(foods).set(food).where(eq(foods.id, food.id));
-  } catch (error) {
-    console.error(`Error updating custom food with ID ${food.id}:`, error);
-  }
-}
-
-export async function getFoodUpdatedAt(
-  foodId: string,
-): Promise<string | null | undefined> {
-  try {
-    const result = await db.query.foods.findFirst({
-      columns: { updatedAt: true },
-      where: eq(foods.id, foodId),
-    });
-    return result?.updatedAt;
-  } catch (error) {
-    console.error(`Error checking if food exists with ID ${foodId}:`, error);
-    return undefined;
-  }
-}
-
-async function updateStreak(date: string) {
-  try {
-    const existingStreak = await db.query.streaks.findFirst({
-      where: eq(streaks.day, date),
-    });
-
-    if (!existingStreak) {
-      await db.insert(streaks).values({ day: date });
-    }
-  } catch (error) {
-    console.error(`Error updating streak for date ${date}:`, error);
-  }
-}
-
-export async function getSavedFood(foodId: string) {
-  try {
-    return await db.query.foods.findFirst({
-      where: eq(foods.id, foodId),
-    });
-  } catch (error) {
-    console.error(`Error getting saved food with ID ${foodId}:`, error);
-    return null;
-  }
-}
-
 export async function updateMeal(
   mealId: number,
   servingQuantity: number,
@@ -169,6 +90,138 @@ export async function updateMeal(
       .where(eq(meals.id, mealId));
   } catch (error) {
     console.error(`Error updating meal with ID ${mealId}:`, error);
+  }
+}
+
+export async function isRecent(foodId: string): Promise<boolean> {
+  const lastYear = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
+  try {
+    const recent = await db.query.recents.findFirst({
+      where: eq(recents.foodId, foodId),
+    });
+    if (!recent) {
+      return false;
+    }
+    return new Date(recent!.updatedAt) >= lastYear;
+  } catch (error) {
+    console.error(`Error checking if food is recent with ID ${foodId}:`, error);
+    return false;
+  }
+}
+
+export async function addCustomFood(food: Food) {
+  try {
+    await db.insert(foods).values(food);
+  } catch (error) {
+    console.error(`Error adding custom food with ID ${food.id}:`, error);
+  }
+}
+
+export async function updateCustomFood(food: Food) {
+  try {
+    await db.update(foods).set(food).where(eq(foods.id, food.id));
+  } catch (error) {
+    console.error(`Error updating custom food with ID ${food.id}:`, error);
+  }
+}
+
+async function addFood(food: FoodDetailsDto) {
+  try {
+    await db
+      .insert(foods)
+      .values({ ...getProductProperties(food), id: food.id });
+  } catch (error) {
+    console.error(
+      `Error adding or updating product with ID ${food.id}:`,
+      error,
+    );
+  }
+}
+
+async function updateFood(food: FoodDetailsDto) {
+  try {
+    await db
+      .update(foods)
+      .set(getProductProperties(food))
+      .where(eq(foods.id, food.id));
+  } catch (error) {
+    console.error(`Error updating food with ID ${food.id}:`, error);
+  }
+}
+
+async function getFoodUpdatedAt(
+  foodId: string,
+): Promise<string | null | undefined> {
+  try {
+    const result = await db.query.foods.findFirst({
+      columns: { updatedAt: true },
+      where: eq(foods.id, foodId),
+    });
+    return result?.updatedAt;
+  } catch (error) {
+    console.error(`Error checking if food exists with ID ${foodId}:`, error);
+    return undefined;
+  }
+}
+
+async function getSavedFood(foodId: string) {
+  try {
+    return await db.query.foods.findFirst({
+      where: eq(foods.id, foodId),
+    });
+  } catch (error) {
+    console.error(`Error getting saved food with ID ${foodId}:`, error);
+    return null;
+  }
+}
+
+async function updateStreak(date: string) {
+  try {
+    const existingStreak = await db.query.streaks.findFirst({
+      where: eq(streaks.day, date),
+    });
+
+    if (!existingStreak) {
+      await db.insert(streaks).values({ day: date });
+    }
+  } catch (error) {
+    console.error(`Error updating streak for date ${date}:`, error);
+  }
+}
+
+async function updateOrAddRecent(
+  foodId: string,
+  servingQuantity: number,
+  amount: number,
+  serving: string,
+) {
+  try {
+    const existingRecent = await db.query.recents.findFirst({
+      where: eq(recents.foodId, foodId),
+    });
+
+    if (existingRecent) {
+      await db
+        .update(recents)
+        .set({
+          amount: amount,
+          servingQuantity: servingQuantity,
+          serving: serving,
+        })
+        .where(eq(recents.id, existingRecent.id));
+    } else {
+      await db.insert(recents).values({
+        foodId: foodId,
+        amount: amount,
+        servingQuantity: servingQuantity,
+        serving: serving,
+      });
+    }
+  } catch (error) {
+    console.error(
+      `Error updating or adding recent for food ID ${foodId}:`,
+      error,
+    );
   }
 }
 

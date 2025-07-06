@@ -7,7 +7,12 @@ import { useEffect, useState } from "react";
 import { MealSelectorHeader } from "~/components/index/meal/add/product/meal-selector-header";
 import { MealType } from "~/types/MealType";
 import { Food } from "~/db/schema";
-import { addFoodToMeal, getAndSaveFood, updateMeal } from "~/utils/querying";
+import {
+  addFoodToMeal,
+  getAndSaveFood,
+  isRecent,
+  updateMeal,
+} from "~/utils/querying";
 import { NutritionFacts } from "~/components/index/meal/nutrition-facts";
 import {
   HistoryIcon,
@@ -33,6 +38,7 @@ export default function ProductDetailScreen() {
   const [amount, setAmount] = useState<number>(100);
   const [serving, setServing] = useState<string>("Gram");
   const [mealType, setMealType] = useState<MealType>(mealName as MealType);
+  const [foodIsRecent, setFoodIsRecent] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -41,12 +47,16 @@ export default function ProductDetailScreen() {
           const meal = await mealQuery(mealId!);
           setMeal(meal);
           setFood(meal?.food);
+          if (meal?.food) {
+            setFoodIsRecent(await isRecent(meal.food.id));
+          }
         } catch {
           console.error("Error fetching meal with meal id ", mealId);
           return;
         }
       } else {
         setFood(await getAndSaveFood(productId!));
+        setFoodIsRecent(await isRecent(productId!));
       }
     })();
   }, []);
@@ -96,13 +106,13 @@ export default function ProductDetailScreen() {
               <Text className="text-primary">Verified nutrition facts</Text>
             </View>
           )}
-          {food.isVerified && true && <View className="mx-2" />}
-          {
+          {food.isVerified && foodIsRecent && <View className="mx-2" />}
+          {foodIsRecent && (
             <View className="flex flex-row items-center">
               <HistoryIcon className="h-5" />
               <Text className="text-primary">Recently logged</Text>
             </View>
-          }
+          )}
         </View>
         <MacroHeader
           energy={food.energy * amount * servingQuantity}
