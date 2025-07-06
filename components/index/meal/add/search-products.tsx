@@ -1,5 +1,5 @@
 import { Text } from "~/components/ui/text";
-import { TouchableOpacity, View } from "react-native";
+import { Keyboard, ScrollView, TouchableOpacity, View } from "react-native";
 import { FoodSearchResult } from "~/api/types/FoodSearchResult";
 import { Card } from "~/components/ui/card";
 import {
@@ -14,6 +14,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import Animated, { FadeOut, LightSpeedInLeft } from "react-native-reanimated";
 import { formatServing } from "~/utils/serving";
+import { FoodTabs } from "~/components/index/meal/add/food-tabs";
 
 type SearchProductsProps = {
   products: FoodSearchResult[];
@@ -22,6 +23,7 @@ type SearchProductsProps = {
   onAddProduct: (product: FoodSearchResult) => Promise<void>;
   meal: string;
   date: string;
+  searchFocused: boolean;
 };
 
 export const SearchProducts = ({
@@ -31,13 +33,14 @@ export const SearchProducts = ({
   onAddProduct,
   meal,
   date,
+  searchFocused,
 }: SearchProductsProps) => {
   return loading ? (
-    <View className="flex-1 items-center justify-center mt-10">
+    <View className="flex-1 items-center mt-10">
       <Text className="text-primary text-lg font-semibold">Loading...</Text>
     </View>
   ) : notFound ? (
-    <View className="flex-1 items-center justify-center mt-10">
+    <View className="flex-1 items-center mt-10">
       <Text className="text-primary text-lg font-semibold">
         No results found
       </Text>
@@ -46,28 +49,41 @@ export const SearchProducts = ({
       </Text>
     </View>
   ) : products.length === 0 ? (
-    <View className="flex-1 items-center justify-center mt-10">
-      <Text className="text-primary text-lg font-semibold">Scan a barcode</Text>
-      <Text className="text-muted-foreground text-sm">
-        or search for a product
-      </Text>
-    </View>
+    searchFocused ? (
+      <View className="flex-1 items-center mt-10">
+        <Text className="text-primary text-lg font-semibold">
+          Scan a barcode
+        </Text>
+        <Text className="text-muted-foreground text-sm">
+          or search for a product
+        </Text>
+      </View>
+    ) : (
+      <View className="h-full bg-amber-300">
+        <FoodTabs />
+      </View>
+    )
   ) : (
-    <Animated.View
-      className="pb-10"
-      entering={LightSpeedInLeft}
-      exiting={FadeOut}
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      onScrollBeginDrag={() => Keyboard.dismiss()}
     >
-      {products.map((product) => (
-        <SearchProduct
-          key={product.productId}
-          product={product}
-          meal={meal}
-          onAddProduct={onAddProduct}
-          date={date}
-        />
-      ))}
-    </Animated.View>
+      <Animated.View
+        className="pb-10"
+        entering={LightSpeedInLeft}
+        exiting={FadeOut}
+      >
+        {products.map((product) => (
+          <SearchProduct
+            key={product.productId}
+            product={product}
+            meal={meal}
+            onAddProduct={onAddProduct}
+            date={date}
+          />
+        ))}
+      </Animated.View>
+    </ScrollView>
   );
 };
 

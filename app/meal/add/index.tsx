@@ -1,5 +1,4 @@
-import { Animated, TouchableOpacity, View, Keyboard } from "react-native";
-import ScrollView = Animated.ScrollView;
+import { TouchableOpacity, View } from "react-native";
 import {
   router,
   Stack,
@@ -41,6 +40,7 @@ export default function AddToMealScreen() {
   const [products, setProducts] = useState<FoodSearchResult[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isTorchEnabled, setIsTorchEnabled] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
   const noResults = products.length === 0 && searchQuery !== "";
 
   useEffect(() => {
@@ -161,6 +161,8 @@ export default function AddToMealScreen() {
         <View className="flex-row justify-center items-center border border-muted-foreground px-4 rounded-lg bg-secondary">
           <SearchIcon className="text-primary" />
           <Input
+            onFocus={() => setSearchFocused(true)}
+            onEndEditing={() => setSearchFocused(false)}
             selectTextOnFocus={true}
             className="flex-1 ml-4 border-0 bg-secondary"
             placeholder="Search Product"
@@ -168,15 +170,11 @@ export default function AddToMealScreen() {
             value={searchQuery}
             autoCorrect={false}
           />
-          <TouchableOpacity onPress={() => setSearchQuery("")}>
+          <TouchableOpacity onPress={() => onSearchQueryChange("")}>
             <XIcon className="text-primary" />
           </TouchableOpacity>
         </View>
-        <ScrollView
-          className="h-full w-full mt-2"
-          showsVerticalScrollIndicator={false}
-          onScrollBeginDrag={() => Keyboard.dismiss()}
-        >
+        <View className="h-full w-full mt-2">
           {barCodeScannerOpen ? (
             <View className="items-center">
               <View className="min-h-56 w-full my-10 border border-border rounded-lg overflow-hidden">
@@ -209,9 +207,10 @@ export default function AddToMealScreen() {
               notFound={noResults}
               onAddProduct={onAddProduct}
               meal={meal}
+              searchFocused={searchFocused}
             />
           )}
-        </ScrollView>
+        </View>
         <FloatingActionButton
           onPress={() => {
             setBarCodeScannerOpen(!barCodeScannerOpen);
