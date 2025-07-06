@@ -108,11 +108,9 @@ export const recents = sqliteTable("recents", {
     .references(() => foods.id),
   updatedAt: text("updated_at")
     .notNull()
-    .default(sql`(CURRENT_TIMESTAMP)`),
-  amount: integer("amount")
-    .notNull()
     .default(sql`(CURRENT_TIMESTAMP)`)
     .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
+  amount: integer("amount").notNull(),
   servingQuantity: integer("serving_quantity").notNull(),
   serving: text("serving").notNull(),
 });
@@ -122,11 +120,36 @@ export const streaks = sqliteTable("streaks", {
   day: text("day").notNull(),
 });
 
+export const recipes = sqliteTable("recipes", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  serving: integer("serving").notNull(),
+  amount: integer("amount").notNull(),
+  servings: integer("servings").notNull(),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
+});
+
+export const recipeEntries = sqliteTable("recipe_entries", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  recipeId: integer("recipe_id")
+    .notNull()
+    .references(() => recipes.id),
+  foodId: text("food_id")
+    .notNull()
+    .references(() => foods.id),
+  amount: integer("amount").notNull(),
+});
+
 export type Food = typeof foods.$inferSelect;
 export type Meal = typeof meals.$inferSelect;
 export type Favorite = typeof favorites.$inferSelect;
 export type Recent = typeof recents.$inferSelect;
 export type Streak = typeof streaks.$inferSelect;
+export type Recipe = typeof recipes.$inferSelect;
+export type RecipeEntry = typeof recipeEntries.$inferSelect;
 
 export const foodsRelations = relations(foods, ({ many }) => ({
   meals: many(meals),
@@ -151,6 +174,21 @@ export const favoritesRelations = relations(favorites, ({ one }) => ({
 export const recentsRelations = relations(recents, ({ one }) => ({
   food: one(foods, {
     fields: [recents.foodId],
+    references: [foods.id],
+  }),
+}));
+
+export const recipesRelations = relations(recipes, ({ many }) => ({
+  entries: many(recipeEntries),
+}));
+
+export const recipeEntriesRelations = relations(recipeEntries, ({ one }) => ({
+  recipe: one(recipes, {
+    fields: [recipeEntries.recipeId],
+    references: [recipes.id],
+  }),
+  food: one(foods, {
+    fields: [recipeEntries.foodId],
     references: [foods.id],
   }),
 }));

@@ -83,6 +83,14 @@ async function addFood(food: FoodDetailsDto) {
   }
 }
 
+export async function addCustomFood(food: Food) {
+  try {
+    await db.insert(foods).values(food);
+  } catch (error) {
+    console.error(`Error adding custom food with ID ${food.id}:`, error);
+  }
+}
+
 export async function updateFood(food: FoodDetailsDto) {
   try {
     await db
@@ -91,6 +99,14 @@ export async function updateFood(food: FoodDetailsDto) {
       .where(eq(foods.id, food.id));
   } catch (error) {
     console.error(`Error updating food with ID ${food.id}:`, error);
+  }
+}
+
+export async function updateCustomFood(food: Food) {
+  try {
+    await db.update(foods).set(food).where(eq(foods.id, food.id));
+  } catch (error) {
+    console.error(`Error updating custom food with ID ${food.id}:`, error);
   }
 }
 

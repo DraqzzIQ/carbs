@@ -4,12 +4,17 @@ import { KeyboardShift } from "~/components/keyboard-shift";
 import { Text } from "~/components/ui/text";
 import { mealQuery, MealQueryType } from "~/db/queries/mealQuery";
 import { useEffect, useState } from "react";
-import { HeaderMealDropdown } from "~/components/index/meal/add/product/header-meal-dropdown";
+import { MealSelectorHeader } from "~/components/index/meal/add/product/meal-selector-header";
 import { MealType } from "~/types/MealType";
 import { Food } from "~/db/schema";
 import { addFoodToMeal, getAndSaveFood, updateMeal } from "~/utils/querying";
 import { NutritionFacts } from "~/components/index/meal/nutrition-facts";
-import { PlusIcon, SaveIcon } from "lucide-nativewind";
+import {
+  HistoryIcon,
+  PlusIcon,
+  SaveIcon,
+  VerifiedIcon,
+} from "lucide-nativewind";
 import { FloatingActionButton } from "~/components/floating-action-button";
 import { ServingSelector } from "~/components/index/meal/add/product/serving-selector";
 import { MacroHeader } from "~/components/index/meal/macro-header";
@@ -37,7 +42,7 @@ export default function ProductDetailScreen() {
           setMeal(meal);
           setFood(meal?.food);
         } catch {
-          console.error("Error fetching meal with  meal id ", mealId);
+          console.error("Error fetching meal with meal id ", mealId);
           return;
         }
       } else {
@@ -67,7 +72,7 @@ export default function ProductDetailScreen() {
       <Stack.Screen
         options={{
           headerTitle: (_) => (
-            <HeaderMealDropdown
+            <MealSelectorHeader
               onSelect={(mealType) => setMealType(mealType)}
               defaultSelection={mealType}
             />
@@ -84,6 +89,21 @@ export default function ProductDetailScreen() {
         <Text className="text-muted-foreground text-xl text-center font-semibold mb-8">
           {food.producer}
         </Text>
+        <View className="flex flex-row justify-center mb-4">
+          {food.isVerified && (
+            <View className="flex flex-row items-center">
+              <VerifiedIcon className="h-5" />
+              <Text className="text-primary">Verified nutrition facts</Text>
+            </View>
+          )}
+          {food.isVerified && true && <View className="mx-2" />}
+          {
+            <View className="flex flex-row items-center">
+              <HistoryIcon className="h-5" />
+              <Text className="text-primary">Recently logged</Text>
+            </View>
+          }
+        </View>
         <MacroHeader
           energy={food.energy * amount * servingQuantity}
           carbs={food.carb * amount * servingQuantity}

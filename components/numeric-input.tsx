@@ -1,5 +1,5 @@
 import { Input } from "~/components/ui/input";
-import { ComponentProps, useState } from "react";
+import { ComponentProps, useEffect, useState } from "react";
 
 type NumericInputProps = {
   onValueChange: (value: number) => void;
@@ -23,6 +23,10 @@ export const NumericInput = ({
     end: text.length,
   });
   const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    setText(defaultValue || "");
+  }, [defaultValue]);
 
   const onTextChange = (text: string) => {
     text = text.replace(",", ".");

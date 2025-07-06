@@ -129,8 +129,16 @@ function SearchProduct({
         )}
         <View className="flex-row items-center">
           <Text className="text-primary">
-            {product.servingQuantity} {formatServing(product.serving)} (
-            {product.amount} g)
+            {product.servingQuantity}{" "}
+            {product.serving === "gram"
+              ? "g"
+              : product.serving === "milliliter"
+                ? "ml"
+                : formatServing(
+                    product.serving,
+                    product.amount,
+                    product.baseUnit,
+                  )}
           </Text>
           <ClockFadingIcon className="text-primary w-4 h-4 ml-1" />
           <View className="flex-grow" />

@@ -22,7 +22,7 @@ import { removeFoodFromMeal } from "~/utils/querying";
 import { router } from "expo-router";
 import { mapMealsToNutritionFacts } from "~/utils/mapMealsToNutritionFacts";
 import { MacroHeader } from "~/components/index/meal/macro-header";
-import { getDefaultServing } from "~/utils/serving";
+import { formatServing } from "~/utils/serving";
 
 type MealDetailProps = {
   date: string;
@@ -133,6 +133,12 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
   return (
     <TouchableOpacity
       onPress={async () => {
+        if (meal.food.category === "quick-entry") {
+          router.push(
+            `/meal/add/quick-entry?edit=true&mealId=${meal.id}&date=${meal.date}&mealName=${meal.mealType}`,
+          );
+          return;
+        }
         router.push(
           `/meal/add/product?edit=true&mealId=${meal.id}&date=${meal.date}&mealName=${meal.mealType}`,
         );
@@ -152,13 +158,21 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
               <View>
                 <Text className="font-semibold">{meal.food.name}</Text>
                 <Text className="text-sm">
-                  {meal.food.producer ? meal.food.producer + ", " : ""}
-                  {meal.servingQuantity}{" "}
-                  {meal.amount === 1
-                    ? getDefaultServing(meal.food.baseUnit)
-                    : `${
-                        meal.servingQuantity > 1 ? "servings" : "serving"
-                      } (${meal.amount} ${meal.food.baseUnit})`}
+                  {meal.food.producer ? meal.food.producer : ""}
+                  {meal.food.category !== "quick-entry" && (
+                    <>
+                      {meal.food.producer ? ", " : ""}
+                      {meal.servingQuantity}{" "}
+                      {meal.amount === 1
+                        ? meal.food.baseUnit
+                        : formatServing(
+                            meal.serving,
+                            meal.amount,
+                            meal.food.baseUnit,
+                            meal.servingQuantity > 1,
+                          )}
+                    </>
+                  )}
                 </Text>
               </View>
               <View className="flex-grow" />

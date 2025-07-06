@@ -9,16 +9,18 @@ import {
 } from "~/components/ui/select";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FlatList, Platform } from "react-native";
+import { useSettings } from "~/contexts/AppSettingsContext";
 
-type HeaderMealDropdownProps = {
+type MealSelectorHeaderProps = {
   defaultSelection: MealType;
   onSelect: (mealType: MealType) => void;
 };
 
-export const HeaderMealDropdown = ({
+export const MealSelectorHeader = ({
   onSelect,
   defaultSelection,
-}: HeaderMealDropdownProps) => {
+}: MealSelectorHeaderProps) => {
+  const { displaySnacks } = useSettings();
   const insets = useSafeAreaInsets();
   const contentInsets = {
     top: insets.top,
@@ -49,11 +51,13 @@ export const HeaderMealDropdown = ({
         className="border border-border bg-secondary"
       >
         <FlatList
-          data={Object.values(MealType).map((mealType) => ({
-            key: mealType,
-            label: mealType,
-            value: mealType,
-          }))}
+          data={Object.values(MealType)
+            .filter((mealType) => displaySnacks || mealType !== MealType.SNACK)
+            .map((mealType) => ({
+              key: mealType,
+              label: mealType,
+              value: mealType,
+            }))}
           renderItem={({ item }) => (
             <SelectItem key={item.key} label={item.label} value={item.value} />
           )}

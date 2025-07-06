@@ -11,6 +11,7 @@ export function mealDetailsQuery(day: string, mealType?: MealType) {
       amount: true,
       mealType: true,
       date: true,
+      serving: true,
     },
     where: and(
       eq(meals.date, day),

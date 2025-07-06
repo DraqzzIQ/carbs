@@ -20,7 +20,6 @@ import {
   useCodeScanner,
 } from "react-native-vision-camera";
 import { Input } from "~/components/ui/input";
-import { Text } from "~/components/ui/text";
 import { SearchProducts } from "~/components/index/meal/add/search-products";
 import { FoodSearchResult } from "~/api/types/FoodSearchResult";
 import { yazioSearchFoods } from "~/api/yazio";
@@ -29,7 +28,7 @@ import { FloatingActionButton } from "~/components/floating-action-button";
 import { useEffect, useState } from "react";
 import { addFoodToMeal } from "~/utils/querying";
 import { MealType } from "~/types/MealType";
-import { DropdownMenu } from "~/components/ui/dropdown-menu";
+import { ThreeDotMenu } from "~/components/index/meal/add/three-dot-menu";
 
 export default function AddToMealScreen() {
   const params = useLocalSearchParams();
@@ -132,11 +131,19 @@ export default function AddToMealScreen() {
   };
 
   async function onAddProduct(food: FoodSearchResult) {
+    // search api returns quantity and amount as 100 in some cases,
+    // probably for '100 (unit)' type of servings
+    let servingQuantity = 1;
+    let amount = food.amount;
+    if (food.servingQuantity === 100 && food.amount === 100) {
+      servingQuantity = 100;
+      amount = 1;
+    }
     await addFoodToMeal(
       meal as MealType,
       food.productId,
-      1,
-      food.amount,
+      servingQuantity,
+      amount,
       food.serving,
       date,
     );
@@ -148,7 +155,7 @@ export default function AddToMealScreen() {
         <Stack.Screen
           options={{
             title: `${meal}`,
-            headerRight: () => <DropdownMenu></DropdownMenu>,
+            headerRight: () => <ThreeDotMenu date={date} mealName={meal} />,
           }}
         />
         <View className="flex-row justify-center items-center border border-muted-foreground px-4 rounded-lg bg-secondary">

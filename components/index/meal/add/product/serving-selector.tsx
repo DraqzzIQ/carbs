@@ -88,7 +88,11 @@ export const ServingSelector = ({
                 value={item.serving}
                 onPress={() => {
                   onServingChange(item);
-                  onServingQuantityChange(1);
+                  onServingQuantityChange(
+                    item.serving === "Gram" || item.serving === "Milliliter"
+                      ? 100
+                      : 1,
+                  );
                 }}
               />
             )}
