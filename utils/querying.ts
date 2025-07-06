@@ -197,17 +197,18 @@ async function updateOrAddRecent(
 ) {
   try {
     const existingRecent = await db.query.recents.findFirst({
-      where: eq(recents.foodId, foodId),
+      where: and(
+        eq(recents.foodId, foodId),
+        eq(recents.serving, serving),
+        eq(recents.servingQuantity, servingQuantity),
+        eq(recents.amount, amount),
+      ),
     });
 
     if (existingRecent) {
       await db
         .update(recents)
-        .set({
-          amount: amount,
-          servingQuantity: servingQuantity,
-          serving: serving,
-        })
+        .set({ count: existingRecent.count + 1 })
         .where(eq(recents.id, existingRecent.id));
     } else {
       await db.insert(recents).values({

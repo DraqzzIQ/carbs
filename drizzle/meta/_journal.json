@@ -50,6 +50,13 @@
       "when": 1751820763350,
       "tag": "0006_absurd_iron_monger",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1751844551170,
+      "tag": "0007_petite_husk",
+      "breakpoints": true
     }
   ]
 }

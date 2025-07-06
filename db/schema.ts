@@ -95,10 +95,13 @@ export const favorites = sqliteTable("favorites", {
   foodId: text("food_id")
     .notNull()
     .references(() => foods.id),
-  createdAt: text("created_at")
+  updatedAt: text("updated_at")
     .notNull()
     .default(sql`(CURRENT_TIMESTAMP)`)
     .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
+  amount: integer("amount").notNull(),
+  servingQuantity: integer("serving_quantity").notNull(),
+  serving: text("serving").notNull(),
 });
 
 export const recents = sqliteTable("recents", {
@@ -113,10 +116,7 @@ export const recents = sqliteTable("recents", {
   amount: integer("amount").notNull(),
   servingQuantity: integer("serving_quantity").notNull(),
   serving: text("serving").notNull(),
-  count: integer("count")
-    .notNull()
-    .default(1)
-    .$onUpdate(() => sql`(count + 1)`),
+  count: integer("count").notNull().default(1),
 });
 
 export const streaks = sqliteTable("streaks", {

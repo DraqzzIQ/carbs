@@ -1,6 +1,7 @@
 import { Text } from "~/components/ui/text";
 import {
   Animated,
+  ScrollView,
   TouchableOpacity,
   useWindowDimensions,
   View,
@@ -81,17 +82,12 @@ export const FoodTabs = ({}: FoodTabsProps) => {
 };
 
 const FrequentsRoute = () => {
-  return (
-    <View className="flex-1 h-20 w-20 bg-red-400">
-      <Text className="text-lg font-semibold text-primary">Frequent Foods</Text>
-      {/* Render frequent foods here */}
-    </View>
-  );
+  return <ScrollView></ScrollView>;
 };
 
 const RecentsRoute = () => {
   return (
-    <View className="flex-1 bg-amber-300">
+    <View className="flex-1">
       <Text className="text-lg font-semibold text-primary">Recent Foods</Text>
       {/* Render recent foods here */}
     </View>

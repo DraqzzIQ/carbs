@@ -59,9 +59,7 @@ export const SearchProducts = ({
         </Text>
       </View>
     ) : (
-      <View className="h-full bg-amber-300">
-        <FoodTabs />
-      </View>
+      <FoodTabs />
     )
   ) : (
     <ScrollView
