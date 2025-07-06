@@ -113,6 +113,10 @@ export const recents = sqliteTable("recents", {
   amount: integer("amount").notNull(),
   servingQuantity: integer("serving_quantity").notNull(),
   serving: text("serving").notNull(),
+  count: integer("count")
+    .notNull()
+    .default(1)
+    .$onUpdate(() => sql`(count + 1)`),
 });
 
 export const streaks = sqliteTable("streaks", {

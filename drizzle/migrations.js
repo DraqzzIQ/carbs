@@ -7,6 +7,7 @@ import m0002 from './0002_eager_proudstar.sql';
 import m0003 from './0003_thick_giant_girl.sql';
 import m0004 from './0004_melodic_grandmaster.sql';
 import m0005 from './0005_natural_bulldozer.sql';
+import m0006 from './0006_absurd_iron_monger.sql';
 
   export default {
     journal,
@@ -16,7 +17,8 @@ m0001,
 m0002,
 m0003,
 m0004,
-m0005
+m0005,
+m0006
     }
   }
   

@@ -43,6 +43,13 @@
       "when": 1750805939365,
       "tag": "0005_natural_bulldozer",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1751820763350,
+      "tag": "0006_absurd_iron_monger",
+      "breakpoints": true
     }
   ]
 }
