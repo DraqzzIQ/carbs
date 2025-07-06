@@ -8,7 +8,7 @@ import {
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Platform, View } from "react-native";
+import { Platform, View, StatusBar as ReactStatusBar } from "react-native";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { ThemeToggle } from "~/components/theme-toggle";
@@ -81,7 +81,10 @@ export default function RootLayout() {
       <SettingsProvider>
         <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
           <View className="flex-1 bg-secondary">
-            <View className="h-8 bg-secondary" />
+            <View
+              className={`bg-secondary`}
+              style={{ marginTop: ReactStatusBar.currentHeight }}
+            />
             <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
             <Stack>
               <Stack.Screen
