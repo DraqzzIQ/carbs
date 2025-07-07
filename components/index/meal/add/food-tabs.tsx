@@ -50,7 +50,7 @@ export const FoodTabs = ({}: FoodTabsProps) => {
               onPress={() => setIndex(i)}
             >
               <Animated.Text
-                className="text-base font-semibold"
+                className="text-base font-semibold text-primary"
                 style={{ opacity }}
               >
                 {route.title}
