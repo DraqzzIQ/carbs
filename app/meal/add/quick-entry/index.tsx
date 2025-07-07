@@ -35,6 +35,7 @@ export default function QuickEntryScreen() {
   const energyError = energy === null;
   const [displayError, setDisplayError] = useState<boolean>(false);
   const [food, setFood] = useState<Food | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -57,6 +58,7 @@ export default function QuickEntryScreen() {
       }
     })();
   }, []);
+
   async function onAddQuickEntry(): Promise<boolean> {
     if (descriptionError || energyError) {
       setDisplayError(true);
@@ -157,10 +159,14 @@ export default function QuickEntryScreen() {
 
       <FloatingActionButton
         onPress={async () => {
+          setIsLoading(true);
           if (await onAddQuickEntry()) {
             router.dismiss(1);
           }
+          setIsLoading(false);
         }}
+        loading={isLoading}
+        disabled={isLoading}
       >
         {edit ? (
           <SaveIcon className="text-secondary h-9 w-9" />

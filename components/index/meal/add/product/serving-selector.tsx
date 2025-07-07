@@ -9,7 +9,7 @@ import {
 import { ServingDto } from "~/api/types/FoodDetails";
 import { formatServing, getDefaultServing } from "~/utils/serving";
 import { useEffect, useState } from "react";
-import { FlatList } from "react-native";
+import { FlatList, View } from "react-native";
 import { NumericInput } from "~/components/numeric-input";
 import { Card } from "~/components/ui/card";
 
@@ -55,18 +55,18 @@ export const ServingSelector = ({
   }
 
   return (
-    <Card className="flex-1 flex-row w-full z-10 left-0 right-0 bottom-0 absolute p-2">
+    <View className="flex-1 flex-row w-full z-10 left-0 right-0 bottom-0 absolute p-2 bg-secondary border-t border-border">
       <NumericInput
         allowNegative={false}
         allowDecimal={true}
         selectTextOnFocus={true}
         keyboardType="numeric"
-        className="w-1/4 bg-secondary"
+        className="w-1/4 bg-secondary mr-1 -ml-0.5"
         defaultValue={servingQuantity.toString()}
         onValueChange={(value) => onServingQuantityChange(value)}
       />
       <Select
-        className="w-3/4 ml-1"
+        className="w-3/4"
         defaultValue={{
           label: `${formatServing((defaultServing ?? options[0]).serving, (defaultServing ?? options[0]).amount, baseUnit)}`,
           value: (defaultServing ?? options[0]).serving,
@@ -102,7 +102,7 @@ export const ServingSelector = ({
           />
         </SelectContent>
       </Select>
-    </Card>
+    </View>
   );
 };
 

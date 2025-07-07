@@ -39,6 +39,7 @@ export default function ProductDetailScreen() {
   const [serving, setServing] = useState<string>("Gram");
   const [mealType, setMealType] = useState<MealType>(mealName as MealType);
   const [foodIsRecent, setFoodIsRecent] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -144,6 +145,7 @@ export default function ProductDetailScreen() {
       />
       <FloatingActionButton
         onPress={async () => {
+          setIsLoading(true);
           if (edit) {
             await updateMeal(
               meal!.id,
@@ -166,6 +168,8 @@ export default function ProductDetailScreen() {
           router.dismiss(1);
         }}
         bottom="bottom-20"
+        loading={isLoading}
+        disabled={isLoading}
       >
         {edit ? (
           <SaveIcon className="text-secondary h-9 w-9" />
