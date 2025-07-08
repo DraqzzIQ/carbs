@@ -26,19 +26,31 @@ import { MacroHeader } from "~/components/index/meal/macro-header";
 import { Skeleton } from "~/components/ui/skeleton";
 
 export default function ProductDetailScreen() {
-  const params = useLocalSearchParams();
-  const date = params["date"] as string;
-  const edit = (params["edit"] as string) == "true";
-  const mealName = params["mealName"] as string;
-  const mealId = edit ? parseInt(params["mealId"] as string, 10) : null;
-  const productId = edit ? null : (params["productId"] as string);
+  const params = useLocalSearchParams<{
+    date: string;
+    edit: string;
+    mealName: string;
+    mealId?: string;
+    productId?: string;
+    amount?: string;
+    servingQuantity?: string;
+    serving?: string;
+  }>();
+  const edit = params.edit === "true";
+  const mealId = edit ? parseInt(params.mealId!, 10) : null;
 
   const [meal, setMeal] = useState<MealQueryType | undefined>(undefined);
   const [food, setFood] = useState<Food | undefined>(undefined);
-  const [servingQuantity, setServingQuantity] = useState<number>(1);
-  const [amount, setAmount] = useState<number>(100);
-  const [serving, setServing] = useState<string>("Gram");
-  const [mealType, setMealType] = useState<MealType>(mealName as MealType);
+  const [servingQuantity, setServingQuantity] = useState<number>(
+    params.servingQuantity ? parseFloat(params.servingQuantity) : 1,
+  );
+  const [amount, setAmount] = useState<number>(
+    params.amount ? parseFloat(params.amount) : 1,
+  );
+  const [serving, setServing] = useState<string>(params.serving || "Gram");
+  const [mealType, setMealType] = useState<MealType>(
+    params.mealName as MealType,
+  );
   const [foodIsRecent, setFoodIsRecent] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -57,8 +69,8 @@ export default function ProductDetailScreen() {
           return;
         }
       } else {
-        setFood(await getAndSaveFood(productId!));
-        setFoodIsRecent(await isRecent(productId!));
+        setFood(await getAndSaveFood(params.productId!));
+        setFoodIsRecent(await isRecent(params.productId!));
       }
     })();
   }, []);
@@ -139,9 +151,17 @@ export default function ProductDetailScreen() {
             defaultServing={
               edit
                 ? { serving: meal!.serving, amount: meal!.amount }
-                : undefined
+                : params.serving
+                  ? { serving: params.serving, amount }
+                  : undefined
             }
-            defaultServingQuantity={edit ? meal!.servingQuantity : undefined}
+            defaultServingQuantity={
+              edit
+                ? meal!.servingQuantity
+                : params.servingQuantity
+                  ? parseFloat(params.servingQuantity)
+                  : undefined
+            }
             servingQuantity={servingQuantity}
             onServingChange={(serving) => {
               setAmount(serving.amount);
@@ -170,7 +190,7 @@ export default function ProductDetailScreen() {
                   servingQuantity,
                   amount,
                   serving,
-                  date,
+                  params.date,
                   food,
                 );
               }

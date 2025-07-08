@@ -12,6 +12,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import React, { useEffect, useState } from "react";
 import { addFoodToMeal } from "~/utils/querying";
 import { MealType } from "~/types/MealType";
+import { router } from "expo-router";
 
 type RecentsListProps = {
   query: any;
@@ -92,7 +93,7 @@ const Recent = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const onPress = async () => {
+  const onAddPress = async () => {
     setIsLoading(true);
     await addFoodToMeal(
       mealType,
@@ -107,42 +108,59 @@ const Recent = ({
   };
 
   return (
-    <View className="flex-row w-full mt-5">
-      <View className="flex flex-grow">
-        <Text className="text-primary text-xl">{recent.food.name}</Text>
-        <Text className="text-primary text-base">
-          {recent.food.producer ? `${recent.food.producer}, ` : ""}
-          {recent.servingQuantity}{" "}
-          {recent.amount === 1
-            ? recent.food.baseUnit
-            : formatServing(
-                recent.serving,
-                recent.amount * recent.servingQuantity,
-                recent.food.baseUnit,
-                recent.servingQuantity > 1,
-              )}
-        </Text>
+    <TouchableOpacity
+      onPress={() =>
+        router.navigate({
+          pathname: "/meal/add/product",
+          params: {
+            productId: recent.foodId,
+            date: date,
+            mealName: mealType,
+            edit: "false",
+            serving: recent.serving,
+            amount: recent.amount,
+            servingQuantity: recent.servingQuantity,
+          },
+        })
+      }
+    >
+      <View className="flex-row w-full mt-5">
+        <View className="flex flex-grow">
+          <Text className="text-primary text-xl">{recent.food.name}</Text>
+          <Text className="text-primary text-base">
+            {recent.food.producer ? `${recent.food.producer}, ` : ""}
+            {recent.servingQuantity}{" "}
+            {recent.amount === 1
+              ? recent.food.baseUnit
+              : formatServing(
+                  recent.serving,
+                  recent.amount * recent.servingQuantity,
+                  recent.food.baseUnit,
+                  recent.servingQuantity > 1,
+                )}
+          </Text>
+        </View>
+        <View className="flex-row items-center">
+          <Text className="text-primary mr-2">
+            {formatNumber(
+              recent.food.energy * recent.amount * recent.servingQuantity,
+            )}{" "}
+            kcal
+          </Text>
+          <TouchableOpacity
+            disabled={isLoading}
+            onPress={async () => await onAddPress()}
+          >
+            {isLoading ? (
+              <View className="animate-spin">
+                <LoaderCircleIcon className="text-primary" />
+              </View>
+            ) : (
+              <PlusIcon className="text-primary" />
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
-      <View className="flex-row items-center">
-        <Text className="text-primary mr-2">
-          {formatNumber(
-            recent.food.energy * recent.amount * recent.servingQuantity,
-          )}{" "}
-          kcal
-        </Text>
-        <TouchableOpacity
-          disabled={isLoading}
-          onPress={async () => await onPress()}
-        >
-          {isLoading ? (
-            <View className="animate-spin">
-              <LoaderCircleIcon className="text-primary" />
-            </View>
-          ) : (
-            <PlusIcon className="text-primary" />
-          )}
-        </TouchableOpacity>
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 };
