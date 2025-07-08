@@ -167,7 +167,7 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
                         ? meal.food.baseUnit
                         : formatServing(
                             meal.serving,
-                            meal.amount,
+                            meal.amount * meal.servingQuantity,
                             meal.food.baseUnit,
                             meal.servingQuantity > 1,
                           )}

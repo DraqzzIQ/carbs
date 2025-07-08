@@ -1,26 +1,21 @@
 import { db } from "~/db/client";
-import { asc } from "drizzle-orm";
-import { foods } from "~/db/schema";
+import { asc, eq } from "drizzle-orm";
+import { favorites, foods } from "~/db/schema";
 
 export function favoritesQuery() {
-  return db.query.favorites.findMany({
-    columns: {
-      foodId: true,
-      servingQuantity: true,
-      amount: true,
-      serving: true,
-    },
-    with: {
-      food: {
-        columns: {
-          name: true,
-          producer: true,
-          energy: true,
-        },
-      },
-    },
-    orderBy: asc(foods.name),
-  });
+  return db
+    .select({
+      id: favorites.id,
+      foodId: favorites.foodId,
+      servingQuantity: favorites.servingQuantity,
+      amount: favorites.amount,
+      serving: favorites.serving,
+      updatedAt: favorites.updatedAt,
+      food: foods,
+    })
+    .from(favorites)
+    .innerJoin(foods, eq(foods.id, favorites.foodId))
+    .orderBy(asc(foods.name));
 }
 
 export type FavoritesQueryType = Awaited<ReturnType<typeof favoritesQuery>>;

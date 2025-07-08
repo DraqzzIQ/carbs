@@ -1,7 +1,5 @@
-import { Text } from "~/components/ui/text";
 import {
   Animated,
-  ScrollView,
   TouchableOpacity,
   useWindowDimensions,
   View,
@@ -9,15 +7,22 @@ import {
 import React, { useState } from "react";
 import {
   NavigationState,
-  SceneMap,
   SceneRendererProps,
   TabDescriptor,
   TabView,
 } from "react-native-tab-view";
+import { RecentsList } from "~/components/index/meal/add/recents-list";
+import { recentsQuery } from "~/db/queries/recentsQuery";
+import { favoritesQuery } from "~/db/queries/favoritesQuery";
+import { frequentsQuery } from "~/db/queries/frequentsQuery";
+import { MealType } from "~/types/MealType";
 
-type FoodTabsProps = {};
+type FoodTabsProps = {
+  mealType: MealType;
+  date: string;
+};
 
-export const FoodTabs = ({}: FoodTabsProps) => {
+export const FoodTabs = ({ mealType, date }: FoodTabsProps) => {
   const [index, setIndex] = useState(0);
   const routes = [
     { key: "frequents", title: "Frequent" },
@@ -62,11 +67,42 @@ export const FoodTabs = ({}: FoodTabsProps) => {
     );
   };
 
-  const renderScene = SceneMap({
-    frequents: FrequentsRoute,
-    recents: RecentsRoute,
-    favorites: FavoritesRoute,
-  });
+  const renderScene = ({
+    route,
+  }: {
+    route: { key: string; title: string };
+  }) => {
+    switch (route.key) {
+      case "frequents":
+        return (
+          <RecentsList
+            query={frequentsQuery()}
+            mealType={mealType}
+            date={date}
+          />
+        );
+      case "recents":
+        return (
+          <RecentsList
+            query={recentsQuery()}
+            mealType={mealType}
+            date={date}
+            enableDateHeader={true}
+          />
+        );
+      case "favorites":
+        return (
+          <RecentsList
+            query={favoritesQuery()}
+            mealType={mealType}
+            date={date}
+            enableAlphabetHeader={true}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   const layout = useWindowDimensions();
   return (
@@ -78,27 +114,5 @@ export const FoodTabs = ({}: FoodTabsProps) => {
       initialLayout={{ width: layout.width }}
       className="h-full"
     />
-  );
-};
-
-const FrequentsRoute = () => {
-  return <ScrollView></ScrollView>;
-};
-
-const RecentsRoute = () => {
-  return (
-    <View className="flex-1">
-      <Text className="text-lg font-semibold text-primary">Recent Foods</Text>
-      {/* Render recent foods here */}
-    </View>
-  );
-};
-
-const FavoritesRoute = () => {
-  return (
-    <View className="flex-1">
-      <Text className="text-lg font-semibold text-primary">Favorite Foods</Text>
-      {/* Render favorite foods here */}
-    </View>
   );
 };

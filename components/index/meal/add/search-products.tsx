@@ -15,6 +15,7 @@ import { useState } from "react";
 import Animated, { FadeOut, LightSpeedInLeft } from "react-native-reanimated";
 import { formatServing } from "~/utils/serving";
 import { FoodTabs } from "~/components/index/meal/add/food-tabs";
+import { MealType } from "~/types/MealType";
 
 type SearchProductsProps = {
   products: FoodSearchResult[];
@@ -59,7 +60,7 @@ export const SearchProducts = ({
         </Text>
       </View>
     ) : (
-      <FoodTabs />
+      <FoodTabs mealType={meal as MealType} date={date} />
     )
   ) : (
     <ScrollView
