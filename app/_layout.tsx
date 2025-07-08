@@ -86,7 +86,7 @@ export default function RootLayout() {
               style={{ marginTop: ReactStatusBar.currentHeight }}
             />
             <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
-            <Stack>
+            <Stack screenOptions={{ animationDuration: 300 }}>
               <Stack.Screen
                 name="index"
                 options={{
