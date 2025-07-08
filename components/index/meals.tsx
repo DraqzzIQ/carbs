@@ -103,7 +103,12 @@ function MealBar({
 
   return (
     <TouchableOpacity
-      onPress={() => router.push(`/meal?mealName=${name}&date=${date}`)}
+      onPress={() =>
+        router.navigate({
+          pathname: "/meal",
+          params: { mealName: name, date: date },
+        })
+      }
     >
       <View className="flex-row items-center">
         {icon}
@@ -120,7 +125,12 @@ function MealBar({
         </View>
         <View className="grow" />
         <TouchableOpacity
-          onPress={() => router.push(`/meal/add?mealName=${name}&date=${date}`)}
+          onPress={() =>
+            router.navigate({
+              pathname: "/meal/add",
+              params: { mealName: name, date: date },
+            })
+          }
         >
           <View className="w-10 h-10 items-center justify-center">
             <PlusIcon className="h-7 w-7 text-primary" />

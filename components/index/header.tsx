@@ -35,7 +35,9 @@ export const Header = ({ date }: HeaderProps) => {
           {getStreakCount(streakDays)}
         </Text>
       </View>
-      <TouchableOpacity onPress={() => router.push("/settings")}>
+      <TouchableOpacity
+        onPress={() => router.navigate({ pathname: "/settings" })}
+      >
         <View className="w-10 h-10 items-center justify-center">
           <SettingsIcon className="text-primary" />
         </View>

@@ -26,7 +26,12 @@ export default function MealScreen() {
         <View className="mb-20" />
       </ScrollView>
       <FloatingActionButton
-        onPress={() => router.push(`/meal/add?mealName=${name}&date=${date}`)}
+        onPress={() =>
+          router.navigate({
+            pathname: "/meal/add",
+            params: { mealName: name, date: date },
+          })
+        }
       >
         <PlusIcon className="text-secondary h-9 w-9" />
       </FloatingActionButton>

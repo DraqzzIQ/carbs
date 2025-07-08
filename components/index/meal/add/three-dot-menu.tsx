@@ -31,9 +31,10 @@ export const ThreeDotMenu = ({ date, mealName }: ThreeDotMenuProps) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onPress={() =>
-            router.push(
-              `/meal/add/quick-entry?date=${date}&mealName=${mealName}`,
-            )
+            router.navigate({
+              pathname: "/meal/add/quick-entry",
+              params: { date: date, mealName: mealName },
+            })
           }
         >
           <Text className="text-sm text-primary">Quick Entry</Text>

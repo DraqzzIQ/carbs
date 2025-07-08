@@ -133,15 +133,16 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
   return (
     <TouchableOpacity
       onPress={async () => {
-        if (meal.food.category === "quick-entry") {
-          router.push(
-            `/meal/add/quick-entry?edit=true&mealId=${meal.id}&date=${meal.date}&mealName=${meal.mealType}`,
-          );
-          return;
-        }
-        router.push(
-          `/meal/add/product?edit=true&mealId=${meal.id}&date=${meal.date}&mealName=${meal.mealType}`,
-        );
+        const path = `/meal/add/${meal.food.category === "quick-entry" ? "/quick-entry" : "product"}`;
+        router.navigate({
+          pathname: path as any,
+          params: {
+            edit: "true",
+            mealId: meal.id,
+            date: meal.date,
+            mealName: meal.mealType,
+          },
+        });
       }}
     >
       <View

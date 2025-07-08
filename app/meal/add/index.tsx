@@ -115,9 +115,15 @@ export default function AddToMealScreen() {
     try {
       const response = await yazioSearchFoods(query, { signal });
       if (response.length === 1 && scanned) {
-        router.push(
-          `/meal/add/product?edit=false&productId=${response[0].productId}&date=${date}&mealName=${meal}`,
-        );
+        router.navigate({
+          pathname: "/meal/add/product",
+          params: {
+            edit: "false",
+            productId: response[0].productId,
+            date: date,
+            mealName: meal,
+          },
+        });
       }
       setProducts(response);
     } catch (error) {

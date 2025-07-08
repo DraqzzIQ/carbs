@@ -108,9 +108,15 @@ function SearchProduct({
   return (
     <TouchableOpacity
       onPress={() =>
-        router.push(
-          `/meal/add/product?edit=false&productId=${product.productId}&date=${date}&mealName=${meal}`,
-        )
+        router.navigate({
+          pathname: "/meal/add/product",
+          params: {
+            edit: "false",
+            productId: product.productId,
+            date: date,
+            mealName: meal,
+          },
+        })
       }
     >
       <Card className="flex items-start justify-between px-3 py-2 bg-secondary rounded-lg mb-2">
