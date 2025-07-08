@@ -1,5 +1,5 @@
 import { db } from "~/db/client";
-import { desc, eq, gte } from "drizzle-orm";
+import { and, desc, eq, gte, not } from "drizzle-orm";
 import { foods, recents } from "~/db/schema";
 
 export function recentsQuery() {
@@ -16,7 +16,12 @@ export function recentsQuery() {
     })
     .from(recents)
     .innerJoin(foods, eq(foods.id, recents.foodId))
-    .where(gte(recents.updatedAt, lastYear.toISOString()))
+    .where(
+      and(
+        gte(recents.updatedAt, lastYear.toISOString()),
+        not(eq(foods.category, "quick-entry")),
+      ),
+    )
     .orderBy(desc(recents.updatedAt))
     .limit(100);
 }
