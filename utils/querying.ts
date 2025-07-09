@@ -2,7 +2,7 @@ import { MealType } from "~/types/MealType";
 import { yazioGetFoodDetails } from "~/api/yazio";
 import { FoodDetailsDto, ServingDto } from "~/api/types/FoodDetails";
 import { db } from "~/db/client";
-import { Food, foods, meals, recents, streaks } from "~/db/schema";
+import { favorites, Food, foods, meals, recents, streaks } from "~/db/schema";
 import { and, eq } from "drizzle-orm";
 
 export async function removeFoodFromMeal(mealId: number) {
@@ -106,6 +106,47 @@ export async function isRecent(foodId: string): Promise<boolean> {
   } catch (error) {
     console.error(`Error checking if food is recent with ID ${foodId}:`, error);
     return false;
+  }
+}
+
+export async function getIsFavorite(foodId: string): Promise<boolean> {
+  try {
+    const favorite = await db.query.favorites.findFirst({
+      where: eq(favorites.foodId, foodId),
+    });
+    return !!favorite;
+  } catch (error) {
+    console.error(
+      `Error checking if food is favorite with ID ${foodId}:`,
+      error,
+    );
+    return false;
+  }
+}
+
+export async function removeFavorite(foodId: string) {
+  try {
+    await db.delete(favorites).where(eq(favorites.foodId, foodId));
+  } catch (error) {
+    console.error(`Error removing favorite for food ID ${foodId}:`, error);
+  }
+}
+
+export async function addFavorite(
+  foodId: string,
+  servingQuantity: number,
+  amount: number,
+  serving: string,
+) {
+  try {
+    await db.insert(favorites).values({
+      foodId: foodId,
+      amount: amount,
+      servingQuantity: servingQuantity,
+      serving: serving,
+    });
+  } catch (error) {
+    console.error(`Error setting favorite for food ID ${foodId}:`, error);
   }
 }
 

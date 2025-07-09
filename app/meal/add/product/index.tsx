@@ -23,8 +23,8 @@ import {
 import { FloatingActionButton } from "~/components/floating-action-button";
 import { ServingSelector } from "~/components/index/meal/add/product/serving-selector";
 import { MacroHeader } from "~/components/index/meal/macro-header";
-import { Skeleton } from "~/components/ui/skeleton";
 import { ProductDetailsLoadingSkeleton } from "~/components/index/meal/add/product/loading-skeleton";
+import { FavoriteIndicator } from "~/components/index/meal/add/product/favorite-indicator";
 
 export default function ProductDetailScreen() {
   const params = useLocalSearchParams<{
@@ -84,6 +84,14 @@ export default function ProductDetailScreen() {
             <MealSelectorHeader
               onSelect={(mealType) => setMealType(mealType)}
               defaultSelection={mealType}
+            />
+          ),
+          headerRight: (_) => (
+            <FavoriteIndicator
+              foodId={food?.id || ""}
+              servingQuantity={servingQuantity}
+              serving={serving}
+              amount={amount}
             />
           ),
         }}
