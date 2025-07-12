@@ -59,3 +59,8 @@ export function getDateSlug(date: string): string {
   }
   return dateObj.toLocaleDateString(locales[0].languageTag, options);
 }
+
+export function isBaseUnit(serving: string): boolean {
+  const baseUnits = ["gram", "milliliter"];
+  return baseUnits.includes(serving.toLowerCase());
+}

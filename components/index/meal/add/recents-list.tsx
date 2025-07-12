@@ -48,7 +48,7 @@ export const RecentsList = ({
   let lastDate = "";
   let lastFirstLetter = "";
   return (
-    <ScrollView>
+    <ScrollView showsVerticalScrollIndicator={false}>
       {recents.map((recent: RecentsQueryType[number]) => {
         let displayHeader = false;
         let currentDate = "";
@@ -78,6 +78,7 @@ export const RecentsList = ({
           </React.Fragment>
         );
       })}
+      <View className="h-36" />
     </ScrollView>
   );
 };
@@ -125,7 +126,7 @@ const Recent = ({
       }
     >
       <View className="flex-row w-full mt-5">
-        <View className="flex flex-grow">
+        <View className="flex w-2/3 flex-grow">
           <Text className="text-primary text-xl">{recent.food.name}</Text>
           <Text className="text-primary text-base">
             {recent.food.producer ? `${recent.food.producer}, ` : ""}

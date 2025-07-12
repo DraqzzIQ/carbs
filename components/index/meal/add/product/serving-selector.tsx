@@ -11,7 +11,7 @@ import { formatServing, getDefaultServing } from "~/utils/serving";
 import { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
 import { NumericInput } from "~/components/numeric-input";
-import { Card } from "~/components/ui/card";
+import { isBaseUnit } from "~/utils/formatting";
 
 type ServingSelectorProps = {
   servingOptions?: ServingDto[];
@@ -88,11 +88,7 @@ export const ServingSelector = ({
                 value={item.serving}
                 onPress={() => {
                   onServingChange(item);
-                  onServingQuantityChange(
-                    item.serving === "Gram" || item.serving === "Milliliter"
-                      ? 100
-                      : 1,
-                  );
+                  onServingQuantityChange(isBaseUnit(item.serving) ? 100 : 1);
                 }}
               />
             )}

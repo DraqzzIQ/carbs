@@ -4,6 +4,7 @@ import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
 import { Card } from "~/components/ui/card";
 import {
   ClockFadingIcon,
+  HistoryIcon,
   LoaderCircleIcon,
   PlusIcon,
   VerifiedIcon,
@@ -11,11 +12,12 @@ import {
 import { formatNumber } from "~/utils/formatting";
 import { Separator } from "~/components/ui/separator";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Animated, { FadeOut, LightSpeedInLeft } from "react-native-reanimated";
 import { formatServing } from "~/utils/serving";
 import { FoodTabs } from "~/components/index/meal/add/food-tabs";
 import { MealType } from "~/types/MealType";
+import { getRecentFoods } from "~/utils/querying";
 
 type SearchProductsProps = {
   products: FoodSearchResultDto[];
@@ -36,6 +38,14 @@ export const SearchProducts = ({
   date,
   searchFocused,
 }: SearchProductsProps) => {
+  const [recents, setRecents] = useState<Set<string>>([]);
+
+  useEffect(() => {
+    getRecentFoods(products.map((product) => product.productId)).then(
+      setRecents,
+    );
+  }, [products]);
+
   return loading ? (
     <View className="flex-1 items-center mt-10">
       <Text className="text-primary text-lg font-semibold">Loading...</Text>
@@ -79,6 +89,7 @@ export const SearchProducts = ({
             meal={meal}
             onAddProduct={onAddProduct}
             date={date}
+            isRecent={recents.has(product.productId)}
           />
         ))}
       </Animated.View>
@@ -91,11 +102,13 @@ function SearchProduct({
   meal,
   date,
   onAddProduct,
+  isRecent,
 }: {
   product: FoodSearchResultDto;
   meal: string;
   date: string;
   onAddProduct: (product: FoodSearchResultDto) => Promise<void>;
+  isRecent: boolean;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -161,7 +174,7 @@ function SearchProduct({
                     product.baseUnit,
                   )}
           </Text>
-          <ClockFadingIcon className="text-primary w-4 h-4 ml-1" />
+          {isRecent && <HistoryIcon className="text-primary w-4 h-4 ml-1" />}
           <View className="flex-grow" />
           <Text className="text-primary">
             {formatNumber(product.nutrients.energy * product.amount)} kcal

@@ -4,6 +4,8 @@ import { FoodDetailsDto, ServingDto } from "~/api/types/FoodDetails";
 import { db } from "~/db/client";
 import { favorites, Food, foods, meals, recents, streaks } from "~/db/schema";
 import { and, eq } from "drizzle-orm";
+import { isBaseUnit } from "~/utils/formatting";
+import { inArray } from "drizzle-orm/sql/expressions/conditions";
 
 export async function removeFoodFromMeal(mealId: number) {
   try {
@@ -109,18 +111,20 @@ export async function isRecent(foodId: string): Promise<boolean> {
   }
 }
 
-export async function getIsFavorite(foodId: string): Promise<boolean> {
+export async function getRecentFoods(foodIds: string[]): Promise<Set<string>> {
+  const uniqueFoodIds = [...new Set(foodIds)];
+  if (uniqueFoodIds.length === 0) return new Set();
   try {
-    const favorite = await db.query.favorites.findFirst({
-      where: eq(favorites.foodId, foodId),
+    const recentFoodIds = await db.query.recents.findMany({
+      where: inArray(recents.foodId, uniqueFoodIds),
+      columns: {
+        foodId: true,
+      },
     });
-    return !!favorite;
+    return new Set(recentFoodIds.map((recent) => recent.foodId));
   } catch (error) {
-    console.error(
-      `Error checking if food is favorite with ID ${foodId}:`,
-      error,
-    );
-    return false;
+    console.error("Error fetching recent foods:", error);
+    return new Set();
   }
 }
 
@@ -233,6 +237,9 @@ async function updateOrAddRecent(
   amount: number,
   serving: string,
 ) {
+  if (isBaseUnit(serving)) {
+    serving = serving.toLowerCase();
+  }
   try {
     const existingRecent = await db.query.recents.findFirst({
       where: and(
