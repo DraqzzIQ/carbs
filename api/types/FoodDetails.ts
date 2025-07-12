@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const NutrientsSchema = z.object({
+const NutrientsSchema = z.object({
   "energy.energy": z.number().default(0),
   // minerals
   "mineral.arsenic": z.number().optional(),
@@ -58,15 +58,14 @@ export const NutrientsSchema = z.object({
   "vitamin.e": z.number().optional(),
   "vitamin.k": z.number().optional(),
 });
-export type NutrientsDto = z.infer<typeof NutrientsSchema>;
 
-export const ServingSchema = z.object({
+const ServingSchema = z.object({
   serving: z.string(),
-  amount: z.number().positive(),
+  amount: z.number(),
 });
 export type ServingDto = z.infer<typeof ServingSchema>;
 
-export const FoodDetailsSchema = z.object({
+const FoodDetailsSchema = z.object({
   id: z.string().uuid(),
   is_custom: z.boolean(),
   name: z.string(),
@@ -96,7 +95,7 @@ export function mapApiFoodDetails(
     is_custom: false,
   });
   if (!result.success) {
-    console.error("Failed to parse product product:", result.error);
+    console.error("Failed to parse product:", result.error);
     return null;
   }
   return result.data;

@@ -172,10 +172,7 @@ async function addFood(food: FoodDetailsDto) {
       .insert(foods)
       .values({ ...getProductProperties(food), id: food.id });
   } catch (error) {
-    console.error(
-      `Error adding or updating product with ID ${food.id}:`,
-      error,
-    );
+    console.error(`Error adding product with ID ${food.id}:`, error);
   }
 }
 

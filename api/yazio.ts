@@ -1,7 +1,7 @@
 import {
-  mapApiFoodToFoodsSearchResult,
-  FoodSearchResult,
-} from "~/api/types/FoodSearchResult";
+  FoodSearchResultDto,
+  mapApiFoodsSearchResult,
+} from "~/api/types/FoodSearchResultDto";
 import { getLocales } from "expo-localization";
 import { getStaticSettings } from "~/contexts/AppSettingsContext";
 import { mapApiFoodDetails, FoodDetailsDto } from "~/api/types/FoodDetails";
@@ -19,7 +19,7 @@ const yazioRequest = (
   url.searchParams.append("countries", getStaticSettings().countryCode);
   url.searchParams.append("locales", locales[0].languageTag);
 
-  // why would they need this?
+  // why tf would they even need this?
   url.searchParams.append("sex", "male");
 
   if (queryParams) {
@@ -37,7 +37,7 @@ const yazioRequest = (
 export const yazioSearchFoods = async (
   searchQuery: string,
   options?: { signal?: AbortSignal },
-): Promise<FoodSearchResult[]> => {
+): Promise<FoodSearchResultDto[]> => {
   const request = yazioRequest(
     "products/search",
     { query: searchQuery },
@@ -52,7 +52,7 @@ export const yazioSearchFoods = async (
   }
 
   const data = await response.json();
-  return data.map(mapApiFoodToFoodsSearchResult);
+  return mapApiFoodsSearchResult(data);
 };
 
 export const yazioGetFoodDetails = async (

@@ -1,6 +1,6 @@
 import { Text } from "~/components/ui/text";
 import { Keyboard, ScrollView, TouchableOpacity, View } from "react-native";
-import { FoodSearchResult } from "~/api/types/FoodSearchResult";
+import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
 import { Card } from "~/components/ui/card";
 import {
   ClockFadingIcon,
@@ -18,10 +18,10 @@ import { FoodTabs } from "~/components/index/meal/add/food-tabs";
 import { MealType } from "~/types/MealType";
 
 type SearchProductsProps = {
-  products: FoodSearchResult[];
+  products: FoodSearchResultDto[];
   loading: boolean;
   notFound: boolean;
-  onAddProduct: (product: FoodSearchResult) => Promise<void>;
+  onAddProduct: (product: FoodSearchResultDto) => Promise<void>;
   meal: string;
   date: string;
   searchFocused: boolean;
@@ -92,14 +92,14 @@ function SearchProduct({
   date,
   onAddProduct,
 }: {
-  product: FoodSearchResult;
+  product: FoodSearchResultDto;
   meal: string;
   date: string;
-  onAddProduct: (product: FoodSearchResult) => Promise<void>;
+  onAddProduct: (product: FoodSearchResultDto) => Promise<void>;
 }) {
   const [loading, setLoading] = useState(false);
 
-  async function localOnAddProduct(product: FoodSearchResult) {
+  async function localOnAddProduct(product: FoodSearchResultDto) {
     setLoading(true);
     await onAddProduct(product);
     setLoading(false);

@@ -20,7 +20,7 @@ import {
 } from "react-native-vision-camera";
 import { Input } from "~/components/ui/input";
 import { SearchProducts } from "~/components/index/meal/add/search-products";
-import { FoodSearchResult } from "~/api/types/FoodSearchResult";
+import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
 import { yazioSearchFoods } from "~/api/yazio";
 import { KeyboardShift } from "~/components/keyboard-shift";
 import { FloatingActionButton } from "~/components/floating-action-button";
@@ -37,7 +37,7 @@ export default function AddToMealScreen() {
   const device = useCameraDevice("back");
   const [barCodeScannerOpen, setBarCodeScannerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [products, setProducts] = useState<FoodSearchResult[]>([]);
+  const [products, setProducts] = useState<FoodSearchResultDto[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isTorchEnabled, setIsTorchEnabled] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
@@ -136,7 +136,7 @@ export default function AddToMealScreen() {
     }
   };
 
-  async function onAddProduct(food: FoodSearchResult) {
+  async function onAddProduct(food: FoodSearchResultDto) {
     // search api returns quantity and amount as 100 in some cases,
     // probably for '100 (unit)' type of servings
     let servingQuantity = 1;
