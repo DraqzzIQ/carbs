@@ -25,7 +25,7 @@ export const FloatingActionButton = ({
         bottom,
       )}
     >
-      <TouchableOpacity onPressIn={() => onPress()} disabled={disabled}>
+      <TouchableOpacity onPress={() => onPress()} disabled={disabled}>
         {loading ? (
           <View className="animate-spin">
             <LoaderCircleIcon className="text-secondary h-9 w-9" />

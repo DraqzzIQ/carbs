@@ -6,6 +6,10 @@ export function getDefaultServing(baseUnit: string): string {
       return "Gram";
     case "ml":
       return "Milliliter";
+    case "oz":
+      return "Ounce";
+    case "fl oz":
+      return "Fluid Ounce";
     default:
       return "Gram";
   }
@@ -26,9 +30,33 @@ export function formatServing(
     serving = parts[0] + ", " + parts[1];
   }
 
-  if (serving !== "Gram" && serving !== "Milliliter") {
+  if (
+    serving !== "Gram" &&
+    serving !== "Milliliter" &&
+    serving !== "Ounce" &&
+    serving !== "Fluid Ounce"
+  ) {
     return `${serving} (${amount} ${baseUnit})`;
   }
 
   return serving;
+}
+
+export function getServingUnitLabel(
+  serving: string,
+  amount: number,
+  baseUnit: string,
+) {
+  switch (serving) {
+    case "gram":
+      return "g";
+    case "milliliter":
+      return "ml";
+    case "ounce":
+      return "oz";
+    case "fluid-ounce":
+      return "fl oz";
+    default:
+      return formatServing(serving, amount, baseUnit);
+  }
 }

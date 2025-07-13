@@ -144,11 +144,26 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
 
   const totalNutrition = useMemo(() => {
     const totals = JSON.parse(JSON.stringify(nutritionTemplate));
+    const unitMultiplier: Record<string, number> = {
+      kcal: 1,
+      g: 1,
+      mg: 1000,
+      "\u00B5g": 1_000_000,
+    };
+
     foods.forEach((food) => {
       const quantity = food.servingQuantity * food.amount;
       Object.keys(totals).forEach((key) => {
+        // console.log(key);
+        // console.log((food as any)[key.replace("totalF", "f")] ?? 0);
+        // console.log(quantity);
+        // console.log(
+        //   unitMultiplier[totals[key as keyof typeof totals].unit] || 1,
+        // );
         totals[key as keyof typeof totals].value +=
-          ((food as any)[key.replace("totalF", "f")] ?? 0) * quantity;
+          ((food as any)[key.replace("totalF", "f")] ?? 0) *
+          quantity *
+          (unitMultiplier[totals[key as keyof typeof totals].unit] || 1);
       });
     });
     return totals;

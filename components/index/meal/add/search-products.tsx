@@ -3,7 +3,6 @@ import { Keyboard, ScrollView, TouchableOpacity, View } from "react-native";
 import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
 import { Card } from "~/components/ui/card";
 import {
-  ClockFadingIcon,
   HistoryIcon,
   LoaderCircleIcon,
   PlusIcon,
@@ -14,7 +13,7 @@ import { Separator } from "~/components/ui/separator";
 import { router } from "expo-router";
 import { useState, useEffect } from "react";
 import Animated, { FadeOut, LightSpeedInLeft } from "react-native-reanimated";
-import { formatServing } from "~/utils/serving";
+import { getServingUnitLabel } from "~/utils/serving";
 import { FoodTabs } from "~/components/index/meal/add/food-tabs";
 import { MealType } from "~/types/MealType";
 import { getRecentFoods } from "~/utils/querying";
@@ -38,7 +37,7 @@ export const SearchProducts = ({
   date,
   searchFocused,
 }: SearchProductsProps) => {
-  const [recents, setRecents] = useState<Set<string>>([]);
+  const [recents, setRecents] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     getRecentFoods(products.map((product) => product.productId)).then(
@@ -164,15 +163,11 @@ function SearchProduct({
         <View className="flex-row items-center">
           <Text className="text-primary">
             {product.servingQuantity}{" "}
-            {product.serving === "gram"
-              ? "g"
-              : product.serving === "milliliter"
-                ? "ml"
-                : formatServing(
-                    product.serving,
-                    product.amount,
-                    product.baseUnit,
-                  )}
+            {getServingUnitLabel(
+              product.serving,
+              product.amount,
+              product.baseUnit,
+            )}
           </Text>
           {isRecent && <HistoryIcon className="text-primary w-4 h-4 ml-1" />}
           <View className="flex-grow" />

@@ -88,7 +88,7 @@ export const CountrySelector = ({}: CountryDropdownProps) => {
           )}
           keyExtractor={(item) => item.key}
           showsVerticalScrollIndicator={false}
-          style={{ height: "100%" }}
+          className="h-full"
           ItemSeparatorComponent={WrappedSelectSeparator}
         />
       </SelectContent>

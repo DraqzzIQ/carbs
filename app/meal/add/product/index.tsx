@@ -4,7 +4,7 @@ import { KeyboardShift } from "~/components/keyboard-shift";
 import { Text } from "~/components/ui/text";
 import { mealQuery, MealQueryType } from "~/db/queries/mealQuery";
 import { useEffect, useState } from "react";
-import { MealSelectorHeader } from "~/components/index/meal/add/product/meal-selector-header";
+import { MealSelectorHeader } from "~/components/index/meal/add/meal-selector-header";
 import { MealType } from "~/types/MealType";
 import { Food } from "~/db/schema";
 import {
@@ -74,7 +74,7 @@ export default function ProductDetailScreen() {
         setFoodIsRecent(await isRecent(params.productId!));
       }
     })();
-  }, []);
+  }, [edit]);
 
   return (
     <KeyboardShift>
@@ -152,12 +152,11 @@ export default function ProductDetailScreen() {
             }
             defaultServingQuantity={
               edit
-                ? meal!.servingQuantity
+                ? meal!.servingQuantity.toString()
                 : params.servingQuantity
-                  ? parseFloat(params.servingQuantity)
+                  ? params.servingQuantity
                   : undefined
             }
-            servingQuantity={servingQuantity}
             onServingChange={(serving) => {
               setAmount(serving.amount);
               setServing(serving.serving);

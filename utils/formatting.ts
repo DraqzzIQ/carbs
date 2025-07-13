@@ -61,6 +61,6 @@ export function getDateSlug(date: string): string {
 }
 
 export function isBaseUnit(serving: string): boolean {
-  const baseUnits = ["gram", "milliliter"];
+  const baseUnits = ["gram", "milliliter", "ounce", "fluid-ounce"];
   return baseUnits.includes(serving.toLowerCase());
 }

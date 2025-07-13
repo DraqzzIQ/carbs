@@ -150,6 +150,17 @@ export default function RootLayout() {
                   },
                 }}
               />
+              <Stack.Screen
+                name="meal/add/custom-food/index"
+                options={{
+                  headerTitleAlign: "center",
+                  headerShown: true,
+                  headerBackButtonDisplayMode: "minimal",
+                  headerStyle: {
+                    backgroundColor: isDarkColorScheme ? "black" : "white",
+                  },
+                }}
+              />
             </Stack>
           </View>
           <PortalHost />

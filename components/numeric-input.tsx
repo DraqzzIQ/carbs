@@ -2,7 +2,8 @@ import { Input } from "~/components/ui/input";
 import { ComponentProps, useEffect, useState } from "react";
 
 type NumericInputProps = {
-  onValueChange: (value: number) => void;
+  onValueChange?: (value: string) => void;
+  onNumberChange?: (value: number) => void;
   allowNegative?: boolean;
   allowDecimal?: boolean;
   defaultValue?: string;
@@ -11,6 +12,7 @@ type NumericInputProps = {
 
 export const NumericInput = ({
   onValueChange,
+  onNumberChange,
   allowNegative,
   allowDecimal,
   defaultValue,
@@ -45,19 +47,20 @@ export const NumericInput = ({
       if (parts.length > 2) {
         text = parts.shift() + "." + parts.join("");
       }
-      if (text.endsWith(".") && parts.length === 2) {
-        setText(text);
-        onValueChange(Number(text.slice(0, -1)));
-        return;
-      }
     }
 
     setText(text);
-    const num = Number(text);
-    if (!isNaN(num)) {
-      onValueChange(num);
-    } else {
-      onValueChange(0);
+
+    if (onValueChange) {
+      onValueChange(text);
+    }
+    if (onNumberChange) {
+      const numberValue = Number(text);
+      if (!isNaN(numberValue)) {
+        onNumberChange(numberValue);
+      } else {
+        onNumberChange(0);
+      }
     }
   };
 

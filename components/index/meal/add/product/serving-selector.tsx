@@ -15,24 +15,25 @@ import { isBaseUnit } from "~/utils/formatting";
 
 type ServingSelectorProps = {
   servingOptions?: ServingDto[];
-  defaultServing?: ServingDto;
-  defaultServingQuantity?: number;
-  servingQuantity: number;
-  onServingChange: (serving: ServingDto) => void;
+  defaultServingQuantity?: string;
   onServingQuantityChange: (quantity: number) => void;
+  defaultServing?: ServingDto;
+  onServingChange: (serving: ServingDto) => void;
   baseUnit: string;
 };
 
 export const ServingSelector = ({
   servingOptions,
-  defaultServing,
   defaultServingQuantity,
-  servingQuantity,
-  onServingChange,
   onServingQuantityChange,
+  defaultServing,
+  onServingChange,
   baseUnit,
 }: ServingSelectorProps) => {
   const [options, setOptions] = useState<ServingDto[]>([]);
+  const [servingQuantity, setServingQuantity] = useState<string | undefined>(
+    defaultServingQuantity,
+  );
 
   useEffect(() => {
     if (!servingOptions) {
@@ -46,7 +47,9 @@ export const ServingSelector = ({
 
     onServingChange(defaultServing ?? options[0]);
     onServingQuantityChange(
-      defaultServingQuantity ?? (options[0].amount === 1 ? 100 : 1),
+      parseFloat(
+        defaultServingQuantity ?? (options[0].amount === 1 ? "100" : "1"),
+      ),
     );
   }, [servingOptions]);
 
@@ -62,8 +65,8 @@ export const ServingSelector = ({
         selectTextOnFocus={true}
         keyboardType="numeric"
         className="w-1/4 bg-secondary mr-1 -ml-0.5"
-        defaultValue={servingQuantity.toString()}
-        onValueChange={(value) => onServingQuantityChange(value)}
+        defaultValue={servingQuantity}
+        onNumberChange={(value) => onServingQuantityChange(value)}
       />
       <Select
         className="w-3/4"
@@ -88,12 +91,14 @@ export const ServingSelector = ({
                 value={item.serving}
                 onPress={() => {
                   onServingChange(item);
-                  onServingQuantityChange(isBaseUnit(item.serving) ? 100 : 1);
+                  const quantity = isBaseUnit(item.serving) ? 100 : 1;
+                  onServingQuantityChange(quantity);
+                  setServingQuantity(quantity.toString());
                 }}
               />
             )}
             showsVerticalScrollIndicator={false}
-            style={{ height: "100%" }}
+            className="h-full"
             ItemSeparatorComponent={WrappedSelectSeparator}
           />
         </SelectContent>

@@ -25,8 +25,15 @@ export const ThreeDotMenu = ({ date, mealName }: ThreeDotMenuProps) => {
           <Text className="text-sm text-primary">Create Recipe</Text>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Text className="text-sm text-primary">Add Food</Text>
+        <DropdownMenuItem
+          onPress={() =>
+            router.navigate({
+              pathname: "/meal/add/custom-food",
+              params: { date: date, mealName: mealName },
+            })
+          }
+        >
+          <Text className="text-sm text-primary">Create Food</Text>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
