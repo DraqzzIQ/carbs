@@ -24,7 +24,7 @@ import { FloatingActionButton } from "~/components/floating-action-button";
 import { ServingSelector } from "~/components/index/meal/add/product/serving-selector";
 import { MacroHeader } from "~/components/index/meal/macro-header";
 import { ProductDetailsLoadingSkeleton } from "~/components/index/meal/add/product/loading-skeleton";
-import { FavoriteIndicator } from "~/components/index/meal/add/product/favorite-indicator";
+import { HeaderOptions } from "~/components/index/meal/add/product/header-options";
 
 export default function ProductDetailScreen() {
   const params = useLocalSearchParams<{
@@ -87,7 +87,7 @@ export default function ProductDetailScreen() {
             />
           ),
           headerRight: (_) => (
-            <FavoriteIndicator
+            <HeaderOptions
               foodId={food?.id || ""}
               servingQuantity={servingQuantity}
               serving={serving}

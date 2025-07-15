@@ -1,51 +1,30 @@
-import { Text } from "~/components/ui/text";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { EllipsisVerticalIcon } from "lucide-nativewind";
-import { router } from "expo-router";
+import { ReactNode } from "react";
+import { FlatList } from "react-native";
 
 type ThreeDotMenuProps = {
-  date: string;
-  mealName: string;
+  children?: ReactNode;
 };
 
-export const ThreeDotMenu = ({ date, mealName }: ThreeDotMenuProps) => {
+export const ThreeDotMenu = ({ children }: ThreeDotMenuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
         <EllipsisVerticalIcon className="text-primary" />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem>
-          <Text className="text-sm text-primary">Create Recipe</Text>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onPress={() =>
-            router.navigate({
-              pathname: "/meal/add/custom-food",
-              params: { date: date, mealName: mealName },
-            })
-          }
-        >
-          <Text className="text-sm text-primary">Create Food</Text>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onPress={() =>
-            router.navigate({
-              pathname: "/meal/add/quick-entry",
-              params: { date: date, mealName: mealName },
-            })
-          }
-        >
-          <Text className="text-sm text-primary">Quick Entry</Text>
-        </DropdownMenuItem>
+        <FlatList
+          data={children ? [children] : []}
+          renderItem={({ item }) => <>{item}</>}
+          keyExtractor={(item, index) => `menu-item-${index}`}
+          ItemSeparatorComponent={DropdownMenuSeparator}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );
