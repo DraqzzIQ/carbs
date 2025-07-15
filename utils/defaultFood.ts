@@ -1,6 +1,14 @@
 import { Food } from "~/db/schema";
 
-export const defaultFood: Food = {
+export function createDefaultFood(): Food {
+  return {
+    ...defaultFood,
+    id: Date.now().toString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+const defaultFood: Food = {
   id: Date.now().toString(),
   name: "",
   energy: 0,
@@ -8,10 +16,12 @@ export const defaultFood: Food = {
   protein: 0,
   fat: 0,
   updatedAt: new Date().toISOString(),
+  deletedAt: null,
   isCustom: true,
   isVerified: false,
   hasEan: false,
   eans: null,
+  valuesPer: 1,
   producer: null,
   category: "",
   baseUnit: "g",
@@ -75,7 +85,7 @@ export function createCustomFood(
   const amount = parseFloat(values["amount"]);
   const serving = values["serving"];
   return {
-    ...defaultFood,
+    ...createDefaultFood(),
     name: values["name"],
     energy: (parseFloat(values["energy"]) || 0) / valuesPer,
     carb: (parseFloat(values["carb"]) || 0) / valuesPer,
@@ -83,6 +93,7 @@ export function createCustomFood(
     fat: (parseFloat(values["fat"]) || 0) / valuesPer,
     hasEan: !!barcode,
     eans: barcode ? [barcode] : [],
+    valuesPer: valuesPer,
     producer: values["producer"] || null,
     baseUnit: values["unit"] || "g",
     servings:
@@ -206,5 +217,103 @@ export function createCustomFood(
       ? parseFloat(values["vanadium"]) / valuesPer
       : null,
     zinc: values["zinc"] ? parseFloat(values["zinc"]) / valuesPer : null,
+  };
+}
+
+export function foodToFormValues(food: Food): Record<string, string> {
+  return {
+    name: food.name,
+    energy: (food.energy * food.valuesPer).toString(),
+    carb: (food.carb * food.valuesPer).toString(),
+    protein: (food.protein * food.valuesPer).toString(),
+    fat: (food.fat * food.valuesPer).toString(),
+    valuesPer: food.valuesPer.toString(),
+    producer: food.producer || "",
+    unit: food.baseUnit || "g",
+    amount: food.servings.length > 0 ? food.servings[0].amount.toString() : "",
+    serving: food.servings.length > 0 ? food.servings[0].serving : "",
+    dietaryFiber: food.dietaryFiber
+      ? (food.dietaryFiber * food.valuesPer).toString()
+      : "",
+    sugar: (food.sugar * food.valuesPer).toString(),
+    saturatedFat: (food.saturatedFat * food.valuesPer).toString(),
+    monoUnsaturatedFat: food.monoUnsaturatedFat
+      ? (food.monoUnsaturatedFat * food.valuesPer).toString()
+      : "",
+    polyUnsaturatedFat: food.polyUnsaturatedFat
+      ? (food.polyUnsaturatedFat * food.valuesPer).toString()
+      : "",
+    transFat: food.transFat ? (food.transFat * food.valuesPer).toString() : "",
+    alcohol: food.alcohol ? (food.alcohol * food.valuesPer).toString() : "",
+    cholesterol: food.cholesterol
+      ? (food.cholesterol * food.valuesPer).toString()
+      : "",
+    sodium: food.sodium ? (food.sodium * food.valuesPer).toString() : "",
+    salt: (food.salt * food.valuesPer).toString(),
+    water: food.water ? (food.water * food.valuesPer).toString() : "",
+    vitaminA: food.vitaminA ? (food.vitaminA * food.valuesPer).toString() : "",
+    vitaminB1: food.vitaminB1
+      ? (food.vitaminB1 * food.valuesPer).toString()
+      : "",
+    vitaminB11: food.vitaminB11
+      ? (food.vitaminB11 * food.valuesPer).toString()
+      : "",
+    vitaminB12: food.vitaminB12
+      ? (food.vitaminB12 * food.valuesPer).toString()
+      : "",
+    vitaminB2: food.vitaminB2
+      ? (food.vitaminB2 * food.valuesPer).toString()
+      : "",
+    vitaminB3: food.vitaminB3
+      ? (food.vitaminB3 * food.valuesPer).toString()
+      : "",
+    vitaminB5: food.vitaminB5
+      ? (food.vitaminB5 * food.valuesPer).toString()
+      : "",
+    vitaminB6: food.vitaminB6
+      ? (food.vitaminB6 * food.valuesPer).toString()
+      : "",
+    vitaminB7: food.vitaminB7
+      ? (food.vitaminB7 * food.valuesPer).toString()
+      : "",
+    vitaminC: food.vitaminC ? (food.vitaminC * food.valuesPer).toString() : "",
+    vitaminD: food.vitaminD ? (food.vitaminD * food.valuesPer).toString() : "",
+    vitaminE: food.vitaminE ? (food.vitaminE * food.valuesPer).toString() : "",
+    vitaminK: food.vitaminK ? (food.vitaminK * food.valuesPer).toString() : "",
+    arsenic: food.arsenic ? (food.arsenic * food.valuesPer).toString() : "",
+    biotin: food.biotin ? (food.biotin * food.valuesPer).toString() : "",
+    boron: food.boron ? (food.boron * food.valuesPer).toString() : "",
+    calcium: food.calcium ? (food.calcium * food.valuesPer).toString() : "",
+    chlorine: food.chlorine ? (food.chlorine * food.valuesPer).toString() : "",
+    choline: food.choline ? (food.choline * food.valuesPer).toString() : "",
+    chrome: food.chrome ? (food.chrome * food.valuesPer).toString() : "",
+    cobalt: food.cobalt ? (food.cobalt * food.valuesPer).toString() : "",
+    copper: food.copper ? (food.copper * food.valuesPer).toString() : "",
+    fluoride: food.fluoride ? (food.fluoride * food.valuesPer).toString() : "",
+    fluorine: food.fluorine ? (food.fluorine * food.valuesPer).toString() : "",
+    iodine: food.iodine ? (food.iodine * food.valuesPer).toString() : "",
+    iron: food.iron ? (food.iron * food.valuesPer).toString() : "",
+    magnesium: food.magnesium
+      ? (food.magnesium * food.valuesPer).toString()
+      : "",
+    manganese: food.manganese
+      ? (food.manganese * food.valuesPer).toString()
+      : "",
+    molybdenum: food.molybdenum
+      ? (food.molybdenum * food.valuesPer).toString()
+      : "",
+    phosphorus: food.phosphorus
+      ? (food.phosphorus * food.valuesPer).toString()
+      : "",
+    potassium: food.potassium
+      ? (food.potassium * food.valuesPer).toString()
+      : "",
+    rubidium: food.rubidium ? (food.rubidium * food.valuesPer).toString() : "",
+    selenium: food.selenium ? (food.selenium * food.valuesPer).toString() : "",
+    silicon: food.silicon ? (food.silicon * food.valuesPer).toString() : "",
+    sulfur: food.sulfur ? (food.sulfur * food.valuesPer).toString() : "",
+    tin: food.tin ? (food.tin * food.valuesPer).toString() : "",
+    vanadium: food.vanadium ? (food.vanadium * food.valuesPer).toString() : "",
+    zinc: food.zinc ? (food.zinc * food.valuesPer).toString() : "",
   };
 }

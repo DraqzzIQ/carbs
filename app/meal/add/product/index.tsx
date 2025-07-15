@@ -81,7 +81,7 @@ export default function ProductDetailScreen() {
         setFoodIsRecent(await isRecent(params.productId!));
       }
     })();
-  }, [edit]);
+  }, [edit, params]);
 
   return (
     <KeyboardShift>
@@ -99,6 +99,8 @@ export default function ProductDetailScreen() {
               servingQuantity={servingQuantity}
               serving={serving}
               amount={amount}
+              isCustom={food?.isCustom}
+              isDeleted={!!food?.deletedAt}
             />
           ),
         }}

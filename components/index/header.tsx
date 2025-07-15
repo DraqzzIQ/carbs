@@ -3,7 +3,7 @@ import { TouchableOpacity, View } from "react-native";
 import { Text } from "~/components/ui/text";
 import { router } from "expo-router";
 import { getStreakCount } from "~/utils/streak";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { useRelationalLiveQuery } from "~/db/queries/useRelationalLiveQuery";
 import { desc } from "drizzle-orm";
 import { streaks } from "~/db/schema";
 import { db } from "~/db/client";
@@ -14,7 +14,7 @@ type HeaderProps = {
 };
 
 export const Header = ({ date }: HeaderProps) => {
-  const { data: streakDays, error: queryError } = useLiveQuery(
+  const { data: streakDays, error: queryError } = useRelationalLiveQuery(
     db.select().from(streaks).orderBy(desc(streaks.id)),
   );
 

@@ -1,5 +1,5 @@
 import { db } from "~/db/client";
-import { and, desc, eq, gte, not } from "drizzle-orm";
+import { and, desc, eq, gte, isNull, not } from "drizzle-orm";
 import { foods, recents } from "~/db/schema";
 
 export function frequentsQuery() {
@@ -15,7 +15,13 @@ export function frequentsQuery() {
     })
     .from(recents)
     .innerJoin(foods, eq(foods.id, recents.foodId))
-    .where(and(gte(recents.count, 3), not(eq(foods.category, "quick-entry"))))
+    .where(
+      and(
+        gte(recents.count, 3),
+        not(eq(foods.category, "quick-entry")),
+        isNull(foods.deletedAt),
+      ),
+    )
     .orderBy(desc(recents.count))
     .limit(100);
 }

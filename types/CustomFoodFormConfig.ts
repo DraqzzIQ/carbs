@@ -1,7 +1,7 @@
 import { FieldType, FormCategory } from "~/components/index/meal/add/form";
 import { ServingType } from "~/types/ServingType";
 
-export const FormConfigs = [
+export const CustomFoodFormConfig = [
   {
     category: "",
     fields: [
@@ -522,7 +522,7 @@ export const QuickEntryFormConfig = [
   },
 ];
 
-export function enrichWithDefaultValues(
+export function enrichFormConfigWithDefaultValues(
   formConfig: FormCategory[],
   defaultValues: Record<string, string>,
 ): FormCategory[] {

@@ -1,7 +1,7 @@
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { useRelationalLiveQuery } from "~/db/queries/useRelationalLiveQuery";
 import { MealType } from "~/types/MealType";
 import { useEffect, useMemo, useState } from "react";
 import { formatNumber } from "~/utils/formatting";
@@ -30,7 +30,7 @@ type MealDetailProps = {
 };
 
 export const MealDetails = ({ date, mealType }: MealDetailProps) => {
-  const { data: currentDayMeals, error: queryError } = useLiveQuery(
+  const { data: currentDayMeals, error: queryError } = useRelationalLiveQuery(
     mealDetailsQuery(date, mealType),
     [date],
   );

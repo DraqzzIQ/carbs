@@ -1,0 +1,1 @@
+ALTER TABLE `foods` ADD `values_per` real DEFAULT 1 NOT NULL;

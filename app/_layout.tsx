@@ -8,7 +8,7 @@ import {
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Platform, View, StatusBar as ReactStatusBar } from "react-native";
+import { View, StatusBar as ReactStatusBar } from "react-native";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { ThemeToggle } from "~/components/theme-toggle";
@@ -44,15 +44,11 @@ export default function RootLayout() {
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
   const { success, error } = useMigrations(db, migrations);
 
-  useIsomorphicLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (hasMounted.current) {
       return;
     }
 
-    if (Platform.OS === "web") {
-      // Adds the background color to the html element to prevent white background on overscroll.
-      document.documentElement.classList.add("bg-background");
-    }
     setAndroidNavigationBar(colorScheme);
     setIsColorSchemeLoaded(true);
     hasMounted.current = true;
@@ -60,7 +56,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (!success) {
-      console.error("Error running migrations", error);
+      if (error) {
+        console.error("Error running migrations", error);
+      }
       return;
     }
     console.info("Successfully ran migrations");
@@ -169,8 +167,3 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
-
-const useIsomorphicLayoutEffect =
-  Platform.OS === "web" && typeof window === "undefined"
-    ? useEffect
-    : useLayoutEffect;

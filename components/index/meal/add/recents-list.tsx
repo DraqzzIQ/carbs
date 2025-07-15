@@ -8,7 +8,7 @@ import {
   getCurrentDayFormattedDate,
   getDateSlug,
 } from "~/utils/formatting";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { useRelationalLiveQuery } from "~/db/queries/useRelationalLiveQuery";
 import React, { useEffect, useState } from "react";
 import { addFoodToMeal } from "~/utils/querying";
 import { MealType } from "~/types/MealType";
@@ -29,7 +29,7 @@ export const RecentsList = ({
   enableDateHeader,
   enableAlphabetHeader,
 }: RecentsListProps) => {
-  const { data: recents, error: recentsError } = useLiveQuery(query);
+  const { data: recents, error: recentsError } = useRelationalLiveQuery(query);
 
   useEffect(() => {
     if (recentsError) {

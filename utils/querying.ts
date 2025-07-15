@@ -196,6 +196,18 @@ export async function updateCustomFood(food: Food) {
   }
 }
 
+export async function deleteCustomFood(foodId: string) {
+  try {
+    await removeFavorite(foodId);
+    await db
+      .update(foods)
+      .set({ deletedAt: new Date().toISOString() })
+      .where(eq(foods.id, foodId));
+  } catch (error) {
+    console.error(`Error deleting custom food with ID ${foodId}:`, error);
+  }
+}
+
 async function addFood(food: FoodDetailsDto) {
   try {
     await db

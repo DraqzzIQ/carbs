@@ -1,35 +1,80 @@
-import { router, Stack } from "expo-router";
-import { useState } from "react";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { Text } from "~/components/ui/text";
-import { FormConfigs } from "~/types/FormConfigs";
+import {
+  CustomFoodFormConfig,
+  enrichFormConfigWithDefaultValues,
+} from "~/types/CustomFoodFormConfig";
 import { KeyboardShift } from "~/components/keyboard-shift";
-import { Form } from "~/components/index/meal/add/form";
+import { Form, FormCategory } from "~/components/index/meal/add/form";
 import { Input } from "~/components/ui/input";
 import { ScanBarcodeIcon, XIcon } from "lucide-nativewind";
 import { BarcodeScanner } from "~/components/index/meal/add/barcode-scanner";
-import { createCustomFood } from "~/utils/defaultFood";
-import { addCustomFood, addFavorite } from "~/utils/querying";
+import { createCustomFood, foodToFormValues } from "~/utils/defaultFood";
+import {
+  addCustomFood,
+  addFavorite,
+  getCustomFood,
+  updateCustomFood,
+} from "~/utils/querying";
 
 export default function CustomFoodScreen() {
+  const params = useLocalSearchParams();
+  const edit = (params["edit"] as string) === "true";
+  const foodId = edit ? (params["foodId"] as string) : undefined;
   const [barcode, setBarcode] = useState<string | undefined>(undefined);
   const [barCodeScannerOpen, setBarCodeScannerOpen] = useState(false);
+  const [formConfig, setFormConfig] =
+    useState<FormCategory[]>(CustomFoodFormConfig);
+
+  useEffect(() => {
+    if (edit) {
+      (async () => {
+        try {
+          const fetchedFood = await getCustomFood(foodId!);
+          if (fetchedFood) {
+            setBarcode(
+              fetchedFood?.eans && fetchedFood.eans.length > 0
+                ? fetchedFood.eans[0]
+                : undefined,
+            );
+            setFormConfig(
+              enrichFormConfigWithDefaultValues(
+                formConfig,
+                foodToFormValues(fetchedFood),
+              ),
+            );
+          }
+        } catch (error) {
+          console.error("Error fetching custom food:", error);
+        }
+      })();
+    }
+  }, [edit]);
 
   async function onSubmit(values: Record<string, string>) {
-    console.log(values);
     const food = createCustomFood(values, barcode);
-    console.log(food);
-    try {
-      await addCustomFood(food);
-      const serving =
-        food.servings.length > 0
-          ? food.servings[0]
-          : { amount: 100, serving: "gram" };
-      await addFavorite(food.id, 1, serving.amount, serving.serving);
-      router.dismiss();
-    } catch (error) {
-      console.error("Error creating custom food:", error);
+    if (edit) {
+      food.id = foodId!;
+      try {
+        await updateCustomFood(food);
+      } catch (error) {
+        console.error("Error updating custom food:", error);
+      }
+    } else {
+      try {
+        await addCustomFood(food);
+        const serving =
+          food.servings.length > 0
+            ? food.servings[0]
+            : { amount: 100, serving: "gram" };
+        await addFavorite(food.id, 1, serving.amount, serving.serving);
+      } catch (error) {
+        console.error("Error creating custom food:", error);
+      }
     }
+    router.dismiss();
   }
 
   return (
@@ -37,11 +82,11 @@ export default function CustomFoodScreen() {
       <Stack.Screen
         options={{
           headerTitle: (_) => (
-            <Text className="text-2xl font-semibold">Create Custom Food</Text>
+            <Text className="text-2xl font-semibold">{`${edit ? "Edit" : "Create"} Custom Food`}</Text>
           ),
         }}
       />
-      <Form formConfig={FormConfigs} onSubmit={onSubmit}>
+      <Form formConfig={formConfig} onSubmit={onSubmit} edit={edit}>
         <Text className="text-base text-primary">Barcode</Text>
         <View className="mb-2 flex-row gap-2 items-center">
           <Input

@@ -77,6 +77,7 @@ const FoodDetailsSchema = z.object({
   producer: z.string().nullable(),
   nutrients: NutrientsSchema,
   updated_at: z.string().nullable(),
+  deleted_at: z.string().nullable(),
   servings: z.array(ServingSchema),
   base_unit: z.string(),
   eans: z.array(z.string()).optional(),
@@ -93,6 +94,7 @@ export function mapApiFoodDetails(
     ...apiFood,
     id: productId,
     is_custom: false,
+    deleted_at: null,
   });
   if (!result.success) {
     console.error("Failed to parse product:", result.error);

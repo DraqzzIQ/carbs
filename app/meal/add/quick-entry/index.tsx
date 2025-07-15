@@ -11,13 +11,13 @@ import {
   updateMeal,
 } from "~/utils/querying";
 import { Food } from "~/db/schema";
-import { defaultFood } from "~/utils/defaultFood";
+import { createDefaultFood } from "~/utils/defaultFood";
 import { mealQuery } from "~/db/queries/mealQuery";
 import { Form, FormCategory } from "~/components/index/meal/add/form";
 import {
-  enrichWithDefaultValues,
+  enrichFormConfigWithDefaultValues,
   QuickEntryFormConfig,
-} from "~/types/FormConfigs";
+} from "~/types/CustomFoodFormConfig";
 
 export default function QuickEntryScreen() {
   const params = useLocalSearchParams();
@@ -40,7 +40,7 @@ export default function QuickEntryScreen() {
         setFood(meal?.food);
         if (meal?.food) {
           setFormConfig(
-            enrichWithDefaultValues(formConfig, {
+            enrichFormConfigWithDefaultValues(formConfig, {
               description: meal.food.name,
               energy: meal.food.energy.toString(),
               carb: meal.food.carb.toString(),
@@ -73,7 +73,7 @@ export default function QuickEntryScreen() {
       await updateMeal(mealId!, 1, 1, "Gram", mealType);
     } else {
       const addedFood: Food = {
-        ...defaultFood,
+        ...createDefaultFood(),
         name: description,
         energy: Number(energy),
         carb: Number(carb) || 0,

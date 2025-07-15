@@ -10,10 +10,12 @@ import { ServingDto } from "~/api/types/FoodDetails";
 export const foods = sqliteTable("foods", {
   id: text("id").primaryKey(),
   updatedAt: text("updated_at"),
+  deletedAt: text("deleted_at"),
   isCustom: integer("is_custom", { mode: "boolean" }).notNull(),
   isVerified: integer("is_verified", { mode: "boolean" }).notNull(),
   hasEan: integer("has_ean", { mode: "boolean" }).notNull(),
-  eans: text("eans").$type<string[]>(),
+  eans: text("eans", { mode: "json" }).$type<string[]>(),
+  valuesPer: real("values_per").notNull().default(1),
   name: text("name").notNull(),
   producer: text("producer"),
   category: text("category").notNull(),

@@ -3,7 +3,7 @@ import { useSettings } from "~/contexts/AppSettingsContext";
 import { Header } from "~/components/index/header";
 import { Summary } from "~/components/index/summary";
 import { Meals } from "~/components/index/meals";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { useRelationalLiveQuery } from "~/db/queries/useRelationalLiveQuery";
 import {
   getCurrentDayFormattedDate,
   offsetDateByDays,
@@ -34,7 +34,7 @@ export default function Screen() {
   const [currentDay, setCurrentDay] = useState(getCurrentDayFormattedDate);
   const [dateString, setDateString] = useState<string>(getDateSlug(currentDay));
 
-  const { data: currentDayMeals, error: queryError } = useLiveQuery(
+  const { data: currentDayMeals, error: queryError } = useRelationalLiveQuery(
     mealDetailsQuery(currentDay),
     [currentDay],
   );
