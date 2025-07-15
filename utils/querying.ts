@@ -73,6 +73,17 @@ export async function getAndSaveFood(
   return (await getSavedFood(foodId)) ?? undefined;
 }
 
+export async function getCustomFood(foodId: string): Promise<Food | undefined> {
+  try {
+    return await db.query.foods.findFirst({
+      where: eq(foods.id, foodId),
+    });
+  } catch (error) {
+    console.error(`Error getting custom food with ID ${foodId}:`, error);
+    return undefined;
+  }
+}
+
 export async function updateMeal(
   mealId: number,
   servingQuantity: number,
@@ -125,6 +136,21 @@ export async function getRecentFoods(foodIds: string[]): Promise<Set<string>> {
   } catch (error) {
     console.error("Error fetching recent foods:", error);
     return new Set();
+  }
+}
+
+export async function getIsFavorite(foodId: string): Promise<boolean> {
+  try {
+    const favorite = await db.query.favorites.findFirst({
+      where: eq(favorites.foodId, foodId),
+    });
+    return !!favorite;
+  } catch (error) {
+    console.error(
+      `Error checking if food is favorite with ID ${foodId}:`,
+      error,
+    );
+    return false;
   }
 }
 

@@ -6,6 +6,7 @@ import { Check } from "~/lib/icons/Check";
 import { ChevronDown } from "~/lib/icons/ChevronDown";
 import { ChevronUp } from "~/lib/icons/ChevronUp";
 import { cn } from "~/lib/utils";
+import { ScrollView } from "react-native-gesture-handler";
 
 type Option = SelectPrimitive.Option;
 
@@ -95,9 +96,11 @@ const SelectContent = React.forwardRef<
       <SelectPrimitive.Overlay
         style={Platform.OS !== "web" ? StyleSheet.absoluteFill : undefined}
       >
-        {/* Removed the animated view because scrolling doesn't work on anroid. /}
-                {/ <Animated.View className='z-50' entering={FadeIn} exiting={FadeOut}> */}
-        <AnimatedWrapper>
+        <Animated.View
+          className="z-50"
+          entering={FadeIn.duration(180)}
+          exiting={FadeOut.duration(180)}
+        >
           <SelectPrimitive.Content
             ref={ref}
             className={cn(
@@ -120,12 +123,18 @@ const SelectContent = React.forwardRef<
                   "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]",
               )}
             >
-              {children}
+              {/*ScrollView from 'react-native-gesture-handler' is a workaround for the issue with*/}
+              {/*scrolling not working on android if wrapped in Animated.View*/}
+              <ScrollView
+                className="h-full"
+                showsVerticalScrollIndicator={false}
+              >
+                {children}
+              </ScrollView>
             </SelectPrimitive.Viewport>
             <SelectScrollDownButton />
           </SelectPrimitive.Content>
-        </AnimatedWrapper>
-        {/* </Animated.View> */}
+        </Animated.View>
       </SelectPrimitive.Overlay>
     </SelectPrimitive.Portal>
   );
@@ -165,7 +174,7 @@ const SelectItem = React.forwardRef<
         <Check size={16} strokeWidth={3} className="text-popover-foreground" />
       </SelectPrimitive.ItemIndicator>
     </View>
-    <SelectPrimitive.ItemText className="text-sm native:text-lg text-popover-foreground native:text-base web:group-focus:text-accent-foreground" />
+    <SelectPrimitive.ItemText className="text-sm text-popover-foreground native:text-base web:group-focus:text-accent-foreground" />
   </SelectPrimitive.Item>
 ));
 SelectItem.displayName = SelectPrimitive.Item.displayName;
@@ -194,14 +203,4 @@ export {
   SelectTrigger,
   SelectValue,
   type Option,
-};
-
-const AnimatedWrapper = ({ children }: { children: React.ReactNode }) => {
-  return Platform.OS === "ios" ? (
-    <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut}>
-      {children}
-    </Animated.View>
-  ) : (
-    <>{children}</>
-  );
 };

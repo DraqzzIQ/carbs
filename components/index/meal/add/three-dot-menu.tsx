@@ -20,7 +20,7 @@ export const ThreeDotMenu = ({ date, mealName }: ThreeDotMenuProps) => {
       <DropdownMenuTrigger>
         <EllipsisVerticalIcon className="text-primary" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent className="bg-secondary">
         <DropdownMenuItem>
           <Text className="text-sm text-primary">Create Recipe</Text>
         </DropdownMenuItem>

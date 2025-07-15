@@ -10,6 +10,7 @@ import { Food } from "~/db/schema";
 import {
   addFoodToMeal,
   getAndSaveFood,
+  getCustomFood,
   isRecent,
   updateMeal,
 } from "~/utils/querying";
@@ -36,9 +37,11 @@ export default function ProductDetailScreen() {
     amount?: string;
     servingQuantity?: string;
     serving?: string;
+    custom?: string;
   }>();
   const edit = params.edit === "true";
   const mealId = edit ? parseInt(params.mealId!, 10) : null;
+  const custom = params.custom === "true";
 
   const [meal, setMeal] = useState<MealQueryType | undefined>(undefined);
   const [food, setFood] = useState<Food | undefined>(undefined);
@@ -70,7 +73,11 @@ export default function ProductDetailScreen() {
           return;
         }
       } else {
-        setFood(await getAndSaveFood(params.productId!));
+        if (custom) {
+          setFood(await getCustomFood(params.productId!));
+        } else {
+          setFood(await getAndSaveFood(params.productId!));
+        }
         setFoodIsRecent(await isRecent(params.productId!));
       }
     })();
@@ -155,7 +162,7 @@ export default function ProductDetailScreen() {
                 ? meal!.servingQuantity.toString()
                 : params.servingQuantity
                   ? params.servingQuantity
-                  : undefined
+                  : "1"
             }
             onServingChange={(serving) => {
               setAmount(serving.amount);

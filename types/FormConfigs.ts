@@ -1,4 +1,5 @@
 import { FieldType, FormCategory } from "~/components/index/meal/add/form";
+import { ServingType } from "~/types/ServingType";
 
 export const FormConfigs = [
   {
@@ -10,12 +11,18 @@ export const FormConfigs = [
         required: true,
         type: FieldType.Text,
       },
+      {
+        key: "producer",
+        label: "Producer / Brand (optional)",
+        required: false,
+        type: FieldType.Text,
+      },
     ],
-    defaultVisible: 1,
-    className: "mb-2",
+    defaultVisible: 2,
+    style: { marginBottom: 4 },
   },
   {
-    category: "Values Per (g/ml/oz/fl oz)",
+    category: "Values Per",
     fields: [
       [
         {
@@ -25,7 +32,7 @@ export const FormConfigs = [
           type: FieldType.Number,
           allowDecimal: true,
           defaultValue: "100",
-          className: "flex-0 w-2/3",
+          style: { flex: 0, width: "67%" },
         },
         {
           key: "unit",
@@ -38,7 +45,31 @@ export const FormConfigs = [
       ],
     ],
     defaultVisible: 1,
-    className: "mb-2",
+    style: { marginBottom: 4 },
+  },
+  {
+    category: "Serving Size",
+    fields: [
+      [
+        {
+          key: "amount",
+          label: "Amount (g/ml/oz/fl oz)",
+          required: false,
+          type: FieldType.Number,
+          allowDecimal: true,
+          style: { flex: 0, width: "60%" },
+        },
+        {
+          key: "serving",
+          label: "Select Serving",
+          required: false,
+          type: FieldType.Select,
+          options: Object.values(ServingType),
+        },
+      ],
+    ],
+    defaultVisible: 1,
+    style: { marginBottom: 4 },
   },
   {
     category: "",
@@ -124,7 +155,7 @@ export const FormConfigs = [
     defaultVisible: 8,
   },
   {
-    category: "Vitamins (Optional)",
+    category: "Vitamins (optional)",
     fields: [
       {
         key: "vitaminC",
@@ -221,7 +252,7 @@ export const FormConfigs = [
     defaultVisible: 2,
   },
   {
-    category: "Minerals (Optional)",
+    category: "Minerals (optional)",
     fields: [
       {
         key: "calcium",
@@ -409,7 +440,7 @@ export const FormConfigs = [
     defaultVisible: 2,
   },
   {
-    category: "Other (Optional)",
+    category: "Other (optional)",
     fields: [
       {
         key: "water",

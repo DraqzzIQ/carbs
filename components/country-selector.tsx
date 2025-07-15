@@ -1,12 +1,12 @@
-import { Platform, FlatList } from "react-native";
+import { FlatList, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
-  SelectSeparator,
 } from "~/components/ui/select";
 import countries from "world-countries";
 import { useSettings } from "~/contexts/AppSettingsContext";
@@ -82,6 +82,7 @@ export const CountrySelector = ({}: CountryDropdownProps) => {
         className="w-full max-h-96 border border-border bg-secondary"
       >
         <FlatList
+          scrollEnabled={false}
           data={countryData}
           renderItem={({ item }) => (
             <SelectItem key={item.key} label={item.label} value={item.value} />
@@ -89,16 +90,12 @@ export const CountrySelector = ({}: CountryDropdownProps) => {
           keyExtractor={(item) => item.key}
           showsVerticalScrollIndicator={false}
           className="h-full"
-          ItemSeparatorComponent={WrappedSelectSeparator}
+          ItemSeparatorComponent={SelectSeparator}
         />
       </SelectContent>
     </Select>
   );
 };
-
-const WrappedSelectSeparator = () => (
-  <SelectSeparator className="bg-border w-full h-[1px]" />
-);
 
 type Country = {
   key: string;

@@ -58,18 +58,18 @@ export const ServingSelector = ({
   }
 
   return (
-    <View className="flex-1 flex-row w-full z-10 left-0 right-0 bottom-0 absolute p-2 bg-secondary border-t border-border">
+    <View className="flex-1 gap-1 flex-row w-full z-10 left-0 right-0 bottom-0 absolute p-2 bg-secondary border-t border-border">
       <NumericInput
         allowNegative={false}
         allowDecimal={true}
         selectTextOnFocus={true}
         keyboardType="numeric"
-        className="w-1/4 bg-secondary mr-1 -ml-0.5"
+        className="w-1/4 bg-secondary"
         defaultValue={servingQuantity}
         onNumberChange={(value) => onServingQuantityChange(value)}
       />
       <Select
-        className="w-3/4"
+        className="flex-1"
         defaultValue={{
           label: `${formatServing((defaultServing ?? options[0]).serving, (defaultServing ?? options[0]).amount, baseUnit)}`,
           value: (defaultServing ?? options[0]).serving,
@@ -81,8 +81,9 @@ export const ServingSelector = ({
             placeholder="Select Serving"
           />
         </SelectTrigger>
-        <SelectContent side="top">
+        <SelectContent side="top" className="bg-secondary">
           <FlatList
+            scrollEnabled={false}
             data={options}
             keyExtractor={(item) => item.serving}
             renderItem={({ item }) => (

@@ -1,5 +1,12 @@
-import { useState, useEffect } from "react";
-import { View, TouchableOpacity } from "react-native";
+import { useState, useEffect, ReactNode } from "react";
+import {
+  View,
+  TouchableOpacity,
+  FlatList,
+  StyleProp,
+  StyleSheet,
+} from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import { Text } from "~/components/ui/text";
 import { NumericInput } from "~/components/numeric-input";
 import { Input } from "~/components/ui/input";
@@ -14,10 +21,10 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { cn } from "~/lib/utils";
 
 export enum FieldType {
   Text = "text",
@@ -28,13 +35,15 @@ export enum FieldType {
 type Field = {
   key: string;
   label: string;
+  placeholder?: string;
   required?: boolean;
   defaultValue?: string;
   allowDecimal?: boolean;
   allowNegative?: boolean;
+  selectTextOnFocus?: boolean;
   options?: string[];
   type: FieldType;
-  className?: string;
+  style?: StyleProp<any>;
 };
 
 type FieldOrRow = Field | Field[];
@@ -43,16 +52,22 @@ export type FormCategory = {
   category: string;
   fields: FieldOrRow[];
   defaultVisible: number;
-  className?: string;
+  style?: StyleProp<any>;
 };
 
 type FoodFormProps = {
   formConfig: FormCategory[];
   onSubmit: (values: Record<string, string>) => Promise<void>;
   edit?: boolean;
+  children?: ReactNode;
 };
 
-export function Form({ formConfig, onSubmit, edit = false }: FoodFormProps) {
+export function Form({
+  formConfig,
+  onSubmit,
+  edit = false,
+  children,
+}: FoodFormProps) {
   const getInitialForm = () => {
     const initial: Record<string, string> = {};
     formConfig.forEach((cat) => {
@@ -146,26 +161,27 @@ export function Form({ formConfig, onSubmit, edit = false }: FoodFormProps) {
   };
 
   return (
-    <View className="flex-1">
-      {formConfig.map((cat, idx) => {
-        const visibleCount = showMore[cat.category]
-          ? cat.fields.length
-          : cat.defaultVisible;
-        return (
-          <View key={idx} className={cn("mb-6", cat.className)}>
-            {cat.category !== "" && (
-              <Text className="font-medium text-lg">{cat.category}</Text>
-            )}
-            {cat.fields.slice(0, visibleCount).map((item, idx) =>
-              Array.isArray(item) ? (
-                <View key={idx} className="flex-row gap-2 mb-2">
-                  {item.map((field) => (
-                    <View
-                      key={field.key}
-                      className={cn("flex-1", field.className)}
-                    >
-                      {field.type === FieldType.Text ? (
-                        <TextField
+    <View className="h-full p-4">
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {children}
+        {formConfig.map((cat, idx) => {
+          const visibleCount = showMore[cat.category]
+            ? cat.fields.length
+            : cat.defaultVisible;
+          return (
+            <View key={idx} className="mb-6" style={cat.style}>
+              {cat.category !== "" && (
+                <Text className="font-medium text-lg">{cat.category}</Text>
+              )}
+              {cat.fields.slice(0, visibleCount).map((item, idx) =>
+                Array.isArray(item) ? (
+                  <View key={idx} className="flex-row gap-2 mb-2">
+                    {item.map((field) => (
+                      <View
+                        key={field.key}
+                        style={StyleSheet.flatten([{ flex: 1 }, field.style])}
+                      >
+                        <Field
                           field={field}
                           value={form[field.key]}
                           onChange={(v: string) => handleChange(field.key, v)}
@@ -173,96 +189,47 @@ export function Form({ formConfig, onSubmit, edit = false }: FoodFormProps) {
                           error={errors[field.key]}
                           touched={touched[field.key]}
                         />
-                      ) : field.type === FieldType.Number ? (
-                        <NumberField
-                          field={field}
-                          value={form[field.key]}
-                          onChange={(v: string) => handleChange(field.key, v)}
-                          onBlur={() => handleBlur(field.key)}
-                          error={errors[field.key]}
-                          touched={touched[field.key]}
-                        />
-                      ) : (
-                        <SelectField
-                          field={field}
-                          value={form[field.key]}
-                          onChange={(v: string) => handleChange(field.key, v)}
-                          onBlur={() => handleBlur(field.key)}
-                          error={errors[field.key]}
-                          touched={touched[field.key]}
-                        />
-                      )}
-                      {field.required &&
-                        touched[field.key] &&
-                        errors[field.key] && (
-                          <Text className="text-red-500 text-xs mt-1">
-                            {errors[field.key]}
-                          </Text>
-                        )}
-                    </View>
-                  ))}
-                </View>
-              ) : (
-                <View key={item.key} className={cn("mb-2", item.className)}>
-                  {item.type === FieldType.Text ? (
-                    <TextField
-                      field={item}
-                      value={form[item.key]}
-                      onChange={(v: string) => handleChange(item.key, v)}
-                      onBlur={() => handleBlur(item.key)}
-                      error={errors[item.key]}
-                      touched={touched[item.key]}
-                    />
-                  ) : item.type === FieldType.Number ? (
-                    <NumberField
-                      field={item}
-                      value={form[item.key]}
-                      onChange={(v: string) => handleChange(item.key, v)}
-                      onBlur={() => handleBlur(item.key)}
-                      error={errors[item.key]}
-                      touched={touched[item.key]}
-                    />
-                  ) : (
-                    <SelectField
-                      field={item}
-                      value={form[item.key]}
-                      onChange={(v: string) => handleChange(item.key, v)}
-                      onBlur={() => handleBlur(item.key)}
-                      error={errors[item.key]}
-                      touched={touched[item.key]}
-                    />
-                  )}
-                  {item.required && touched[item.key] && errors[item.key] && (
-                    <Text className="text-red-500 text-xs mt-1">
-                      {errors[item.key]}
-                    </Text>
-                  )}
-                </View>
-              ),
-            )}
-            {cat.fields.length > cat.defaultVisible && (
-              <TouchableOpacity
-                className="flex-row items-center mt-2"
-                onPress={() =>
-                  setShowMore((prev) => ({
-                    ...prev,
-                    [cat.category]: !prev[cat.category],
-                  }))
-                }
-              >
-                {showMore[cat.category] ? (
-                  <ChevronUpIcon className="text-primary" />
+                      </View>
+                    ))}
+                  </View>
                 ) : (
-                  <ChevronDownIcon className="text-primary" />
-                )}
-                <Text className="text-primary">
-                  {showMore[cat.category] ? "Show less" : "Show more"}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        );
-      })}
+                  <View key={item.key} className="mb-2" style={item.style}>
+                    <Field
+                      field={item}
+                      value={form[item.key]}
+                      onChange={(v: string) => handleChange(item.key, v)}
+                      onBlur={() => handleBlur(item.key)}
+                      error={errors[item.key]}
+                      touched={touched[item.key]}
+                    />
+                  </View>
+                ),
+              )}
+              {cat.fields.length > cat.defaultVisible && (
+                <TouchableOpacity
+                  className="flex-row items-center mt-2"
+                  onPress={() =>
+                    setShowMore((prev) => ({
+                      ...prev,
+                      [cat.category]: !prev[cat.category],
+                    }))
+                  }
+                >
+                  {showMore[cat.category] ? (
+                    <ChevronUpIcon className="text-primary" />
+                  ) : (
+                    <ChevronDownIcon className="text-primary" />
+                  )}
+                  <Text className="text-primary">
+                    {showMore[cat.category] ? "Show less" : "Show more"}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          );
+        })}
+        <View className="h-20" />
+      </ScrollView>
       <FloatingActionButton
         onPress={async () => {
           setIsLoading(true);
@@ -282,33 +249,119 @@ export function Form({ formConfig, onSubmit, edit = false }: FoodFormProps) {
   );
 }
 
-function TextField({ field, value, onChange, onBlur, error, touched }: any) {
+type FieldProps = {
+  field: Field;
+  value: string | undefined;
+  onChange: (value: string) => void;
+  onBlur: () => void;
+  error?: string;
+  touched?: boolean;
+};
+
+function Field({ field, value, onChange, onBlur, error, touched }: FieldProps) {
+  return (
+    <>
+      <Text className="text-base text-primary">{field.label}</Text>
+      {(() => {
+        switch (field.type) {
+          case FieldType.Text:
+            return (
+              <TextField
+                field={field}
+                value={value}
+                onChange={onChange}
+                onBlur={onBlur}
+                error={error}
+                touched={touched}
+              />
+            );
+          case FieldType.Number:
+            return (
+              <NumberField
+                field={field}
+                value={value}
+                onChange={onChange}
+                onBlur={onBlur}
+                error={error}
+                touched={touched}
+              />
+            );
+          case FieldType.Select:
+            return (
+              <SelectField
+                field={field}
+                value={value}
+                onChange={onChange}
+                onBlur={onBlur}
+                error={error}
+                touched={touched}
+              />
+            );
+          default:
+            return null;
+        }
+      })()}
+      {field.required && touched && error && (
+        <Text className="text-red-500 text-xs mt-1">{error}</Text>
+      )}
+    </>
+  );
+}
+
+function TextField({
+  field,
+  value,
+  onChange,
+  onBlur,
+  error,
+  touched,
+}: FieldProps) {
   return (
     <Input
-      placeholder={field.label}
+      selectTextOnFocus={field.selectTextOnFocus ?? true}
+      placeholder={
+        field.placeholder ?? (field.required ? "(required)" : "(optional)")
+      }
       value={value ?? ""}
       onChangeText={onChange}
       onBlur={onBlur}
-      className={`${field.required && touched && error ? "border-red-500" : ""}`}
+      className={`${field.required && touched && error ? "border-red-500" : ""} bg-secondary`}
     />
   );
 }
 
-function NumberField({ field, value, onChange, onBlur, error, touched }: any) {
+function NumberField({
+  field,
+  value,
+  onChange,
+  onBlur,
+  error,
+  touched,
+}: FieldProps) {
   return (
     <NumericInput
       allowDecimal={field.allowDecimal ?? false}
       allowNegative={field.allowNegative ?? false}
-      placeholder={field.label}
+      selectTextOnFocus={field.selectTextOnFocus ?? true}
+      placeholder={
+        field.placeholder ?? (field.required ? "(required)" : "(optional)")
+      }
       defaultValue={value ?? ""}
       onValueChange={onChange}
       onBlur={onBlur}
-      className={`${field.required && touched && error ? "border-red-500" : ""}`}
+      className={`${field.required && touched && error ? "border-red-500" : ""} bg-secondary`}
     />
   );
 }
 
-function SelectField({ field, value, onChange, onBlur, error, touched }: any) {
+function SelectField({
+  field,
+  value,
+  onChange,
+  onBlur,
+  error,
+  touched,
+}: FieldProps) {
   return (
     <Select
       value={value ? { value, label: value } : undefined}
@@ -320,12 +373,29 @@ function SelectField({ field, value, onChange, onBlur, error, touched }: any) {
       <SelectTrigger
         className={`bg-secondary ${field.required && touched && error ? "border-red-500" : ""}`}
       >
-        <SelectValue className="text-primary" placeholder={field.label} />
+        <SelectValue
+          className={`${value ? "text-primary" : "text-muted-foreground"}`}
+          placeholder={
+            field.placeholder ?? (field.required ? "(required)" : "(optional)")
+          }
+        />
       </SelectTrigger>
-      <SelectContent>
-        {field.options?.map((option: string) => (
-          <SelectItem key={option} value={option} label={option} />
-        ))}
+      <SelectContent className="bg-secondary">
+        <FlatList
+          scrollEnabled={false}
+          showsVerticalScrollIndicator={false}
+          data={field.options}
+          renderItem={({ item }) => (
+            <SelectItem
+              key={item}
+              value={item}
+              label={item}
+              className="text-primary"
+            />
+          )}
+          keyExtractor={(item) => item}
+          ItemSeparatorComponent={SelectSeparator}
+        />
       </SelectContent>
     </Select>
   );

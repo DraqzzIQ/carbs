@@ -1,5 +1,5 @@
 import { Text } from "~/components/ui/text";
-import { Keyboard, ScrollView, TouchableOpacity, View } from "react-native";
+import { FlatList, Keyboard, TouchableOpacity, View } from "react-native";
 import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
 import { Card } from "~/components/ui/card";
 import {
@@ -50,7 +50,10 @@ export const SearchProducts = ({
       <Text className="text-primary text-lg font-semibold">Loading...</Text>
     </View>
   ) : notFound ? (
-    <View className="flex-1 items-center mt-10">
+    <View
+      className="flex-1 items-center mt-10"
+      onTouchStart={() => Keyboard.dismiss()}
+    >
       <Text className="text-primary text-lg font-semibold">
         No results found
       </Text>
@@ -60,7 +63,10 @@ export const SearchProducts = ({
     </View>
   ) : products.length === 0 ? (
     searchFocused ? (
-      <View className="flex-1 items-center mt-10">
+      <View
+        className="flex-1 items-center mt-10"
+        onTouchStart={() => Keyboard.dismiss()}
+      >
         <Text className="text-primary text-lg font-semibold">
           Scan a barcode
         </Text>
@@ -72,27 +78,24 @@ export const SearchProducts = ({
       <FoodTabs mealType={meal as MealType} date={date} />
     )
   ) : (
-    <ScrollView
+    <FlatList
+      data={products}
+      keyExtractor={(item) => item.productId}
       showsVerticalScrollIndicator={false}
       onScrollBeginDrag={() => Keyboard.dismiss()}
-    >
-      <Animated.View
-        className="pb-10"
-        entering={LightSpeedInLeft}
-        exiting={FadeOut}
-      >
-        {products.map((product) => (
+      contentContainerStyle={{ paddingBottom: 40 }}
+      renderItem={({ item }) => (
+        <Animated.View entering={LightSpeedInLeft} exiting={FadeOut}>
           <SearchProduct
-            key={product.productId}
-            product={product}
+            product={item}
             meal={meal}
             onAddProduct={onAddProduct}
             date={date}
-            isRecent={recents.has(product.productId)}
+            isRecent={recents.has(item.productId)}
           />
-        ))}
-      </Animated.View>
-    </ScrollView>
+        </Animated.View>
+      )}
+    />
   );
 };
 

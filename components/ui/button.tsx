@@ -59,19 +59,17 @@ const buttonTextVariants = cva(
   },
 );
 
-type ButtonProps = React.ComponentPropsWithoutRef<typeof Pressable> &
+type ButtonProps = React.ComponentProps<typeof Pressable> &
   VariantProps<typeof buttonVariants>;
 
-const Button = React.forwardRef<
-  React.ElementRef<typeof Pressable>,
-  ButtonProps
->(({ className, variant, size, ...props }, ref) => {
+function Button({ ref, className, variant, size, ...props }: ButtonProps) {
   return (
     <TextClassContext.Provider
-      value={cn(
-        props.disabled && "web:pointer-events-none",
-        buttonTextVariants({ variant, size }),
-      )}
+      value={buttonTextVariants({
+        variant,
+        size,
+        className: "web:pointer-events-none",
+      })}
     >
       <Pressable
         className={cn(
@@ -84,7 +82,7 @@ const Button = React.forwardRef<
       />
     </TextClassContext.Provider>
   );
-});
+}
 Button.displayName = "Button";
 
 export { Button, buttonTextVariants, buttonVariants };

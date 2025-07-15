@@ -1,23 +1,12 @@
-import { TouchableOpacity, View } from "react-native";
+import { Keyboard, TouchableOpacity, View } from "react-native";
 import {
   router,
   Stack,
   useLocalSearchParams,
   useNavigation,
 } from "expo-router";
-import {
-  SearchIcon,
-  XIcon,
-  ScanBarcodeIcon,
-  FlashlightIcon,
-  FlashlightOffIcon,
-} from "lucide-nativewind";
-import {
-  Camera,
-  useCameraDevice,
-  useCameraPermission,
-  useCodeScanner,
-} from "react-native-vision-camera";
+import { SearchIcon, XIcon, ScanBarcodeIcon } from "lucide-nativewind";
+import { useCameraPermission } from "react-native-vision-camera";
 import { Input } from "~/components/ui/input";
 import { SearchProducts } from "~/components/index/meal/add/search-products";
 import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
@@ -28,28 +17,19 @@ import { useEffect, useState } from "react";
 import { addFoodToMeal } from "~/utils/querying";
 import { MealType } from "~/types/MealType";
 import { ThreeDotMenu } from "~/components/index/meal/add/three-dot-menu";
+import { BarcodeScanner } from "~/components/index/meal/add/barcode-scanner";
 
 export default function AddToMealScreen() {
   const params = useLocalSearchParams();
   const meal = params["mealName"] as string;
   const date = params["date"] as string;
   const { hasPermission, requestPermission } = useCameraPermission();
-  const device = useCameraDevice("back");
   const [barCodeScannerOpen, setBarCodeScannerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<FoodSearchResultDto[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isTorchEnabled, setIsTorchEnabled] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const noResults = products.length === 0 && searchQuery !== "";
-
-  useEffect(() => {
-    if (barCodeScannerOpen && !hasPermission) {
-      (async () => {
-        await requestPermission();
-      })();
-    }
-  }, [barCodeScannerOpen]);
 
   useEffect(() => {
     if (searchQuery === "" && products.length > 0) {
@@ -57,28 +37,10 @@ export default function AddToMealScreen() {
     }
   }, [products]);
 
-  const codeScanner = useCodeScanner({
-    codeTypes: ["ean-13", "ean-8", "upc-a", "upc-e"],
-    onCodeScanned: async (codes) => {
-      if (codes.length > 0 && codes[0].value !== undefined) {
-        setBarCodeScannerOpen(false);
-        // if the code is ean-13 and starts with 0, remove the first character
-        // this works around ios api interpreting upc-a as ean-13
-        let data = codes[0].value;
-        if (codes[0].type === "ean-13" && data[0] === "0") {
-          data = data.substring(1);
-        }
-        setSearchQuery(data);
-        await searchProducts(data, true);
-      }
-    },
-  });
-
   const navigation = useNavigation();
   useEffect(() => {
     return navigation.addListener("focus", () => {
       setBarCodeScannerOpen(false);
-      setIsTorchEnabled(false);
       if (!hasPermission) {
         (async () => {
           await requestPermission();
@@ -86,10 +48,6 @@ export default function AddToMealScreen() {
       }
     });
   }, [navigation]);
-
-  if (!device) {
-    return;
-  }
 
   const onSearchQueryChange = async (text: string) => {
     setSearchQuery(text);
@@ -155,6 +113,12 @@ export default function AddToMealScreen() {
     );
   }
 
+  const onScan = async (code: string) => {
+    setBarCodeScannerOpen(false);
+    setSearchQuery(code);
+    await searchProducts(code, true);
+  };
+
   return (
     <KeyboardShift>
       <View className="p-4 bg-secondary h-full">
@@ -176,35 +140,21 @@ export default function AddToMealScreen() {
             value={searchQuery}
             autoCorrect={false}
           />
-          <TouchableOpacity onPress={() => onSearchQueryChange("")}>
+          <TouchableOpacity
+            onPress={async () => {
+              await onSearchQueryChange("");
+              Keyboard.dismiss();
+            }}
+          >
             <XIcon className="text-primary" />
           </TouchableOpacity>
         </View>
         <View className="h-full w-full mt-2">
           {barCodeScannerOpen ? (
-            <View className="items-center">
-              <View className="min-h-56 w-full my-10 border border-border rounded-lg overflow-hidden">
-                <Camera
-                  codeScanner={codeScanner}
-                  style={{ flex: 1 }}
-                  device={device}
-                  isActive={barCodeScannerOpen}
-                  onError={(error) => {
-                    console.error("Camera error:", error);
-                  }}
-                  torch={isTorchEnabled ? "on" : "off"}
-                />
-              </View>
-              <TouchableOpacity
-                onPress={() => setIsTorchEnabled(!isTorchEnabled)}
-              >
-                {isTorchEnabled ? (
-                  <FlashlightIcon className="text-primary" size={32} />
-                ) : (
-                  <FlashlightOffIcon className="text-primary" size={32} />
-                )}
-              </TouchableOpacity>
-            </View>
+            <BarcodeScanner
+              barCodeScannerOpen={barCodeScannerOpen}
+              onScan={onScan}
+            />
           ) : (
             <SearchProducts
               date={date}
@@ -219,8 +169,7 @@ export default function AddToMealScreen() {
         </View>
         <FloatingActionButton
           onPress={() => {
-            setBarCodeScannerOpen(!barCodeScannerOpen);
-            setIsTorchEnabled(false);
+            setBarCodeScannerOpen((prev) => !prev);
           }}
         >
           {barCodeScannerOpen ? (

@@ -51,6 +51,7 @@ export const MealSelectorHeader = ({
         className="border border-border bg-secondary"
       >
         <FlatList
+          scrollEnabled={false}
           data={Object.values(MealType)
             .filter((mealType) => displaySnacks || mealType !== MealType.SNACK)
             .map((mealType) => ({

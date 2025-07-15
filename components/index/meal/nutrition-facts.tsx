@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { FlatList, View } from "react-native";
 import { useMemo } from "react";
 import { formatNumber } from "~/utils/formatting";
 import { cn } from "~/lib/utils";
@@ -154,12 +154,6 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
     foods.forEach((food) => {
       const quantity = food.servingQuantity * food.amount;
       Object.keys(totals).forEach((key) => {
-        // console.log(key);
-        // console.log((food as any)[key.replace("totalF", "f")] ?? 0);
-        // console.log(quantity);
-        // console.log(
-        //   unitMultiplier[totals[key as keyof typeof totals].unit] || 1,
-        // );
         totals[key as keyof typeof totals].value +=
           ((food as any)[key.replace("totalF", "f")] ?? 0) *
           quantity *
@@ -168,6 +162,22 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
     });
     return totals;
   }, [foods]);
+
+  type NutritionDataItem =
+    | { type: "header"; key: string; title: string }
+    | { type: "item"; key: keyof typeof nutritionTemplate };
+
+  const nutritionData: NutritionDataItem[] = Object.entries(nutritionGroups)
+    .flatMap(([groupKey, group]) => [
+      group.title
+        ? { type: "header", key: `${groupKey}-header`, title: group.title }
+        : null,
+      ...group.keys.map((key) => ({
+        type: "item",
+        key,
+      })),
+    ])
+    .filter((item): item is NutritionDataItem => item !== null);
 
   return (
     <>
@@ -179,32 +189,35 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
       >
         Nutrition Facts
       </Text>
-      <View className="justify-between">
-        {Object.entries(nutritionGroups).map(([groupKey, group]) => (
-          <View key={groupKey}>
-            {group.title && (
+      <FlatList
+        scrollEnabled={false}
+        data={nutritionData}
+        keyExtractor={(item) => item.key}
+        renderItem={({ item }) => {
+          if (item.type === "header") {
+            return (
               <Text className="font-semibold mt-2 mb-1 text-primary">
-                {group.title}
+                {item.title}
               </Text>
-            )}
-            {group.keys.map((key) => (
-              <View key={key} className="p-2 flex-row justify-between">
-                <Text className="text-sm capitalize text-primary">
-                  {key.replace(/([A-Z])/g, " $1")}
+            );
+          }
+          return (
+            <View className="p-2 flex-row justify-between">
+              <Text className="text-sm capitalize text-primary">
+                {item.key.replace(/([A-Z])/g, " $1")}
+              </Text>
+              {totalNutrition[item.key].value === 0 ? (
+                <Text className="text-sm text-primary">-</Text>
+              ) : (
+                <Text className="text-sm text-primary">
+                  {formatNumber(totalNutrition[item.key].value, 1)}{" "}
+                  {totalNutrition[item.key].unit}
                 </Text>
-                {totalNutrition[key].value === 0 ? (
-                  <Text className="text-sm text-primary">-</Text>
-                ) : (
-                  <Text className="text-sm text-primary">
-                    {formatNumber(totalNutrition[key].value, 1)}{" "}
-                    {totalNutrition[key].unit}
-                  </Text>
-                )}
-              </View>
-            ))}
-          </View>
-        ))}
-      </View>
+              )}
+            </View>
+          );
+        }}
+      />
     </>
   );
 };

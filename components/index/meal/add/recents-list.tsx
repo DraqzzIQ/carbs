@@ -1,6 +1,6 @@
 import { Text } from "~/components/ui/text";
 import { LoaderCircleIcon, PlusIcon } from "lucide-nativewind";
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity, View } from "react-native";
 import { RecentsQueryType } from "~/db/queries/recentsQuery";
 import { formatServing } from "~/utils/serving";
 import {
@@ -45,41 +45,53 @@ export const RecentsList = ({
     );
   }
 
-  let lastDate = "";
-  let lastFirstLetter = "";
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      {recents.map((recent: RecentsQueryType[number]) => {
+    <FlatList
+      data={recents}
+      keyExtractor={(item) => item.id.toString()}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 40 }}
+      ListFooterComponent={<View className="h-36" />}
+      renderItem={({ item, index }) => {
         let displayHeader = false;
         let currentDate = "";
-        if (enableDateHeader) {
-          currentDate = getDateSlug(
-            getCurrentDayFormattedDate(0, new Date(recent.updatedAt)),
-          );
-          displayHeader = currentDate !== lastDate;
-          lastDate = currentDate;
-        }
         let displayAlphabetHeader = false;
         let firstLetter = "";
-        if (enableAlphabetHeader) {
-          firstLetter = recent.food.name.charAt(0).toUpperCase();
-          displayAlphabetHeader = firstLetter !== lastFirstLetter;
-          lastFirstLetter = firstLetter;
+
+        if (enableDateHeader) {
+          currentDate = getDateSlug(
+            getCurrentDayFormattedDate(0, new Date(item.updatedAt)),
+          );
+          displayHeader =
+            index === 0 ||
+            getDateSlug(
+              getCurrentDayFormattedDate(
+                0,
+                new Date(recents[index - 1].updatedAt),
+              ),
+            ) !== currentDate;
         }
+        if (enableAlphabetHeader) {
+          firstLetter = item.food.name.charAt(0).toUpperCase();
+          displayAlphabetHeader =
+            index === 0 ||
+            recents[index - 1].food.name.charAt(0).toUpperCase() !==
+              firstLetter;
+        }
+
         return (
-          <React.Fragment key={recent.id}>
+          <React.Fragment>
             {displayHeader && (
               <Text className="text-lg mt-8">{currentDate}</Text>
             )}
             {displayAlphabetHeader && (
               <Text className="text-lg mt-8">{firstLetter}</Text>
             )}
-            <Recent recent={recent} mealType={mealType} date={date} />
+            <Recent recent={item} mealType={mealType} date={date} />
           </React.Fragment>
         );
-      })}
-      <View className="h-36" />
-    </ScrollView>
+      }}
+    />
   );
 };
 
@@ -121,6 +133,7 @@ const Recent = ({
             serving: recent.serving,
             amount: recent.amount,
             servingQuantity: recent.servingQuantity,
+            custom: recent.food.isCustom ? "true" : "false",
           },
         })
       }

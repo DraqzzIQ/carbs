@@ -1,5 +1,4 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { ScrollView, View } from "react-native";
 import { KeyboardShift } from "~/components/keyboard-shift";
 import { useEffect, useState } from "react";
 import { MealSelectorHeader } from "~/components/index/meal/add/meal-selector-header";
@@ -111,17 +110,11 @@ export default function QuickEntryScreen() {
           ),
         }}
       />
-      <ScrollView
-        className="p-4 bg-secondary h-full"
-        showsVerticalScrollIndicator={false}
-      >
-        <Text className="text-primary text-2xl text-center font-semibold">
+      <Form formConfig={formConfig} onSubmit={onSubmit} edit={edit}>
+        <Text className="text-primary text-2xl text-center font-semibold mb-6">
           Quick Entry
         </Text>
-        <View className="flex-1">
-          <Form formConfig={formConfig} onSubmit={onSubmit} edit={edit} />
-        </View>
-      </ScrollView>
+      </Form>
     </KeyboardShift>
   );
 }
