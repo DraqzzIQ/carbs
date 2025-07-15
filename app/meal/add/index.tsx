@@ -17,6 +17,8 @@ import { useEffect, useState } from "react";
 import { addFoodToMeal } from "~/utils/querying";
 import { MealType } from "~/types/MealType";
 import { ThreeDotMenu } from "~/components/index/meal/add/three-dot-menu";
+import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
+import { Text } from "~/components/ui/text";
 import { BarcodeScanner } from "~/components/index/meal/add/barcode-scanner";
 
 export default function AddToMealScreen() {
@@ -125,7 +127,33 @@ export default function AddToMealScreen() {
         <Stack.Screen
           options={{
             title: `${meal}`,
-            headerRight: () => <ThreeDotMenu date={date} mealName={meal} />,
+            headerRight: () => (
+              <ThreeDotMenu>
+                <DropdownMenuItem>
+                  <Text className="text-sm text-primary">Create Recipe</Text>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onPress={() =>
+                    router.navigate({
+                      pathname: "/meal/add/custom-food",
+                      params: { date: date, mealName: meal },
+                    })
+                  }
+                >
+                  <Text className="text-sm text-primary">Create Food</Text>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onPress={() =>
+                    router.navigate({
+                      pathname: "/meal/add/quick-entry",
+                      params: { date: date, mealName: meal },
+                    })
+                  }
+                >
+                  <Text className="text-sm text-primary">Quick Entry</Text>
+                </DropdownMenuItem>
+              </ThreeDotMenu>
+            ),
           }}
         />
         <View className="flex-row justify-center items-center border border-muted-foreground px-4 rounded-lg bg-secondary">
