@@ -8,7 +8,7 @@ import {
 } from "~/components/ui/select";
 import { ServingDto } from "~/api/types/FoodDetails";
 import { formatServing, getDefaultServing } from "~/utils/serving";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FlatList, View } from "react-native";
 import { NumericInput } from "~/components/numeric-input";
 import { isBaseUnit } from "~/utils/formatting";
@@ -30,31 +30,17 @@ export const ServingSelector = ({
   onServingChange,
   baseUnit,
 }: ServingSelectorProps) => {
-  const [options, setOptions] = useState<ServingDto[]>([]);
   const [servingQuantity, setServingQuantity] = useState<string | undefined>(
-    defaultServingQuantity,
+    defaultServingQuantity ??
+      (!servingOptions || servingOptions.length === 0 ? "100" : "1"),
   );
-
-  useEffect(() => {
-    if (!servingOptions) {
-      return;
-    }
-    const options = [
-      ...servingOptions,
-      { serving: getDefaultServing(baseUnit), amount: 1 },
-    ];
-    setOptions(options);
-
-    onServingChange(defaultServing ?? options[0]);
-    onServingQuantityChange(
-      parseFloat(
-        defaultServingQuantity ?? (options[0].amount === 1 ? "100" : "1"),
-      ),
-    );
-  }, [servingOptions]);
+  const options = [
+    ...(servingOptions ?? []),
+    { serving: getDefaultServing(baseUnit), amount: 1 },
+  ];
 
   if (options.length === 0) {
-    return;
+    return null;
   }
 
   return (

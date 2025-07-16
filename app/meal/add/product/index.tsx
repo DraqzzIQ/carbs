@@ -1,9 +1,14 @@
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import {
+  router,
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+} from "expo-router";
 import { ScrollView, View } from "react-native";
 import { KeyboardShift } from "~/components/keyboard-shift";
 import { Text } from "~/components/ui/text";
 import { mealQuery, MealQueryType } from "~/db/queries/mealQuery";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MealSelectorHeader } from "~/components/index/meal/add/meal-selector-header";
 import { MealType } from "~/types/MealType";
 import { Food } from "~/db/schema";
@@ -26,6 +31,8 @@ import { ServingSelector } from "~/components/index/meal/add/product/serving-sel
 import { MacroHeader } from "~/components/index/meal/macro-header";
 import { ProductDetailsLoadingSkeleton } from "~/components/index/meal/add/product/loading-skeleton";
 import { HeaderOptions } from "~/components/index/meal/add/product/header-options";
+import { getDefaultServing } from "~/utils/serving";
+import { isBaseUnit } from "~/utils/formatting";
 
 export default function ProductDetailScreen() {
   const params = useLocalSearchParams<{
@@ -58,30 +65,90 @@ export default function ProductDetailScreen() {
   const [foodIsRecent, setFoodIsRecent] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  useFocusEffect(
+    useCallback(() => {
+      (async () => handleEffect())();
+    }, []),
+  );
+
   useEffect(() => {
-    (async () => {
-      if (edit) {
-        try {
-          const meal = await mealQuery(mealId!);
-          setMeal(meal);
-          setFood(meal?.food);
-          if (meal?.food) {
-            setFoodIsRecent(await isRecent(meal.food.id));
-          }
-        } catch {
-          console.error("Error fetching meal with meal id ", mealId);
-          return;
+    (async () => handleEffect())();
+  }, [edit, params.productId]);
+
+  // i hate this
+  async function handleEffect() {
+    let fetchedFood: Food | undefined;
+    let meal: MealQueryType | undefined;
+    if (edit) {
+      try {
+        const mealData = await mealQuery(mealId!);
+        setMeal(mealData);
+        meal = mealData;
+        fetchedFood = mealData?.food;
+        if (mealData?.food) {
+          setFoodIsRecent(await isRecent(mealData.food.id));
         }
-      } else {
-        if (custom) {
-          setFood(await getCustomFood(params.productId!));
-        } else {
-          setFood(await getAndSaveFood(params.productId!));
-        }
-        setFoodIsRecent(await isRecent(params.productId!));
+      } catch {
+        console.error("Error fetching meal with meal id ", mealId);
+        return;
       }
-    })();
-  }, [edit, params]);
+    } else {
+      if (custom) {
+        fetchedFood = await getCustomFood(params.productId!);
+      } else {
+        fetchedFood = await getAndSaveFood(params.productId!);
+      }
+      if (fetchedFood) {
+        setFoodIsRecent(await isRecent(fetchedFood.id));
+      }
+    }
+
+    if (fetchedFood) {
+      setFood(fetchedFood);
+      if (!params.serving) {
+        const initialServing = meal
+          ? { serving: meal.serving, amount: meal.amount }
+          : (fetchedFood.servings?.[0] ?? {
+              serving: getDefaultServing(fetchedFood.baseUnit),
+              amount: 1,
+            });
+        setServing(initialServing.serving);
+        setAmount(initialServing.amount);
+        setServingQuantity(
+          meal
+            ? meal.servingQuantity
+            : isBaseUnit(initialServing.serving)
+              ? 100
+              : 1,
+        );
+      }
+    }
+  }
+
+  const handleServingChange = useCallback(
+    (serving: { serving: string; amount: number }) => {
+      setAmount(serving.amount);
+      setServing(serving.serving);
+    },
+    [],
+  );
+
+  const handleServingQuantityChange = useCallback((servingQuantity: number) => {
+    setServingQuantity(servingQuantity);
+  }, []);
+
+  const defaultServing = useMemo(() => {
+    if (edit && meal) {
+      return { serving: meal.serving, amount: meal.amount };
+    }
+    if (params.serving) {
+      return {
+        serving: params.serving,
+        amount: params.amount ? parseFloat(params.amount) : 1,
+      };
+    }
+    return undefined;
+  }, [edit, meal, params.serving, params.amount]);
 
   return (
     <KeyboardShift>
@@ -152,27 +219,16 @@ export default function ProductDetailScreen() {
         <>
           <ServingSelector
             servingOptions={food.servings}
-            defaultServing={
-              edit
-                ? { serving: meal!.serving, amount: meal!.amount }
-                : params.serving
-                  ? { serving: params.serving, amount }
-                  : undefined
-            }
+            defaultServing={defaultServing}
             defaultServingQuantity={
               edit
                 ? meal!.servingQuantity.toString()
                 : params.servingQuantity
                   ? params.servingQuantity
-                  : "1"
+                  : undefined
             }
-            onServingChange={(serving) => {
-              setAmount(serving.amount);
-              setServing(serving.serving);
-            }}
-            onServingQuantityChange={(servingQuantity) => {
-              setServingQuantity(servingQuantity);
-            }}
+            onServingChange={handleServingChange}
+            onServingQuantityChange={handleServingQuantityChange}
             baseUnit={food.baseUnit}
           />
           <FloatingActionButton

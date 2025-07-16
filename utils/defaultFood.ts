@@ -1,4 +1,5 @@
 import { Food } from "~/db/schema";
+import { roundToInt } from "~/utils/formatting";
 
 export function createDefaultFood(): Food {
   return {
@@ -118,202 +119,280 @@ export function createCustomFood(
       ? parseFloat(values["alcohol"]) / valuesPer
       : null,
     cholesterol: values["cholesterol"]
-      ? parseFloat(values["cholesterol"]) / valuesPer
+      ? parseFloat(values["cholesterol"]) / 1_000 / valuesPer
       : null,
-    sodium: values["sodium"] ? parseFloat(values["sodium"]) / valuesPer : null,
+    sodium: values["sodium"]
+      ? parseFloat(values["sodium"]) / 1_000 / valuesPer
+      : null,
     salt: (parseFloat(values["salt"]) || 0) / valuesPer,
     water: values["water"] ? parseFloat(values["water"]) / valuesPer : null,
     vitaminA: values["vitaminA"]
-      ? parseFloat(values["vitaminA"]) / valuesPer
+      ? parseFloat(values["vitaminA"]) / 1_000_000 / valuesPer
       : null,
     vitaminB1: values["vitaminB1"]
-      ? parseFloat(values["vitaminB1"]) / valuesPer
+      ? parseFloat(values["vitaminB1"]) / 1_000 / valuesPer
       : null,
     vitaminB11: values["vitaminB11"]
-      ? parseFloat(values["vitaminB11"]) / valuesPer
+      ? parseFloat(values["vitaminB11"]) / 1_000_000 / valuesPer
       : null,
     vitaminB12: values["vitaminB12"]
-      ? parseFloat(values["vitaminB12"]) / valuesPer
+      ? parseFloat(values["vitaminB12"]) / 1_000_000 / valuesPer
       : null,
     vitaminB2: values["vitaminB2"]
-      ? parseFloat(values["vitaminB2"]) / valuesPer
+      ? parseFloat(values["vitaminB2"]) / 1_000 / valuesPer
       : null,
     vitaminB3: values["vitaminB3"]
-      ? parseFloat(values["vitaminB3"]) / valuesPer
+      ? parseFloat(values["vitaminB3"]) / 1_000 / valuesPer
       : null,
     vitaminB5: values["vitaminB5"]
-      ? parseFloat(values["vitaminB5"]) / valuesPer
+      ? parseFloat(values["vitaminB5"]) / 1_000 / valuesPer
       : null,
     vitaminB6: values["vitaminB6"]
-      ? parseFloat(values["vitaminB6"]) / valuesPer
+      ? parseFloat(values["vitaminB6"]) / 1_000 / valuesPer
       : null,
     vitaminB7: values["vitaminB7"]
-      ? parseFloat(values["vitaminB7"]) / valuesPer
+      ? parseFloat(values["vitaminB7"]) / 1_000_000 / valuesPer
       : null,
     vitaminC: values["vitaminC"]
-      ? parseFloat(values["vitaminC"]) / valuesPer
+      ? parseFloat(values["vitaminC"]) / 1_000 / valuesPer
       : null,
     vitaminD: values["vitaminD"]
-      ? parseFloat(values["vitaminD"]) / valuesPer
+      ? parseFloat(values["vitaminD"]) / 1_000_000 / valuesPer
       : null,
     vitaminE: values["vitaminE"]
-      ? parseFloat(values["vitaminE"]) / valuesPer
+      ? parseFloat(values["vitaminE"]) / 1_000 / valuesPer
       : null,
     vitaminK: values["vitaminK"]
-      ? parseFloat(values["vitaminK"]) / valuesPer
+      ? parseFloat(values["vitaminK"]) / 1_000_000 / valuesPer
       : null,
     arsenic: values["arsenic"]
-      ? parseFloat(values["arsenic"]) / valuesPer
+      ? parseFloat(values["arsenic"]) / 1_000_000 / valuesPer
       : null,
-    biotin: values["biotin"] ? parseFloat(values["biotin"]) / valuesPer : null,
-    boron: values["boron"] ? parseFloat(values["boron"]) / valuesPer : null,
+    biotin: values["biotin"]
+      ? parseFloat(values["biotin"]) / 1_000_000 / valuesPer
+      : null,
+    boron: values["boron"]
+      ? parseFloat(values["boron"]) / 1_000 / valuesPer
+      : null,
     calcium: values["calcium"]
-      ? parseFloat(values["calcium"]) / valuesPer
+      ? parseFloat(values["calcium"]) / 1_000 / valuesPer
       : null,
     chlorine: values["chlorine"]
-      ? parseFloat(values["chlorine"]) / valuesPer
+      ? parseFloat(values["chlorine"]) / 1_000 / valuesPer
       : null,
     choline: values["choline"]
-      ? parseFloat(values["choline"]) / valuesPer
+      ? parseFloat(values["choline"]) / 1_000 / valuesPer
       : null,
-    chrome: values["chrome"] ? parseFloat(values["chrome"]) / valuesPer : null,
-    cobalt: values["cobalt"] ? parseFloat(values["cobalt"]) / valuesPer : null,
-    copper: values["copper"] ? parseFloat(values["copper"]) / valuesPer : null,
+    chrome: values["chrome"]
+      ? parseFloat(values["chrome"]) / 1_000_000 / valuesPer
+      : null,
+    cobalt: values["cobalt"]
+      ? parseFloat(values["cobalt"]) / 1_000_000 / valuesPer
+      : null,
+    copper: values["copper"]
+      ? parseFloat(values["copper"]) / 1_000 / valuesPer
+      : null,
     fluoride: values["fluoride"]
-      ? parseFloat(values["fluoride"]) / valuesPer
+      ? parseFloat(values["fluoride"]) / 1_000 / valuesPer
       : null,
     fluorine: values["fluorine"]
-      ? parseFloat(values["fluorine"]) / valuesPer
+      ? parseFloat(values["fluorine"]) / 1_000 / valuesPer
       : null,
-    iodine: values["iodine"] ? parseFloat(values["iodine"]) / valuesPer : null,
-    iron: values["iron"] ? parseFloat(values["iron"]) / valuesPer : null,
+    iodine: values["iodine"]
+      ? parseFloat(values["iodine"]) / 1_000_000 / valuesPer
+      : null,
+    iron: values["iron"]
+      ? parseFloat(values["iron"]) / 1_000 / valuesPer
+      : null,
     magnesium: values["magnesium"]
-      ? parseFloat(values["magnesium"]) / valuesPer
+      ? parseFloat(values["magnesium"]) / 1_000 / valuesPer
       : null,
     manganese: values["manganese"]
-      ? parseFloat(values["manganese"]) / valuesPer
+      ? parseFloat(values["manganese"]) / 1_000 / valuesPer
       : null,
     molybdenum: values["molybdenum"]
-      ? parseFloat(values["molybdenum"]) / valuesPer
+      ? parseFloat(values["molybdenum"]) / 1_000_000 / valuesPer
       : null,
     phosphorus: values["phosphorus"]
-      ? parseFloat(values["phosphorus"]) / valuesPer
+      ? parseFloat(values["phosphorus"]) / 1_000 / valuesPer
       : null,
     potassium: values["potassium"]
-      ? parseFloat(values["potassium"]) / valuesPer
+      ? parseFloat(values["potassium"]) / 1_000 / valuesPer
       : null,
     rubidium: values["rubidium"]
-      ? parseFloat(values["rubidium"]) / valuesPer
+      ? parseFloat(values["rubidium"]) / 1_000 / valuesPer
       : null,
     selenium: values["selenium"]
-      ? parseFloat(values["selenium"]) / valuesPer
+      ? parseFloat(values["selenium"]) / 1_000_000 / valuesPer
       : null,
     silicon: values["silicon"]
-      ? parseFloat(values["silicon"]) / valuesPer
+      ? parseFloat(values["silicon"]) / 1_000 / valuesPer
       : null,
-    sulfur: values["sulfur"] ? parseFloat(values["sulfur"]) / valuesPer : null,
-    tin: values["tin"] ? parseFloat(values["tin"]) / valuesPer : null,
+    sulfur: values["sulfur"]
+      ? parseFloat(values["sulfur"]) / 1_000 / valuesPer
+      : null,
+    tin: values["tin"] ? parseFloat(values["tin"]) / 1_000 / valuesPer : null,
     vanadium: values["vanadium"]
-      ? parseFloat(values["vanadium"]) / valuesPer
+      ? parseFloat(values["vanadium"]) / 1_000_000 / valuesPer
       : null,
-    zinc: values["zinc"] ? parseFloat(values["zinc"]) / valuesPer : null,
+    zinc: values["zinc"]
+      ? parseFloat(values["zinc"]) / 1_000 / valuesPer
+      : null,
   };
 }
 
 export function foodToFormValues(food: Food): Record<string, string> {
   return {
     name: food.name,
-    energy: (food.energy * food.valuesPer).toString(),
-    carb: (food.carb * food.valuesPer).toString(),
-    protein: (food.protein * food.valuesPer).toString(),
-    fat: (food.fat * food.valuesPer).toString(),
+    energy: roundToInt(food.energy * food.valuesPer, 2).toString(),
+    carb: roundToInt(food.carb * food.valuesPer, 2).toString(),
+    protein: roundToInt(food.protein * food.valuesPer, 2).toString(),
+    fat: roundToInt(food.fat * food.valuesPer, 2).toString(),
     valuesPer: food.valuesPer.toString(),
     producer: food.producer || "",
     unit: food.baseUnit || "g",
     amount: food.servings.length > 0 ? food.servings[0].amount.toString() : "",
     serving: food.servings.length > 0 ? food.servings[0].serving : "",
     dietaryFiber: food.dietaryFiber
-      ? (food.dietaryFiber * food.valuesPer).toString()
+      ? roundToInt(food.dietaryFiber * food.valuesPer, 2).toString()
       : "",
-    sugar: (food.sugar * food.valuesPer).toString(),
-    saturatedFat: (food.saturatedFat * food.valuesPer).toString(),
+    sugar: roundToInt(food.sugar * food.valuesPer, 2).toString(),
+    saturatedFat: roundToInt(food.saturatedFat * food.valuesPer, 2).toString(),
     monoUnsaturatedFat: food.monoUnsaturatedFat
-      ? (food.monoUnsaturatedFat * food.valuesPer).toString()
+      ? roundToInt(food.monoUnsaturatedFat * food.valuesPer, 2).toString()
       : "",
     polyUnsaturatedFat: food.polyUnsaturatedFat
-      ? (food.polyUnsaturatedFat * food.valuesPer).toString()
+      ? roundToInt(food.polyUnsaturatedFat * food.valuesPer, 2).toString()
       : "",
-    transFat: food.transFat ? (food.transFat * food.valuesPer).toString() : "",
-    alcohol: food.alcohol ? (food.alcohol * food.valuesPer).toString() : "",
+    transFat: food.transFat
+      ? roundToInt(food.transFat * food.valuesPer, 2).toString()
+      : "",
+    alcohol: food.alcohol
+      ? roundToInt(food.alcohol * food.valuesPer, 2).toString()
+      : "",
     cholesterol: food.cholesterol
-      ? (food.cholesterol * food.valuesPer).toString()
+      ? roundToInt(food.cholesterol * 1_000 * food.valuesPer, 2).toString()
       : "",
-    sodium: food.sodium ? (food.sodium * food.valuesPer).toString() : "",
-    salt: (food.salt * food.valuesPer).toString(),
-    water: food.water ? (food.water * food.valuesPer).toString() : "",
-    vitaminA: food.vitaminA ? (food.vitaminA * food.valuesPer).toString() : "",
+    sodium: food.sodium
+      ? roundToInt(food.sodium * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    salt: roundToInt(food.salt * food.valuesPer, 2).toString(),
+    water: food.water
+      ? roundToInt(food.water * food.valuesPer, 2).toString()
+      : "",
+    vitaminA: food.vitaminA
+      ? roundToInt(food.vitaminA * 1_000_000 * food.valuesPer, 2).toString()
+      : "",
     vitaminB1: food.vitaminB1
-      ? (food.vitaminB1 * food.valuesPer).toString()
+      ? roundToInt(food.vitaminB1 * 1_000 * food.valuesPer, 2).toString()
       : "",
     vitaminB11: food.vitaminB11
-      ? (food.vitaminB11 * food.valuesPer).toString()
+      ? roundToInt(food.vitaminB11 * 1_000_000 * food.valuesPer, 2).toString()
       : "",
     vitaminB12: food.vitaminB12
-      ? (food.vitaminB12 * food.valuesPer).toString()
+      ? roundToInt(food.vitaminB12 * 1_000_000 * food.valuesPer, 2).toString()
       : "",
     vitaminB2: food.vitaminB2
-      ? (food.vitaminB2 * food.valuesPer).toString()
+      ? roundToInt(food.vitaminB2 * 1_000 * food.valuesPer, 2).toString()
       : "",
     vitaminB3: food.vitaminB3
-      ? (food.vitaminB3 * food.valuesPer).toString()
+      ? roundToInt(food.vitaminB3 * 1_000 * food.valuesPer, 2).toString()
       : "",
     vitaminB5: food.vitaminB5
-      ? (food.vitaminB5 * food.valuesPer).toString()
+      ? roundToInt(food.vitaminB5 * 1_000 * food.valuesPer, 2).toString()
       : "",
     vitaminB6: food.vitaminB6
-      ? (food.vitaminB6 * food.valuesPer).toString()
+      ? roundToInt(food.vitaminB6 * 1_000 * food.valuesPer, 2).toString()
       : "",
     vitaminB7: food.vitaminB7
-      ? (food.vitaminB7 * food.valuesPer).toString()
+      ? roundToInt(food.vitaminB7 * 1_000_000 * food.valuesPer, 2).toString()
       : "",
-    vitaminC: food.vitaminC ? (food.vitaminC * food.valuesPer).toString() : "",
-    vitaminD: food.vitaminD ? (food.vitaminD * food.valuesPer).toString() : "",
-    vitaminE: food.vitaminE ? (food.vitaminE * food.valuesPer).toString() : "",
-    vitaminK: food.vitaminK ? (food.vitaminK * food.valuesPer).toString() : "",
-    arsenic: food.arsenic ? (food.arsenic * food.valuesPer).toString() : "",
-    biotin: food.biotin ? (food.biotin * food.valuesPer).toString() : "",
-    boron: food.boron ? (food.boron * food.valuesPer).toString() : "",
-    calcium: food.calcium ? (food.calcium * food.valuesPer).toString() : "",
-    chlorine: food.chlorine ? (food.chlorine * food.valuesPer).toString() : "",
-    choline: food.choline ? (food.choline * food.valuesPer).toString() : "",
-    chrome: food.chrome ? (food.chrome * food.valuesPer).toString() : "",
-    cobalt: food.cobalt ? (food.cobalt * food.valuesPer).toString() : "",
-    copper: food.copper ? (food.copper * food.valuesPer).toString() : "",
-    fluoride: food.fluoride ? (food.fluoride * food.valuesPer).toString() : "",
-    fluorine: food.fluorine ? (food.fluorine * food.valuesPer).toString() : "",
-    iodine: food.iodine ? (food.iodine * food.valuesPer).toString() : "",
-    iron: food.iron ? (food.iron * food.valuesPer).toString() : "",
+    vitaminC: food.vitaminC
+      ? roundToInt(food.vitaminC * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    vitaminD: food.vitaminD
+      ? roundToInt(food.vitaminD * 1_000_000 * food.valuesPer, 2).toString()
+      : "",
+    vitaminE: food.vitaminE
+      ? roundToInt(food.vitaminE * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    vitaminK: food.vitaminK
+      ? roundToInt(food.vitaminK * 1_000_000 * food.valuesPer, 2).toString()
+      : "",
+    arsenic: food.arsenic
+      ? roundToInt(food.arsenic * 1_000_000 * food.valuesPer, 2).toString()
+      : "",
+    biotin: food.biotin
+      ? roundToInt(food.biotin * 1_000_000 * food.valuesPer, 2).toString()
+      : "",
+    boron: food.boron
+      ? roundToInt(food.boron * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    calcium: food.calcium
+      ? roundToInt(food.calcium * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    chlorine: food.chlorine
+      ? roundToInt(food.chlorine * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    choline: food.choline
+      ? roundToInt(food.choline * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    chrome: food.chrome
+      ? roundToInt(food.chrome * 1_000_000 * food.valuesPer, 2).toString()
+      : "",
+    cobalt: food.cobalt
+      ? roundToInt(food.cobalt * 1_000_000 * food.valuesPer, 2).toString()
+      : "",
+    copper: food.copper
+      ? roundToInt(food.copper * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    fluoride: food.fluoride
+      ? roundToInt(food.fluoride * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    fluorine: food.fluorine
+      ? roundToInt(food.fluorine * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    iodine: food.iodine
+      ? roundToInt(food.iodine * 1_000_000 * food.valuesPer, 2).toString()
+      : "",
+    iron: food.iron
+      ? roundToInt(food.iron * 1_000 * food.valuesPer, 2).toString()
+      : "",
     magnesium: food.magnesium
-      ? (food.magnesium * food.valuesPer).toString()
+      ? roundToInt(food.magnesium * 1_000 * food.valuesPer, 2).toString()
       : "",
     manganese: food.manganese
-      ? (food.manganese * food.valuesPer).toString()
+      ? roundToInt(food.manganese * 1_000 * food.valuesPer, 2).toString()
       : "",
     molybdenum: food.molybdenum
-      ? (food.molybdenum * food.valuesPer).toString()
+      ? roundToInt(food.molybdenum * 1_000_000 * food.valuesPer, 2).toString()
       : "",
     phosphorus: food.phosphorus
-      ? (food.phosphorus * food.valuesPer).toString()
+      ? roundToInt(food.phosphorus * 1_000 * food.valuesPer, 2).toString()
       : "",
     potassium: food.potassium
-      ? (food.potassium * food.valuesPer).toString()
+      ? roundToInt(food.potassium * 1_000 * food.valuesPer, 2).toString()
       : "",
-    rubidium: food.rubidium ? (food.rubidium * food.valuesPer).toString() : "",
-    selenium: food.selenium ? (food.selenium * food.valuesPer).toString() : "",
-    silicon: food.silicon ? (food.silicon * food.valuesPer).toString() : "",
-    sulfur: food.sulfur ? (food.sulfur * food.valuesPer).toString() : "",
-    tin: food.tin ? (food.tin * food.valuesPer).toString() : "",
-    vanadium: food.vanadium ? (food.vanadium * food.valuesPer).toString() : "",
-    zinc: food.zinc ? (food.zinc * food.valuesPer).toString() : "",
+    rubidium: food.rubidium
+      ? roundToInt(food.rubidium * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    selenium: food.selenium
+      ? roundToInt(food.selenium * 1_000_000 * food.valuesPer, 2).toString()
+      : "",
+    silicon: food.silicon
+      ? roundToInt(food.silicon * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    sulfur: food.sulfur
+      ? roundToInt(food.sulfur * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    tin: food.tin
+      ? roundToInt(food.tin * 1_000 * food.valuesPer, 2).toString()
+      : "",
+    vanadium: food.vanadium
+      ? roundToInt(food.vanadium * 1_000_000 * food.valuesPer, 2).toString()
+      : "",
+    zinc: food.zinc
+      ? roundToInt(food.zinc * 1_000 * food.valuesPer, 2).toString()
+      : "",
   };
 }

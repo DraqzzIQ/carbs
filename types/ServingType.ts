@@ -9,6 +9,11 @@ export enum ServingType {
   Can = "Can",
   Cup = "Cup",
   Glass = "Glass",
+  Bowl = "Bowl",
+  Bag = "Bag",
+  Portion = "Portion",
   Tablespoon = "Tablespoon",
   Teaspoon = "Teaspoon",
+  Tablet = "Tablet",
+  Plate = "Plate",
 }

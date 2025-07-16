@@ -5,7 +5,7 @@ import { Text } from "~/components/ui/text";
 import {
   CustomFoodFormConfig,
   enrichFormConfigWithDefaultValues,
-} from "~/types/CustomFoodFormConfig";
+} from "~/types/FormConfig";
 import { KeyboardShift } from "~/components/keyboard-shift";
 import { Form, FormCategory } from "~/components/index/meal/add/form";
 import { Input } from "~/components/ui/input";
@@ -16,8 +16,11 @@ import {
   addCustomFood,
   addFavorite,
   getCustomFood,
+  getIsFavorite,
+  removeFavorite,
   updateCustomFood,
 } from "~/utils/querying";
+import { getDefaultServing } from "~/utils/serving";
 
 export default function CustomFoodScreen() {
   const params = useLocalSearchParams();
@@ -65,15 +68,26 @@ export default function CustomFoodScreen() {
     } else {
       try {
         await addCustomFood(food);
-        const serving =
-          food.servings.length > 0
-            ? food.servings[0]
-            : { amount: 100, serving: "gram" };
-        await addFavorite(food.id, 1, serving.amount, serving.serving);
       } catch (error) {
         console.error("Error creating custom food:", error);
       }
     }
+    const serving =
+      food.servings.length > 0
+        ? food.servings[0]
+        : {
+            amount: 1,
+            serving: getDefaultServing(food.baseUnit).toLowerCase(),
+          };
+    if (await getIsFavorite(food.id)) {
+      await removeFavorite(food.id);
+    }
+    await addFavorite(
+      food.id,
+      serving.amount === 1 ? 100 : 1,
+      serving.amount,
+      serving.serving,
+    );
     router.dismiss();
   }
 

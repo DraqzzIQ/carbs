@@ -17,7 +17,7 @@ import { Form, FormCategory } from "~/components/index/meal/add/form";
 import {
   enrichFormConfigWithDefaultValues,
   QuickEntryFormConfig,
-} from "~/types/CustomFoodFormConfig";
+} from "~/types/FormConfig";
 
 export default function QuickEntryScreen() {
   const params = useLocalSearchParams();
