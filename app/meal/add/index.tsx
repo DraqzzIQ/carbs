@@ -14,7 +14,7 @@ import { yazioSearchFoods } from "~/api/yazio";
 import { KeyboardShift } from "~/components/keyboard-shift";
 import { FloatingActionButton } from "~/components/floating-action-button";
 import { useEffect, useState } from "react";
-import { addFoodToMeal } from "~/utils/querying";
+import { addFoodToMeal, queryCustomFoods } from "~/utils/querying";
 import { MealType } from "~/types/MealType";
 import { ThreeDotMenu } from "~/components/index/meal/add/three-dot-menu";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
@@ -32,6 +32,7 @@ export default function AddToMealScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const noResults = products.length === 0 && searchQuery !== "";
+  const [onlyCustomProducts, setOnlyCustomProducts] = useState(false);
 
   useEffect(() => {
     if (searchQuery === "" && products.length > 0) {
@@ -57,7 +58,11 @@ export default function AddToMealScreen() {
   };
 
   let abortController: AbortController | null = null;
-  const searchProducts = async (query: string, scanned: boolean = false) => {
+  const searchProducts = async (
+    query: string,
+    scanned: boolean = false,
+    onlyCustom = onlyCustomProducts,
+  ) => {
     if (abortController) {
       abortController.abort();
     }
@@ -73,19 +78,24 @@ export default function AddToMealScreen() {
 
     setLoading(true);
     try {
-      const response = await yazioSearchFoods(query, { signal });
-      if (response.length === 1 && scanned) {
+      const [response, localResults] = await Promise.all([
+        onlyCustom ? [] : yazioSearchFoods(query, { signal }),
+        queryCustomFoods(query, scanned),
+      ]);
+      const result = [...response, ...localResults];
+      setProducts(result);
+      if (result.length === 1 && scanned) {
         router.navigate({
           pathname: "/meal/add/product",
           params: {
             edit: "false",
-            productId: response[0].productId,
+            productId: result[0].productId,
             date: date,
             mealName: meal,
+            custom: result[0].score === 200 ? "true" : "false",
           },
         });
       }
-      setProducts(response);
     } catch (error) {
       if (error instanceof Error && error.name !== "AbortError") {
         console.error("Failed to search products:", error);
@@ -192,6 +202,10 @@ export default function AddToMealScreen() {
               onAddProduct={onAddProduct}
               meal={meal}
               searchFocused={searchFocused}
+              onSetOnlyCustomProducts={async (value: boolean) => {
+                setOnlyCustomProducts(value);
+                await searchProducts(searchQuery, false, value);
+              }}
             />
           )}
         </View>

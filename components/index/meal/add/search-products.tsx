@@ -5,6 +5,7 @@ import { Card } from "~/components/ui/card";
 import {
   HistoryIcon,
   LoaderCircleIcon,
+  PenIcon,
   PlusIcon,
   VerifiedIcon,
 } from "lucide-nativewind";
@@ -17,6 +18,7 @@ import { getServingUnitLabel } from "~/utils/serving";
 import { FoodTabs } from "~/components/index/meal/add/food-tabs";
 import { MealType } from "~/types/MealType";
 import { getRecentFoods } from "~/utils/querying";
+import { Toggle } from "~/components/ui/toggle";
 
 type SearchProductsProps = {
   products: FoodSearchResultDto[];
@@ -26,6 +28,7 @@ type SearchProductsProps = {
   meal: string;
   date: string;
   searchFocused: boolean;
+  onSetOnlyCustomProducts: (onlyCustom: boolean) => Promise<void>;
 };
 
 export const SearchProducts = ({
@@ -36,8 +39,10 @@ export const SearchProducts = ({
   meal,
   date,
   searchFocused,
+  onSetOnlyCustomProducts,
 }: SearchProductsProps) => {
   const [recents, setRecents] = useState<Set<string>>(new Set());
+  const [onlyCustomProducts, setOnlyCustomProducts] = useState(false);
 
   useEffect(() => {
     getRecentFoods(products.map((product) => product.productId)).then(
@@ -45,57 +50,78 @@ export const SearchProducts = ({
     );
   }, [products]);
 
-  return loading ? (
-    <View className="flex-1 items-center mt-10">
-      <Text className="text-primary text-lg font-semibold">Loading...</Text>
-    </View>
-  ) : notFound ? (
-    <View
-      className="flex-1 items-center mt-10"
-      onTouchStart={() => Keyboard.dismiss()}
-    >
-      <Text className="text-primary text-lg font-semibold">
-        No results found
-      </Text>
-      <Text className="text-muted-foreground text-sm">
-        Try a different search
-      </Text>
-    </View>
-  ) : products.length === 0 ? (
-    searchFocused ? (
-      <View
-        className="flex-1 items-center mt-10"
-        onTouchStart={() => Keyboard.dismiss()}
-      >
-        <Text className="text-primary text-lg font-semibold">
-          Scan a barcode
-        </Text>
-        <Text className="text-muted-foreground text-sm">
-          or search for a product
-        </Text>
-      </View>
-    ) : (
-      <FoodTabs mealType={meal as MealType} date={date} />
-    )
+  const displayFoodTabs =
+    !searchFocused && products.length === 0 && !loading && !notFound;
+
+  return displayFoodTabs ? (
+    <FoodTabs mealType={meal as MealType} date={date} />
   ) : (
-    <FlatList
-      data={products}
-      keyExtractor={(item) => item.productId}
-      showsVerticalScrollIndicator={false}
-      onScrollBeginDrag={() => Keyboard.dismiss()}
-      contentContainerStyle={{ paddingBottom: 40 }}
-      renderItem={({ item }) => (
-        <Animated.View entering={LightSpeedInLeft} exiting={FadeOut}>
-          <SearchProduct
-            product={item}
-            meal={meal}
-            onAddProduct={onAddProduct}
-            date={date}
-            isRecent={recents.has(item.productId)}
-          />
-        </Animated.View>
+    <>
+      <Toggle
+        size="sm"
+        variant="outline"
+        pressed={onlyCustomProducts}
+        onPressedChange={async (pressed) => {
+          setOnlyCustomProducts(pressed);
+          await onSetOnlyCustomProducts(pressed);
+        }}
+        className="self-start rounded-full"
+      >
+        <View className="flex-row items-center">
+          <PenIcon className="text-primary h-4 w-4 mr-1" />
+          <Text>Custom Products</Text>
+        </View>
+      </Toggle>
+      {loading ? (
+        <View className="flex-1 items-center mt-10">
+          <Text className="text-primary text-lg font-semibold">Loading...</Text>
+        </View>
+      ) : notFound ? (
+        <View
+          className="flex-1 items-center mt-10"
+          onTouchStart={() => Keyboard.dismiss()}
+        >
+          <Text className="text-primary text-lg font-semibold">
+            No results found
+          </Text>
+          <Text className="text-muted-foreground text-sm">
+            Try a different search
+          </Text>
+        </View>
+      ) : products.length === 0 ? (
+        <View
+          className="flex-1 items-center mt-10"
+          onTouchStart={() => Keyboard.dismiss()}
+        >
+          <Text className="text-primary text-lg font-semibold">
+            Scan a barcode
+          </Text>
+          <Text className="text-muted-foreground text-sm">
+            or search for a product
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          className="mt-2"
+          data={products}
+          keyExtractor={(item) => item.productId}
+          showsVerticalScrollIndicator={false}
+          onScrollBeginDrag={() => Keyboard.dismiss()}
+          contentContainerStyle={{ paddingBottom: 40 }}
+          renderItem={({ item }) => (
+            <Animated.View entering={LightSpeedInLeft} exiting={FadeOut}>
+              <SearchProduct
+                product={item}
+                meal={meal}
+                onAddProduct={onAddProduct}
+                date={date}
+                isRecent={recents.has(item.productId)}
+              />
+            </Animated.View>
+          )}
+        />
       )}
-    />
+    </>
   );
 };
 
@@ -130,6 +156,7 @@ function SearchProduct({
             productId: product.productId,
             date: date,
             mealName: meal,
+            custom: product.score === 200 ? "true" : "false",
           },
         })
       }

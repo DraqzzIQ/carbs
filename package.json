@@ -25,6 +25,7 @@
     "@rn-primitives/separator": "^1.1.0",
     "@rn-primitives/slot": "~1.1.0",
     "@rn-primitives/switch": "^1.1.0",
+    "@rn-primitives/toggle": "^1.2.0",
     "@rn-primitives/tooltip": "~1.1.0",
     "@rn-primitives/types": "~1.1.0",
     "babel-plugin-inline-import": "^3.0.0",

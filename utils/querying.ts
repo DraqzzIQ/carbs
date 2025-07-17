@@ -3,9 +3,10 @@ import { yazioGetFoodDetails } from "~/api/yazio";
 import { FoodDetailsDto, ServingDto } from "~/api/types/FoodDetails";
 import { db } from "~/db/client";
 import { favorites, Food, foods, meals, recents, streaks } from "~/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull, like } from "drizzle-orm";
 import { isBaseUnit } from "~/utils/formatting";
 import { inArray } from "drizzle-orm/sql/expressions/conditions";
+import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
 
 export async function removeFoodFromMeal(mealId: number) {
   try {
@@ -205,6 +206,49 @@ export async function deleteCustomFood(foodId: string) {
       .where(eq(foods.id, foodId));
   } catch (error) {
     console.error(`Error deleting custom food with ID ${foodId}:`, error);
+  }
+}
+
+export async function queryCustomFoods(
+  query: string,
+  barCode: boolean = false,
+): Promise<FoodSearchResultDto[]> {
+  if (query.length < 2) {
+    return [];
+  }
+  try {
+    const result = await db.query.foods.findMany({
+      where: and(
+        eq(foods.isCustom, true),
+        isNull(foods.deletedAt),
+        barCode
+          ? like(foods.eans, `%${query}%`)
+          : like(foods.name, `%${query}%`),
+      ),
+      limit: 5,
+    });
+    return result.map((food) => ({
+      score: 200,
+      name: food.name,
+      productId: food.id,
+      serving: food.servings?.[0]?.serving ?? "",
+      servingQuantity: 1,
+      amount: food.servings?.[0]?.amount ?? 0,
+      baseUnit: food.baseUnit,
+      producer: food.producer ?? "",
+      isVerified: food.isVerified,
+      nutrients: {
+        energy: food.energy,
+        carb: food.carb,
+        fat: food.fat,
+        protein: food.protein,
+      },
+      countries: [],
+      language: "",
+    }));
+  } catch (error) {
+    console.error("Error querying custom foods:", error);
+    return [];
   }
 }
 
