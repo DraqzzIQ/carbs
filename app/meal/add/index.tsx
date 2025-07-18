@@ -92,7 +92,7 @@ export default function AddToMealScreen() {
             productId: result[0].productId,
             date: date,
             mealName: meal,
-            custom: result[0].score === 200 ? "true" : "false",
+            custom: result[0].score === -1 ? "true" : "false",
           },
         });
       }

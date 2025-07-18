@@ -156,7 +156,7 @@ function SearchProduct({
             productId: product.productId,
             date: date,
             mealName: meal,
-            custom: product.score === 200 ? "true" : "false",
+            custom: product.score === -1 ? "true" : "false",
           },
         })
       }

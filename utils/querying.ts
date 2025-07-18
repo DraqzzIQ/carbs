@@ -228,7 +228,7 @@ export async function queryCustomFoods(
       limit: 5,
     });
     return result.map((food) => ({
-      score: 200,
+      score: -1,
       name: food.name,
       productId: food.id,
       serving: food.servings?.[0]?.serving ?? "",
