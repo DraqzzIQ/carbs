@@ -80,11 +80,20 @@ export const foods = sqliteTable("foods", {
   zinc: real("zinc"),
 });
 
+export enum ItemType {
+  Food = "food",
+  Recipe = "recipe",
+}
+
 export const meals = sqliteTable("meals", {
   id: integer("id").primaryKey({ autoIncrement: true }),
+  itemType: text("itemType", { enum: [ItemType.Food, ItemType.Recipe] })
+    .notNull()
+    .default(ItemType.Food),
   foodId: text("food_id")
     .notNull()
     .references(() => foods.id),
+  recipeId: text("recipe_id").references(() => recipes.id),
   servingQuantity: integer("serving_quantity").notNull(),
   amount: integer("amount").notNull(),
   serving: text("serving").notNull(),
