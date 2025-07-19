@@ -3,7 +3,7 @@ import { relations, sql } from "drizzle-orm";
 import { ServingDto } from "~/api/types/FoodDetails";
 
 // servingQuantity is the number of servings in the food item
-// amount is the amount of the food item
+// amount is the amount of the food item per serving in baseUnit
 // baseUnit is the unit of measurement for the food item (e.g., grams, milliliters)
 // total food is servingQuantity * amount
 
@@ -138,9 +138,6 @@ export const streaks = sqliteTable("streaks", {
 export const recipes = sqliteTable("recipes", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
-  serving: integer("serving").notNull(),
-  amount: integer("amount").notNull(),
-  servings: integer("servings").notNull(),
   updatedAt: text("updated_at")
     .notNull()
     .default(sql`(CURRENT_TIMESTAMP)`)
@@ -156,6 +153,12 @@ export const recipeEntries = sqliteTable("recipe_entries", {
     .notNull()
     .references(() => foods.id),
   amount: integer("amount").notNull(),
+  serving: text("serving").notNull(),
+  servingQuantity: integer("serving_quantity").notNull(),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
 });
 
 export type Food = typeof foods.$inferSelect;
