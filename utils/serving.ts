@@ -21,6 +21,10 @@ export function formatServing(
   baseUnit: string,
   plural: boolean = false,
 ): string {
+  if (!serving) {
+    return `${amount} ${baseUnit}`;
+  }
+
   serving = serving[0].toUpperCase() + serving.slice(1);
   const parts = serving.split(".");
   if (plural) {
