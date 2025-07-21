@@ -1,6 +1,6 @@
 import { EditIcon, HeartIcon, TrashIcon } from "lucide-nativewind";
 import { TouchableOpacity, View } from "react-native";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   addFavorite,
   deleteCustomFood,
@@ -11,6 +11,17 @@ import { ThreeDotMenu } from "~/components/index/meal/add/three-dot-menu";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import { Text } from "~/components/ui/text";
 import { router } from "expo-router";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog";
 
 type HeaderOptionProps = {
   foodId: string;
@@ -30,6 +41,7 @@ export const HeaderOptions = ({
   isDeleted = false,
 }: HeaderOptionProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     if (foodId === "") {
@@ -54,43 +66,62 @@ export const HeaderOptions = ({
   }
 
   return (
-    <View className="flex-row gap-5">
-      <TouchableOpacity onPress={onPress}>
-        <HeartIcon
-          className={`h-8 w-8 text-primary${isFavorite ? " fill-primary" : ""}`}
-        />
-      </TouchableOpacity>
-      {isCustom ? (
-        <ThreeDotMenu>
-          <DropdownMenuItem
-            onPress={() => {
-              router.navigate({
-                pathname: "/meal/add/custom-food",
-                params: {
-                  edit: "true",
-                  foodId: foodId,
-                },
-              });
-            }}
-          >
-            <View className="flex-row gap-2">
-              <EditIcon className="h-6 w-6 text-primary" />
-              <Text className="text-primary text-base">Edit product</Text>
-            </View>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onPress={async () => {
-              await deleteCustomFood(foodId);
-              router.dismiss();
-            }}
-          >
-            <View className="flex-row gap-2">
-              <TrashIcon className="h-6 w-6 text-red-500" />
-              <Text className="text-red-500 text-base">Delete product</Text>
-            </View>
-          </DropdownMenuItem>
-        </ThreeDotMenu>
-      ) : null}
-    </View>
+    <AlertDialog open={isDialogOpen}>
+      <View className="flex-row gap-5">
+        <TouchableOpacity onPress={onPress}>
+          <HeartIcon
+            className={`h-8 w-8 text-primary${isFavorite ? " fill-primary" : ""}`}
+          />
+        </TouchableOpacity>
+        {isCustom ? (
+          <ThreeDotMenu>
+            <DropdownMenuItem
+              onPress={() => {
+                router.navigate({
+                  pathname: "/meal/add/custom-food",
+                  params: {
+                    edit: "true",
+                    foodId: foodId,
+                  },
+                });
+              }}
+            >
+              <View className="flex-row gap-2">
+                <EditIcon className="h-6 w-6 text-primary" />
+                <Text className="text-primary text-base">Edit product</Text>
+              </View>
+            </DropdownMenuItem>
+            <DropdownMenuItem onPress={() => setIsDialogOpen(true)}>
+              <View className="flex-row gap-2">
+                <TrashIcon className="h-6 w-6 text-red-500" />
+                <Text className="text-red-500 text-base">Delete product</Text>
+              </View>
+            </DropdownMenuItem>
+          </ThreeDotMenu>
+        ) : null}
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This cannot be undone. This will permanently delete your custom
+              food.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onPress={() => setIsDialogOpen(false)}>
+              <Text>Cancel</Text>
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onPress={async () => {
+                await deleteCustomFood(foodId);
+                router.dismiss();
+              }}
+            >
+              <Text>Delete</Text>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </View>
+    </AlertDialog>
   );
 };
