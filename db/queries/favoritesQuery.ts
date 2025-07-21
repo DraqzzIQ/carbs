@@ -1,5 +1,5 @@
 import { db } from "~/db/client";
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import { favorites, foods } from "~/db/schema";
 
 export function favoritesQuery() {
@@ -15,7 +15,11 @@ export function favoritesQuery() {
     })
     .from(favorites)
     .innerJoin(foods, eq(foods.id, favorites.foodId))
-    .orderBy(asc(foods.name));
+    .orderBy(
+      asc(sql`lower (
+    ${foods.name}
+    )`),
+    );
 }
 
 export type FavoritesQueryType = Awaited<ReturnType<typeof favoritesQuery>>;
