@@ -59,78 +59,110 @@ const nutritionTemplate = {
   tin: { value: 0, unit: "mg" },
   vanadium: { value: 0, unit: "µg" },
   zinc: { value: 0, unit: "mg" },
+} as const;
+
+type NutrientKey = keyof typeof nutritionTemplate;
+const NUTRIENT_KEYS: NutrientKey[] = Object.keys(
+  nutritionTemplate,
+) as NutrientKey[];
+
+const SOURCE_KEY_ALIAS: Partial<Record<NutrientKey, string>> = {
+  totalFat: "fat",
 };
 
-const nutritionGroups: Record<
-  string,
-  { title?: string; keys: (keyof typeof nutritionTemplate)[] }
-> = {
-  General: {
-    keys: ["energy", "carb", "protein", "dietaryFiber", "sugar"],
-  },
-  Fat: {
-    title: "Fat",
-    keys: [
-      "totalFat",
-      "saturatedFat",
-      "monoUnsaturatedFat",
-      "polyUnsaturatedFat",
-      "transFat",
-    ],
-  },
-  Miscellaneous: {
-    title: "Miscellaneous",
-    keys: ["alcohol", "cholesterol", "sodium", "salt", "water"],
-  },
-  Vitamins: {
-    title: "Vitamins",
-    keys: [
-      "vitaminA",
-      "vitaminB1",
-      "vitaminB11",
-      "vitaminB12",
-      "vitaminB2",
-      "vitaminB3",
-      "vitaminB5",
-      "vitaminB6",
-      "vitaminB7",
-      "vitaminC",
-      "vitaminD",
-      "vitaminE",
-      "vitaminK",
-    ],
-  },
-  Minerals: {
-    title: "Minerals",
-    keys: [
-      "arsenic",
-      "biotin",
-      "boron",
-      "calcium",
-      "chlorine",
-      "choline",
-      "chrome",
-      "cobalt",
-      "copper",
-      "fluoride",
-      "fluorine",
-      "iodine",
-      "iron",
-      "magnesium",
-      "manganese",
-      "molybdenum",
-      "phosphorus",
-      "potassium",
-      "rubidium",
-      "selenium",
-      "silicon",
-      "sulfur",
-      "tin",
-      "vanadium",
-      "zinc",
-    ],
-  },
+const UNIT_MULTIPLIER: Record<string, number> = {
+  kcal: 1,
+  g: 1,
+  mg: 1000,
+  "\u00B5g": 1_000_000,
 };
+
+const displayLabelCache: Record<NutrientKey, string> = NUTRIENT_KEYS.reduce(
+  (acc, k) => {
+    acc[k] = k.replace(/([A-Z])/g, " $1").toLowerCase();
+    return acc;
+  },
+  {} as Record<NutrientKey, string>,
+);
+
+const nutritionGroups: Record<string, { title?: string; keys: NutrientKey[] }> =
+  {
+    General: { keys: ["energy", "carb", "protein", "dietaryFiber", "sugar"] },
+    Fat: {
+      title: "Fat",
+      keys: [
+        "totalFat",
+        "saturatedFat",
+        "monoUnsaturatedFat",
+        "polyUnsaturatedFat",
+        "transFat",
+      ],
+    },
+    Miscellaneous: {
+      title: "Miscellaneous",
+      keys: ["alcohol", "cholesterol", "sodium", "salt", "water"],
+    },
+    Vitamins: {
+      title: "Vitamins",
+      keys: [
+        "vitaminA",
+        "vitaminB1",
+        "vitaminB11",
+        "vitaminB12",
+        "vitaminB2",
+        "vitaminB3",
+        "vitaminB5",
+        "vitaminB6",
+        "vitaminB7",
+        "vitaminC",
+        "vitaminD",
+        "vitaminE",
+        "vitaminK",
+      ],
+    },
+    Minerals: {
+      title: "Minerals",
+      keys: [
+        "arsenic",
+        "biotin",
+        "boron",
+        "calcium",
+        "chlorine",
+        "choline",
+        "chrome",
+        "cobalt",
+        "copper",
+        "fluoride",
+        "fluorine",
+        "iodine",
+        "iron",
+        "magnesium",
+        "manganese",
+        "molybdenum",
+        "phosphorus",
+        "potassium",
+        "rubidium",
+        "selenium",
+        "silicon",
+        "sulfur",
+        "tin",
+        "vanadium",
+        "zinc",
+      ],
+    },
+  };
+
+type NutrientTotals = Record<NutrientKey, { value: number; unit: string }>;
+
+const buildEmptyTotals = (): NutrientTotals =>
+  NUTRIENT_KEYS.reduce((acc, k) => {
+    acc[k] = { value: 0, unit: nutritionTemplate[k].unit };
+    return acc;
+  }, {} as NutrientTotals);
+
+type NutritionHeaderItem = { type: "header"; key: string; title: string };
+type NutritionValueItem = { type: "item"; key: NutrientKey };
+type NutritionDataItem = NutritionHeaderItem | NutritionValueItem;
 
 type NutritionFactsProps = {
   foods: (Food & { amount: number; servingQuantity: number })[];
@@ -138,46 +170,33 @@ type NutritionFactsProps = {
 };
 
 export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
-  if (foods.length === 0) {
-    return <View />;
-  }
+  if (!foods.length) return <View />;
 
-  const totalNutrition = useMemo(() => {
-    const totals = JSON.parse(JSON.stringify(nutritionTemplate));
-    const unitMultiplier: Record<string, number> = {
-      kcal: 1,
-      g: 1,
-      mg: 1000,
-      "\u00B5g": 1_000_000,
-    };
+  const nutritionData = useMemo<NutritionDataItem[]>(() => {
+    return Object.entries(nutritionGroups)
+      .flatMap(([groupKey, group]) => [
+        group.title
+          ? { type: "header", key: `${groupKey}-header`, title: group.title }
+          : null,
+        ...group.keys.map<NutritionValueItem>((key) => ({ type: "item", key })),
+      ])
+      .filter(Boolean) as NutritionDataItem[];
+  }, []);
 
-    foods.forEach((food) => {
+  const totalNutrition = useMemo<NutrientTotals>(() => {
+    const totals = buildEmptyTotals();
+    for (const food of foods) {
       const quantity = food.servingQuantity * food.amount;
-      Object.keys(totals).forEach((key) => {
-        totals[key as keyof typeof totals].value +=
-          ((food as any)[key.replace("totalF", "f")] ?? 0) *
-          quantity *
-          (unitMultiplier[totals[key as keyof typeof totals].unit] || 1);
-      });
-    });
+      for (const key of NUTRIENT_KEYS) {
+        const sourceKey = SOURCE_KEY_ALIAS[key] || key;
+        const raw = (food as any)[sourceKey];
+        if (raw == null) continue;
+        const multiplier = UNIT_MULTIPLIER[totals[key].unit] || 1;
+        totals[key].value += raw * quantity * multiplier;
+      }
+    }
     return totals;
   }, [foods]);
-
-  type NutritionDataItem =
-    | { type: "header"; key: string; title: string }
-    | { type: "item"; key: keyof typeof nutritionTemplate };
-
-  const nutritionData: NutritionDataItem[] = Object.entries(nutritionGroups)
-    .flatMap(([groupKey, group]) => [
-      group.title
-        ? { type: "header", key: `${groupKey}-header`, title: group.title }
-        : null,
-      ...group.keys.map((key) => ({
-        type: "item",
-        key,
-      })),
-    ])
-    .filter((item): item is NutritionDataItem => item !== null);
 
   return (
     <>
@@ -189,7 +208,7 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
       >
         Nutrition Facts
       </Text>
-      <FlatList
+      <FlatList<NutritionDataItem>
         scrollEnabled={false}
         data={nutritionData}
         keyExtractor={(item) => item.key}
@@ -201,17 +220,17 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
               </Text>
             );
           }
+          const data = totalNutrition[item.key];
           return (
             <View className="p-2 flex-row justify-between">
               <Text className="text-sm capitalize text-primary">
-                {item.key.replace(/([A-Z])/g, " $1")}
+                {displayLabelCache[item.key]}
               </Text>
-              {totalNutrition[item.key].value === 0 ? (
+              {data.value === 0 ? (
                 <Text className="text-sm text-primary">-</Text>
               ) : (
                 <Text className="text-sm text-primary">
-                  {formatNumber(totalNutrition[item.key].value, 1)}{" "}
-                  {totalNutrition[item.key].unit}
+                  {formatNumber(data.value, 1)} {data.unit}
                 </Text>
               )}
             </View>
