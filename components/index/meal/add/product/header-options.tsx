@@ -1,4 +1,4 @@
-import { EditIcon, HeartIcon, TrashIcon } from "lucide-nativewind";
+import { BarcodeIcon, EditIcon, HeartIcon, TrashIcon } from "lucide-nativewind";
 import { TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -21,6 +21,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
+import { Button } from "~/components/ui/button";
+import {
+  BarcodeCreatorView,
+  BarcodeFormat,
+} from "react-native-barcode-creator";
 
 type HeaderOptionProps = {
   foodId: string;
@@ -29,6 +43,7 @@ type HeaderOptionProps = {
   amount: number;
   isCustom?: boolean;
   isDeleted?: boolean;
+  eans?: string[];
 };
 
 export const HeaderOptions = ({
@@ -38,66 +53,75 @@ export const HeaderOptions = ({
   amount,
   isCustom = false,
   isDeleted = false,
+  eans = [],
 }: HeaderOptionProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [barcodeOpen, setBarcodeOpen] = useState(false);
+  const BARCODE_LENGTHS = [8, 12, 13];
 
   useEffect(() => {
-    if (foodId === "") {
-      return;
-    }
+    if (!foodId) return;
     (async () => {
       setIsFavorite(await getIsFavorite(foodId));
     })();
   }, [foodId]);
 
-  const onPress = async () => {
+  const onPressFavorite = async () => {
     if (isFavorite) {
       await removeFavorite(foodId);
     } else {
       await addFavorite(foodId, servingQuantity, amount, serving);
     }
-    setIsFavorite(!isFavorite);
+    setIsFavorite((prev) => !prev);
   };
 
-  if (isDeleted) {
-    return null;
-  }
+  if (isDeleted) return null;
 
   return (
-    <AlertDialog open={isDialogOpen}>
+    <>
       <View className="flex-row gap-5">
-        <TouchableOpacity onPress={onPress}>
+        <TouchableOpacity onPress={onPressFavorite}>
           <HeartIcon
             className={`h-8 w-8 text-primary${isFavorite ? " fill-primary" : ""}`}
           />
         </TouchableOpacity>
+
         {isCustom ? (
           <ThreeDotMenu>
             <DropdownMenuItem
-              onPress={() => {
+              onPress={() =>
                 router.navigate({
                   pathname: "/meal/add/custom-food",
-                  params: {
-                    edit: "true",
-                    foodId: foodId,
-                  },
-                });
-              }}
+                  params: { edit: "true", foodId },
+                })
+              }
             >
               <View className="flex-row gap-2">
                 <EditIcon className="h-6 w-6 text-primary" />
                 <Text className="text-primary text-base">Edit product</Text>
               </View>
             </DropdownMenuItem>
-            <DropdownMenuItem onPress={() => setIsDialogOpen(true)}>
+            <DropdownMenuItem onPress={() => setDeleteDialogOpen(true)}>
               <View className="flex-row gap-2">
                 <TrashIcon className="h-6 w-6 text-red-500" />
                 <Text className="text-red-500 text-base">Delete product</Text>
               </View>
             </DropdownMenuItem>
+            <DropdownMenuItem onPress={() => setBarcodeOpen(true)}>
+              <View className="flex-row gap-2">
+                <BarcodeIcon className="h-6 w-6 text-primary" />
+                <Text className="text-primary text-base">View barcode</Text>
+              </View>
+            </DropdownMenuItem>
           </ThreeDotMenu>
-        ) : null}
+        ) : (
+          <TouchableOpacity onPress={() => setBarcodeOpen(true)}>
+            <BarcodeIcon className="h-8 w-8 text-primary" />
+          </TouchableOpacity>
+        )}
+      </View>
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
@@ -107,7 +131,7 @@ export const HeaderOptions = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onPress={() => setIsDialogOpen(false)}>
+            <AlertDialogCancel onPress={() => setDeleteDialogOpen(false)}>
               <Text>Cancel</Text>
             </AlertDialogCancel>
             <AlertDialogAction
@@ -120,7 +144,43 @@ export const HeaderOptions = ({
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </View>
-    </AlertDialog>
+      </AlertDialog>
+      <Dialog open={barcodeOpen} onOpenChange={setBarcodeOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-center mb-2">Barcode</DialogTitle>
+            <DialogDescription>
+              {eans.length === 0 ||
+              !BARCODE_LENGTHS.includes(eans[0].length) ? (
+                <Text className="text-center text-muted-foreground">
+                  No barcode available for this product.
+                </Text>
+              ) : (
+                <BarcodeCreatorView
+                  format={
+                    eans[0].length === 8
+                      ? BarcodeFormat.EAN8
+                      : eans[0].length === 12
+                        ? BarcodeFormat.UPCA
+                        : BarcodeFormat.EAN13
+                  }
+                  value={eans[0]}
+                  style={{ width: 280, height: 80 }}
+                  background={"#ffffff"}
+                  foregroundColor={"#000000"}
+                />
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button onPress={() => setBarcodeOpen(false)}>
+                <Text>Close</Text>
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };

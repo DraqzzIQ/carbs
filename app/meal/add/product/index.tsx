@@ -168,6 +168,7 @@ export default function ProductDetailScreen() {
               amount={amount}
               isCustom={food?.isCustom}
               isDeleted={!!food?.deletedAt}
+              eans={food?.eans}
             />
           ),
         }}
