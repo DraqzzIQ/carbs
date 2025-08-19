@@ -21,6 +21,7 @@ export default function SettingsScreen() {
     maxSnacks,
     displaySnacks,
     setSettings,
+    searchDebounceMs,
   } = useSettings();
 
   const totalMaxCalories =
@@ -102,6 +103,16 @@ export default function SettingsScreen() {
         ))}
         <Text className="font-semibold text-sm mt-3">Food Database</Text>
         <CountrySelector />
+        <Text className="font-semibold text-sm mt-3">Search Delay (ms)</Text>
+        <Input
+          selectTextOnFocus={true}
+          keyboardType="numeric"
+          value={searchDebounceMs.toString()}
+          onChangeText={(text) =>
+            setSettings({ searchDebounceMs: Number(text) || 300 })
+          }
+          className="border border-primary p-2 rounded-md text-sm text-primary bg-secondary"
+        />
       </ScrollView>
     </KeyboardShift>
   );

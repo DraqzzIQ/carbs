@@ -213,9 +213,6 @@ export async function queryCustomFoods(
   query: string,
   barCode: boolean = false,
 ): Promise<FoodSearchResultDto[]> {
-  if (query.length < 2) {
-    return [];
-  }
   try {
     const result = await db.query.foods.findMany({
       where: and(

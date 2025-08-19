@@ -1,3 +1,4 @@
+import { useRef, useTransition, useCallback } from "react";
 import { Keyboard, TouchableOpacity, View } from "react-native";
 import {
   router,
@@ -20,27 +21,32 @@ import { ThreeDotMenu } from "~/components/index/meal/add/three-dot-menu";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import { Text } from "~/components/ui/text";
 import { BarcodeScanner } from "~/components/index/meal/add/barcode-scanner";
+import { useSettings } from "~/contexts/AppSettingsContext";
 
 export default function AddToMealScreen() {
   const params = useLocalSearchParams();
   const meal = params["mealName"] as string;
   const date = params["date"] as string;
+
   const { hasPermission, requestPermission } = useCameraPermission();
+  const navigation = useNavigation();
+  const { searchDebounceMs } = useSettings();
+
   const [barCodeScannerOpen, setBarCodeScannerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<FoodSearchResultDto[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
-  const noResults = products.length === 0 && searchQuery !== "";
   const [onlyCustomProducts, setOnlyCustomProducts] = useState(false);
+  const [noResults, setNoResults] = useState(false);
 
-  useEffect(() => {
-    if (searchQuery === "" && products.length > 0) {
-      setProducts([]);
-    }
-  }, [products]);
+  // Concurrency / cancellation tracking
+  const abortRef = useRef<AbortController | null>(null);
+  const requestIdRef = useRef(0);
+  const cacheRef = useRef<Map<string, FoodSearchResultDto[]>>(new Map());
+  const [_, startTransition] = useTransition();
 
-  const navigation = useNavigation();
+  // Focus listener & camera permission
   useEffect(() => {
     return navigation.addListener("focus", () => {
       setBarCodeScannerOpen(false);
@@ -50,59 +56,121 @@ export default function AddToMealScreen() {
         })();
       }
     });
-  }, [navigation]);
+  }, [navigation, hasPermission, requestPermission]);
 
-  const onSearchQueryChange = async (text: string) => {
-    setSearchQuery(text);
-    await searchProducts(text);
-  };
-
-  let abortController: AbortController | null = null;
-  const searchProducts = async (
-    query: string,
-    scanned: boolean = false,
-    onlyCustom = onlyCustomProducts,
-  ) => {
-    if (abortController) {
-      abortController.abort();
-    }
-
-    if (query.length === 0) {
+  // Clear products when query cleared manually
+  useEffect(() => {
+    if (searchQuery === "" && products.length > 0) {
       setProducts([]);
-      setLoading(false);
+    }
+  }, [searchQuery, products]);
+
+  const performSearch = useCallback(
+    async (
+      rawQuery: string,
+      scanned = false,
+      onlyCustom = onlyCustomProducts,
+    ) => {
+      const query = rawQuery.trim();
+      // Serve from cache if present and not scanned (still allow scan to refetch)
+      const cacheKey = `${onlyCustom ? "custom|" : "all|"}${query.toLowerCase()}`;
+      if (!scanned && cacheRef.current.has(cacheKey)) {
+        setProducts(cacheRef.current.get(cacheKey)!);
+        return;
+      }
+
+      requestIdRef.current += 1;
+      const currentId = requestIdRef.current;
+
+      // Abort previous
+      if (abortRef.current) abortRef.current.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      setLoading(true);
+      try {
+        const remotePromise = onlyCustom
+          ? Promise.resolve<FoodSearchResultDto[]>([])
+          : yazioSearchFoods(query, { signal: controller.signal });
+
+        const localPromise = queryCustomFoods(query, scanned);
+
+        const [remote, local] = await Promise.all([
+          remotePromise,
+          localPromise,
+        ]);
+
+        if (controller.signal.aborted || currentId !== requestIdRef.current)
+          return;
+
+        // Merge & dedupe by productId (prefer local override if same id)
+        const map = new Map<string, FoodSearchResultDto>();
+        remote.forEach((r) => map.set(r.productId, r));
+        local.forEach((l) => map.set(l.productId, l));
+        const merged = Array.from(map.values());
+
+        cacheRef.current.set(cacheKey, merged);
+
+        startTransition(() => {
+          setProducts(merged);
+        });
+
+        setNoResults(merged.length === 0);
+
+        if (merged.length === 1 && scanned) {
+          router.navigate({
+            pathname: "/meal/add/product",
+            params: {
+              edit: "false",
+              productId: merged[0].productId,
+              date,
+              mealName: meal,
+              custom: merged[0].score === -1 ? "true" : "false",
+            },
+          });
+        }
+      } catch (e) {
+        if (
+          !(e instanceof Error && e.name === "AbortError") &&
+          currentId === requestIdRef.current
+        ) {
+          console.error("Failed to search products:", e);
+          setProducts([]);
+          setNoResults(true);
+        }
+      } finally {
+        if (currentId === requestIdRef.current) {
+          setLoading(false);
+        }
+      }
+    },
+    [onlyCustomProducts, date, meal],
+  );
+
+  // Debounced search effect (keyboard input)
+  useEffect(() => {
+    if (searchQuery === "") {
+      abortRef.current?.abort();
+      setProducts([]);
+      setNoResults(false);
       return;
     }
+    const handle = setTimeout(() => {
+      performSearch(searchQuery, false);
+    }, searchDebounceMs);
+    return () => clearTimeout(handle);
+  }, [searchQuery, performSearch]);
 
-    abortController = new AbortController();
-    const { signal } = abortController;
+  const onSearchQueryChange = (text: string) => {
+    setSearchQuery(text);
+  };
 
-    setLoading(true);
-    try {
-      const [response, localResults] = await Promise.all([
-        onlyCustom ? [] : yazioSearchFoods(query, { signal }),
-        queryCustomFoods(query, scanned),
-      ]);
-      const result = [...response, ...localResults];
-      setProducts(result);
-      if (result.length === 1 && scanned) {
-        router.navigate({
-          pathname: "/meal/add/product",
-          params: {
-            edit: "false",
-            productId: result[0].productId,
-            date: date,
-            mealName: meal,
-            custom: result[0].score === -1 ? "true" : "false",
-          },
-        });
-      }
-    } catch (error) {
-      if (error instanceof Error && error.name !== "AbortError") {
-        console.error("Failed to search products:", error);
-      }
-      setProducts([]);
-    } finally {
-      setLoading(false);
+  const handleOnlyCustomChange = (value: boolean) => {
+    setOnlyCustomProducts(value);
+    setNoResults(false);
+    // Re-run search immediately (respects debounce for typing already done)
+    if (searchQuery.trim()) {
+      performSearch(searchQuery, false, value);
     }
   };
 
@@ -125,10 +193,11 @@ export default function AddToMealScreen() {
     );
   }
 
-  const onScan = async (code: string) => {
+  const onScan = (code: string) => {
     setBarCodeScannerOpen(false);
     setSearchQuery(code);
-    await searchProducts(code, true);
+    // Immediate search: bypass debounce & cache
+    performSearch(code, true);
   };
 
   return (
@@ -146,7 +215,7 @@ export default function AddToMealScreen() {
                   onPress={() =>
                     router.navigate({
                       pathname: "/meal/add/custom-food",
-                      params: { date: date, mealName: meal },
+                      params: { date, mealName: meal },
                     })
                   }
                 >
@@ -156,7 +225,7 @@ export default function AddToMealScreen() {
                   onPress={() =>
                     router.navigate({
                       pathname: "/meal/add/quick-entry",
-                      params: { date: date, mealName: meal },
+                      params: { date, mealName: meal },
                     })
                   }
                 >
@@ -171,16 +240,16 @@ export default function AddToMealScreen() {
           <Input
             onFocus={() => setSearchFocused(true)}
             onEndEditing={() => setSearchFocused(false)}
-            selectTextOnFocus={true}
+            selectTextOnFocus
             className="flex-1 ml-4 border-0 bg-secondary"
             placeholder="Search Product"
-            onChangeText={(text: string) => onSearchQueryChange(text)}
+            onChangeText={onSearchQueryChange}
             value={searchQuery}
             autoCorrect={false}
           />
           <TouchableOpacity
-            onPress={async () => {
-              await onSearchQueryChange("");
+            onPress={() => {
+              setSearchQuery("");
               Keyboard.dismiss();
             }}
           >
@@ -202,17 +271,12 @@ export default function AddToMealScreen() {
               onAddProduct={onAddProduct}
               meal={meal}
               searchFocused={searchFocused}
-              onSetOnlyCustomProducts={async (value: boolean) => {
-                setOnlyCustomProducts(value);
-                await searchProducts(searchQuery, false, value);
-              }}
+              onSetOnlyCustomProducts={handleOnlyCustomChange}
             />
           )}
         </View>
         <FloatingActionButton
-          onPress={() => {
-            setBarCodeScannerOpen((prev) => !prev);
-          }}
+          onPress={() => setBarCodeScannerOpen((prev) => !prev)}
         >
           {barCodeScannerOpen ? (
             <XIcon className="text-secondary h-9 w-9" />

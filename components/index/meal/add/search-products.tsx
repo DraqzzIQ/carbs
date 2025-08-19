@@ -28,7 +28,7 @@ type SearchProductsProps = {
   meal: string;
   date: string;
   searchFocused: boolean;
-  onSetOnlyCustomProducts: (onlyCustom: boolean) => Promise<void>;
+  onSetOnlyCustomProducts: (onlyCustom: boolean) => void;
 };
 
 export const SearchProducts = ({
@@ -61,15 +61,15 @@ export const SearchProducts = ({
         size="sm"
         variant="outline"
         pressed={onlyCustomProducts}
-        onPressedChange={async (pressed) => {
+        onPressedChange={(pressed) => {
           setOnlyCustomProducts(pressed);
-          await onSetOnlyCustomProducts(pressed);
+          onSetOnlyCustomProducts(pressed);
         }}
         className="self-start rounded-full"
       >
         <View className="flex-row items-center">
           <PenIcon className="text-primary h-4 w-4 mr-1" />
-          <Text>Custom Products</Text>
+          <Text>Custom only</Text>
         </View>
       </Toggle>
       {loading ? (
