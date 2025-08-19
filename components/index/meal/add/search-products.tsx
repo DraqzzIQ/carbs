@@ -148,6 +148,7 @@ function SearchProduct({
 
   return (
     <TouchableOpacity
+      className="p-0.5"
       onPress={() =>
         router.navigate({
           pathname: "/meal/add/product",
@@ -161,7 +162,7 @@ function SearchProduct({
         })
       }
     >
-      <Card className="flex items-start justify-between px-3 py-2 bg-secondary rounded-lg mb-2">
+      <Card className="flex items-start justify-between px-2.5 py-1.5 bg-secondary rounded-lg mb-2">
         <View className="flex-row items-center">
           <Text className="text-primary font-semibold max-w-[90%] flex-shrink">
             {`${product.name} `}

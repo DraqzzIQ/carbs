@@ -4,6 +4,7 @@ import { formatNumber } from "~/utils/formatting";
 import { cn } from "~/lib/utils";
 import { Text } from "~/components/ui/text";
 import { Food } from "~/db/schema";
+import { Card } from "~/components/ui/card";
 
 const nutritionTemplate = {
   energy: { value: 0, unit: "kcal" },
@@ -199,13 +200,8 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
   }, [foods]);
 
   return (
-    <>
-      <Text
-        className={cn(
-          "text-center font-semibold text-primary text-lg mt-5",
-          className,
-        )}
-      >
+    <Card className={cn("p-4 pt-5 rounded-2xl bg-secondary", className)}>
+      <Text className="text-center font-semibold text-primary text-lg">
         Nutrition Facts
       </Text>
       <FlatList<NutritionDataItem>
@@ -237,6 +233,6 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
           );
         }}
       />
-    </>
+    </Card>
   );
 };

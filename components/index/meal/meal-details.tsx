@@ -59,7 +59,7 @@ export const MealDetails = ({ date, mealType }: MealDetailProps) => {
   }, [currentDayMeals]);
 
   return (
-    <ScrollView className="h-full bg-secondary mb-6">
+    <ScrollView className="h-full bg-secondary pb-6">
       <MacroHeader
         energy={mealData.totalCalories}
         carbs={mealData.totalCarbs}
@@ -71,10 +71,9 @@ export const MealDetails = ({ date, mealType }: MealDetailProps) => {
           {currentDayMeals.map((meal) => (
             <MealItem meal={meal} key={meal.id} />
           ))}
-          <NutritionFacts
-            foods={mapMealsToNutritionFacts(currentDayMeals)}
-            className="pt-1"
-          />
+          <View className="p-1 pb-2 mt-6">
+            <NutritionFacts foods={mapMealsToNutritionFacts(currentDayMeals)} />
+          </View>
         </View>
       ) : (
         <Text className="text-center text-muted-foreground mt-4">
@@ -104,20 +103,22 @@ const RightAction = ({
   }));
 
   return (
-    <TouchableOpacity
-      className="flex w-full flex-row items-center pr-4 bg-[#ff526b] h-full justify-center"
-      onPress={async () => {
-        await removeFoodFromMeal(mealId);
-      }}
-    >
-      <View className="flex-grow" />
-      <Animated.View
-        style={[animatedStyle]}
-        className="items-center justify-center h-full"
+    <View className="w-full items-center justify-center h-full p-1">
+      <TouchableOpacity
+        className="w-full bg-[#ff526b] pr-4 rounded-lg"
+        onPress={async () => {
+          await removeFoodFromMeal(mealId);
+        }}
       >
-        <Trash2Icon className="w-8 h-8 text-primary" />
-      </Animated.View>
-    </TouchableOpacity>
+        <View className="flex-grow" />
+        <Animated.View
+          style={[animatedStyle]}
+          className="items-center justify-center h-full"
+        >
+          <Trash2Icon className="w-8 h-8 text-primary" />
+        </Animated.View>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -154,7 +155,7 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
             renderRightActions(translation, meal.id, width)
           }
         >
-          <Card className="p-3 bg-secondary ">
+          <Card className="p-3 bg-secondary m-1">
             <View className="flex-row">
               <View>
                 <Text className="font-semibold">{meal.food.name}</Text>
