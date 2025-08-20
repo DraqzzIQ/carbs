@@ -9,8 +9,9 @@ import { getVolumeUnitForLocale } from "~/utils/formatting";
 import { addFluidIntake, deleteFluidIntake } from "~/utils/querying";
 import { Separator } from "~/components/ui/separator";
 import Animated, {
-  LightSpeedInLeft,
-  LightSpeedOutRight,
+  FadeIn,
+  FadeOut,
+  LinearTransition,
 } from "react-native-reanimated";
 
 type WaterTrackerProps = {
@@ -67,8 +68,9 @@ export const WaterTracker = ({ date, fluidIntake }: WaterTrackerProps) => {
             {fluidIntake.map((item) => (
               <Animated.View
                 key={item.id}
-                entering={LightSpeedInLeft}
-                exiting={LightSpeedOutRight}
+                layout={LinearTransition}
+                entering={FadeIn}
+                exiting={FadeOut}
               >
                 <View className="flex-row items-center rounded-lg bg-card shadow-sm shadow-primary/40 p-2">
                   <GlassWaterIcon className="text-primary h-8 w-8" />

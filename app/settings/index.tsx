@@ -6,10 +6,11 @@ import { Switch } from "~/components/ui/switch";
 import { useSettings } from "~/contexts/AppSettingsContext";
 import { formatNumber, getVolumeUnitForLocale } from "~/utils/formatting";
 import { KeyboardShift } from "~/components/keyboard-shift";
-import { CountrySelector } from "~/components/country-selector";
 import { MealType } from "~/types/MealType";
 import ScrollView = Animated.ScrollView;
 import { Card, CardTitle } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { router } from "expo-router";
 
 export default function SettingsScreen() {
   const {
@@ -21,11 +22,11 @@ export default function SettingsScreen() {
     maxDinner,
     maxSnacks,
     displaySnacks,
-    setSettings,
     searchDebounceMs,
     waterTrackerEnabled,
     maxFluidIntake,
     fluidSizes,
+    setSettings,
   } = useSettings();
 
   const totalMaxCalories =
@@ -171,7 +172,14 @@ export default function SettingsScreen() {
         </Card>
         <Card className="p-4 mt-4">
           <CardTitle className="text-center mb-4">Food database</CardTitle>
-          <CountrySelector />
+          <Button
+            onPress={() =>
+              router.navigate({ pathname: "/settings/food-db-location" })
+            }
+            className="w-full"
+          >
+            <Text>Change database location</Text>
+          </Button>
         </Card>
         <Card className="p-4 mt-4 mb-8">
           <CardTitle className="text-center">Advanced</CardTitle>
@@ -181,7 +189,7 @@ export default function SettingsScreen() {
             keyboardType="numeric"
             value={searchDebounceMs.toString()}
             onChangeText={(text) =>
-              setSettings({ searchDebounceMs: Number(text) || 300 })
+              setSettings({ searchDebounceMs: Number(text) || 0 })
             }
             className="border border-primary p-2 rounded-md text-sm text-primary bg-secondary"
           />

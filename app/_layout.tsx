@@ -23,6 +23,8 @@ import { db, expoDb } from "~/db/client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { cssInterop } from "nativewind";
+import { Dropdown } from "react-native-element-dropdown";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -74,6 +76,20 @@ export default function RootLayout() {
 
   setBackgroundColorAsync(isDarkColorScheme ? "black" : "#f4f4f5");
 
+  cssInterop(Dropdown, {
+    className: "style",
+    containerClassName: "containerStyle",
+    placeholderClassName: "placeholderStyle",
+    selectedTextClassName: "selectedTextStyle",
+    inputSearchClassName: "inputSearchStyle",
+    iconClassName: "iconStyle",
+    itemTextClassName: "itemTextStyle",
+    activeColorClassName: {
+      target: false,
+      nativeStyleToProp: { color: "activeColor" },
+    },
+  });
+
   return (
     <GestureHandlerRootView>
       <SettingsProvider>
@@ -102,6 +118,18 @@ export default function RootLayout() {
                     backgroundColor: isDarkColorScheme ? "black" : "white",
                   },
                   headerRight: () => <ThemeToggle />,
+                }}
+              />
+              <Stack.Screen
+                name="settings/food-db-location/index"
+                options={{
+                  headerTitleAlign: "center",
+                  headerShown: true,
+                  title: "Food Database",
+                  headerBackButtonDisplayMode: "minimal",
+                  headerStyle: {
+                    backgroundColor: isDarkColorScheme ? "black" : "white",
+                  },
                 }}
               />
               <Stack.Screen

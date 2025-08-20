@@ -1,6 +1,6 @@
 import { Text } from "~/components/ui/text";
 import { LoaderCircleIcon, PlusIcon } from "lucide-nativewind";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { RecentsQueryType } from "~/db/queries/recentsQuery";
 import { formatServing } from "~/utils/serving";
 import {
@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import { addFoodToMeal } from "~/utils/querying";
 import { MealType } from "~/types/MealType";
 import { router } from "expo-router";
+import { FlashList } from "@shopify/flash-list";
 
 type RecentsListProps = {
   query: any;
@@ -46,7 +47,8 @@ export const RecentsList = ({
   }
 
   return (
-    <FlatList
+    <FlashList<any>
+      estimatedItemSize={63}
       data={recents}
       keyExtractor={(item) => item.id.toString()}
       showsVerticalScrollIndicator={false}

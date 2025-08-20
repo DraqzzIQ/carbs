@@ -1,10 +1,11 @@
-import { FlatList, View } from "react-native";
+import { View } from "react-native";
 import { useMemo } from "react";
 import { formatNumber } from "~/utils/formatting";
 import { cn } from "~/lib/utils";
 import { Text } from "~/components/ui/text";
 import { Food } from "~/db/schema";
 import { Card, CardTitle } from "~/components/ui/card";
+import { FlashList } from "@shopify/flash-list";
 
 const nutritionTemplate = {
   energy: { value: 0, unit: "kcal" },
@@ -200,7 +201,8 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
   return (
     <Card className={cn("p-4 pt-5 rounded-2xl", className)}>
       <CardTitle className="text-center">Nutrition Facts</CardTitle>
-      <FlatList<NutritionDataItem>
+      <FlashList<NutritionDataItem>
+        estimatedItemSize={31}
         className="mt-4"
         scrollEnabled={false}
         data={nutritionData}

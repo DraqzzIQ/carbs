@@ -17,8 +17,8 @@ export const MacroHeader = ({
   fat,
 }: MacroHeaderProps) => {
   return (
-    <Card className="p-2 mb-1 bg-secondary border-2 border-foreground flex-1">
-      <View className="flex-1 flex-row justify-between">
+    <Card className="p-2 m-1 bg-secondary border-2 border-foreground">
+      <View className="flex-row justify-between">
         <View className="items-center">
           <Text className="font-semibold">{formatNumber(energy)} kcal</Text>
           <Text className="text-xs">Calories</Text>

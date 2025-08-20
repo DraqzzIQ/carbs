@@ -1,4 +1,4 @@
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity, View } from "react-native";
 import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import { useRelationalLiveQuery } from "~/db/queries/useRelationalLiveQuery";
@@ -9,18 +9,18 @@ import {
   mealDetailsQuery,
   MealDetailsQueryType,
 } from "~/db/queries/mealDetailsQuery";
-import { NutritionFacts } from "~/components/index/meal/nutrition-facts";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import Animated, {
   SharedValue,
   useAnimatedStyle,
   interpolate,
   Extrapolation,
+  FadeOut,
+  LinearTransition,
 } from "react-native-reanimated";
 import { Trash2Icon } from "lucide-nativewind";
 import { removeFoodFromMeal } from "~/utils/querying";
 import { router } from "expo-router";
-import { mapMealsToNutritionFacts } from "~/utils/mapMealsToNutritionFacts";
 import { MacroHeader } from "~/components/index/meal/macro-header";
 import { formatServing } from "~/utils/serving";
 
@@ -59,28 +59,29 @@ export const MealDetails = ({ date, mealType }: MealDetailProps) => {
   }, [currentDayMeals]);
 
   return (
-    <ScrollView className="h-full bg-secondary pb-6">
-      <MacroHeader
-        energy={mealData.totalCalories}
-        carbs={mealData.totalCarbs}
-        protein={mealData.totalProtein}
-        fat={mealData.totalFat}
+    <>
+      <FlatList
+        className="h-full bg-secondary pb-6"
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={false}
+        ListHeaderComponent={
+          <MacroHeader
+            energy={mealData.totalCalories}
+            carbs={mealData.totalCarbs}
+            protein={mealData.totalProtein}
+            fat={mealData.totalFat}
+          />
+        }
+        contentContainerClassName="pb-32"
+        data={currentDayMeals}
+        renderItem={({ item }) => <MealItem meal={item} key={item.id} />}
       />
-      {currentDayMeals.length > 0 ? (
-        <View>
-          {currentDayMeals.map((meal) => (
-            <MealItem meal={meal} key={meal.id} />
-          ))}
-          <View className="p-1 pb-2 mt-6">
-            <NutritionFacts foods={mapMealsToNutritionFacts(currentDayMeals)} />
-          </View>
-        </View>
-      ) : (
+      {currentDayMeals.length === 0 && (
         <Text className="text-center text-muted-foreground mt-4">
           Nothing added yet.
         </Text>
       )}
-    </ScrollView>
+    </>
   );
 };
 
@@ -132,30 +133,32 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
   const [width, setWidth] = useState(0);
 
   return (
-    <TouchableOpacity
-      onPress={async () => {
-        const path = `/meal/add/${meal.food.category === "quick-entry" ? "/quick-entry" : "product"}`;
-        router.navigate({
-          pathname: path as any,
-          params: {
-            edit: "true",
-            mealId: meal.id,
-            date: meal.date,
-            mealName: meal.mealType,
-          },
-        });
-      }}
+    <Animated.View
+      className="mt-1.5 rounded-lg overflow-hidden"
+      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      exiting={FadeOut}
+      layout={LinearTransition}
     >
-      <View
-        className="mt-1.5 rounded-lg overflow-hidden"
-        onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      <ReanimatedSwipeable
+        renderRightActions={(_, translation) =>
+          renderRightActions(translation, meal.id, width)
+        }
       >
-        <ReanimatedSwipeable
-          renderRightActions={(_, translation) =>
-            renderRightActions(translation, meal.id, width)
-          }
-        >
-          <Card className="p-3 m-1">
+        <Card className="p-3 m-1">
+          <TouchableOpacity
+            onPress={async () => {
+              const path = `/meal/add/${meal.food.category === "quick-entry" ? "/quick-entry" : "product"}`;
+              router.navigate({
+                pathname: path as any,
+                params: {
+                  edit: "true",
+                  mealId: meal.id,
+                  date: meal.date,
+                  mealName: meal.mealType,
+                },
+              });
+            }}
+          >
             <View className="flex-row">
               <View>
                 <Text className="font-semibold">{meal.food.name}</Text>
@@ -217,9 +220,9 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
                 <Text className="text-xs">Fat</Text>
               </View>
             </View>
-          </Card>
-        </ReanimatedSwipeable>
-      </View>
-    </TouchableOpacity>
+          </TouchableOpacity>
+        </Card>
+      </ReanimatedSwipeable>
+    </Animated.View>
   );
 }

@@ -18,7 +18,7 @@ import { mealDetailsQuery } from "~/db/queries/mealDetailsQuery";
 import { mapMealsToNutritionFacts } from "~/utils/mapMealsToNutritionFacts";
 import { db } from "~/db/client";
 import { fluidIntake } from "~/db/schema";
-import { asc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { WaterTracker } from "~/components/index/water-tracker";
 
 export default function Screen() {
@@ -55,7 +55,7 @@ export default function Screen() {
       db
         .select()
         .from(fluidIntake)
-        .orderBy(asc(fluidIntake.id))
+        .orderBy(desc(fluidIntake.id))
         .where(eq(fluidIntake.date, currentDay)),
       [currentDay],
     );

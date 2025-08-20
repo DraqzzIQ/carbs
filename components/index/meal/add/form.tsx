@@ -1,11 +1,5 @@
 import { useState, useEffect, ReactNode } from "react";
-import {
-  View,
-  TouchableOpacity,
-  FlatList,
-  StyleProp,
-  StyleSheet,
-} from "react-native";
+import { View, TouchableOpacity, StyleProp, StyleSheet } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Text } from "~/components/ui/text";
 import { NumericInput } from "~/components/numeric-input";
@@ -26,6 +20,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Card, CardTitle } from "~/components/ui/card";
+import { FlashList } from "@shopify/flash-list";
 
 export enum FieldType {
   Text = "text",
@@ -387,17 +382,13 @@ function SelectField({
         />
       </SelectTrigger>
       <SelectContent className="bg-secondary">
-        <FlatList
+        <FlashList
+          estimatedItemSize={40}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
           data={field.options}
           renderItem={({ item }) => (
-            <SelectItem
-              key={item}
-              value={item}
-              label={item}
-              className="text-primary"
-            />
+            <SelectItem value={item} label={item} className="text-primary" />
           )}
           keyExtractor={(item) => item}
           ItemSeparatorComponent={SelectSeparator}

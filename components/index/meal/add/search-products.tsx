@@ -1,5 +1,5 @@
 import { Text } from "~/components/ui/text";
-import { FlatList, Keyboard, TouchableOpacity, View } from "react-native";
+import { Keyboard, TouchableOpacity, View } from "react-native";
 import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
 import { Card } from "~/components/ui/card";
 import {
@@ -16,12 +16,14 @@ import { useState, useEffect } from "react";
 import Animated, {
   LightSpeedInLeft,
   LightSpeedOutRight,
+  LinearTransition,
 } from "react-native-reanimated";
 import { getServingUnitLabel } from "~/utils/serving";
 import { FoodTabs } from "~/components/index/meal/add/food-tabs";
 import { MealType } from "~/types/MealType";
 import { getRecentFoods } from "~/utils/querying";
 import { Toggle } from "~/components/ui/toggle";
+import { FlashList } from "@shopify/flash-list";
 
 type SearchProductsProps = {
   products: FoodSearchResultDto[];
@@ -104,7 +106,8 @@ export const SearchProducts = ({
           </Text>
         </View>
       ) : (
-        <FlatList
+        <FlashList
+          estimatedItemSize={120}
           className="mt-2"
           data={products}
           keyExtractor={(item) => item.productId}
@@ -113,6 +116,7 @@ export const SearchProducts = ({
           contentContainerStyle={{ paddingBottom: 40 }}
           renderItem={({ item }) => (
             <Animated.View
+              layout={LinearTransition}
               entering={LightSpeedInLeft}
               exiting={LightSpeedOutRight}
             >
