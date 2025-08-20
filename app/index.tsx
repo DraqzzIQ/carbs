@@ -8,7 +8,7 @@ import {
   getCurrentDayFormattedDate,
   offsetDateByDays,
 } from "~/utils/formatting";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigation } from "expo-router";
 import { getDateSlug } from "~/utils/formatting";
 import { runOnJS } from "react-native-reanimated";
@@ -16,6 +16,10 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { NutritionFacts } from "~/components/index/meal/nutrition-facts";
 import { mealDetailsQuery } from "~/db/queries/mealDetailsQuery";
 import { mapMealsToNutritionFacts } from "~/utils/mapMealsToNutritionFacts";
+import { db } from "~/db/client";
+import { fluidIntake } from "~/db/schema";
+import { asc, eq } from "drizzle-orm";
+import { WaterTracker } from "~/components/index/water-tracker";
 
 export default function Screen() {
   const {
@@ -27,6 +31,7 @@ export default function Screen() {
     maxDinner,
     maxSnacks,
     displaySnacks,
+    maxFluidIntake,
   } = useSettings();
   const maxCalories =
     maxBreakfast + maxLunch + maxDinner + (displaySnacks ? maxSnacks : 0);
@@ -34,16 +39,37 @@ export default function Screen() {
   const [currentDay, setCurrentDay] = useState(getCurrentDayFormattedDate);
   const [dateString, setDateString] = useState<string>(getDateSlug(currentDay));
 
-  const { data: currentDayMeals, error: queryError } = useRelationalLiveQuery(
-    mealDetailsQuery(currentDay),
-    [currentDay],
-  );
+  const { waterTrackerEnabled } = useSettings();
+
+  const { data: currentDayMeals, error: mealDetailsQueryError } =
+    useRelationalLiveQuery(mealDetailsQuery(currentDay), [currentDay]);
 
   useEffect(() => {
-    if (queryError) {
-      console.error("Error fetching streaks:", queryError);
+    if (mealDetailsQueryError) {
+      console.error("Error fetching streaks: ", mealDetailsQueryError);
     }
-  }, [queryError]);
+  }, [mealDetailsQueryError]);
+
+  const { data: fluidIntakeResult, error: fluidIntakeQueryError } =
+    useRelationalLiveQuery(
+      db
+        .select()
+        .from(fluidIntake)
+        .orderBy(asc(fluidIntake.id))
+        .where(eq(fluidIntake.date, currentDay)),
+      [currentDay],
+    );
+  const totalFluidIntake = useMemo(() => {
+    return (
+      fluidIntakeResult?.reduce((total, day) => total + day.amount, 0) || 0
+    );
+  }, [fluidIntakeResult]);
+
+  useEffect(() => {
+    if (fluidIntakeQueryError) {
+      console.error("Error fetching fluid intake: ", fluidIntakeQueryError);
+    }
+  }, [fluidIntakeQueryError]);
 
   const onSwipe = (direction: "left" | "right") => {
     const offset = direction === "left" ? 1 : -1;
@@ -100,6 +126,9 @@ export default function Screen() {
                 maxCarbs={maxCarbs}
                 maxProtein={maxProtein}
                 maxFat={maxFat}
+                fluidIntake={totalFluidIntake}
+                maxFluidIntake={maxFluidIntake}
+                waterTrackerEnabled={waterTrackerEnabled}
               />
               <Meals
                 date={currentDay}
@@ -110,9 +139,15 @@ export default function Screen() {
                 maxSnacks={maxSnacks}
                 displaySnacks={displaySnacks}
               />
+              {waterTrackerEnabled && (
+                <WaterTracker
+                  date={currentDay}
+                  fluidIntake={fluidIntakeResult}
+                />
+              )}
               <NutritionFacts
                 foods={mapMealsToNutritionFacts(currentDayMeals)}
-                className="mt-20"
+                className="mt-8"
               />
             </View>
           </View>

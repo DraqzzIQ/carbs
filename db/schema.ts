@@ -152,6 +152,12 @@ export const recipeEntries = sqliteTable("recipe_entries", {
     .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
 });
 
+export const fluidIntake = sqliteTable("fluid_intake", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  amount: integer("amount").notNull(),
+  date: text("date").notNull(),
+});
+
 export type Food = typeof foods.$inferSelect;
 export type Meal = typeof meals.$inferSelect;
 export type Favorite = typeof favorites.$inferSelect;
@@ -159,6 +165,7 @@ export type Recent = typeof recents.$inferSelect;
 export type Streak = typeof streaks.$inferSelect;
 export type Recipe = typeof recipes.$inferSelect;
 export type RecipeEntry = typeof recipeEntries.$inferSelect;
+export type FluidIntake = typeof fluidIntake.$inferSelect;
 
 export const foodsRelations = relations(foods, ({ many }) => ({
   meals: many(meals),

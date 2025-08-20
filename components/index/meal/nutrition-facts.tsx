@@ -171,8 +171,6 @@ type NutritionFactsProps = {
 };
 
 export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
-  if (!foods.length) return <View />;
-
   const nutritionData = useMemo<NutritionDataItem[]>(() => {
     return Object.entries(nutritionGroups)
       .flatMap(([groupKey, group]) => [

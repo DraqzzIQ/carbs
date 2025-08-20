@@ -15,6 +15,16 @@ type Settings = {
   displaySnacks: boolean;
   countryCode: string;
   searchDebounceMs: number;
+  waterTrackerEnabled: boolean;
+  maxFluidIntake: number;
+  fluidSizes: {
+    xs: number;
+    s: number;
+    m: number;
+    l: number;
+    xl: number;
+    xxl: number;
+  };
 };
 
 type SettingsContextType = Settings & {
@@ -33,6 +43,16 @@ const defaultSettings: Settings = {
   displaySnacks: true,
   countryCode: getLocales()[0].regionCode ?? "DE",
   searchDebounceMs: 300,
+  waterTrackerEnabled: false,
+  maxFluidIntake: 2500,
+  fluidSizes: {
+    xs: 50,
+    s: 100,
+    m: 200,
+    l: 300,
+    xl: 500,
+    xxl: 1000,
+  },
 };
 
 let staticSettings: Settings = defaultSettings;

@@ -2,7 +2,7 @@ import { Text } from "~/components/ui/text";
 import { Card } from "~/components/ui/card";
 import { View } from "react-native";
 import { Progress } from "~/components/ui/progress";
-import { formatNumber } from "~/utils/formatting";
+import { formatNumber, getVolumeUnitForLocale } from "~/utils/formatting";
 import { useMemo } from "react";
 import { MealDetailsQueryType } from "~/db/queries/mealDetailsQuery";
 
@@ -12,6 +12,9 @@ type SummaryProps = {
   maxCarbs: number;
   maxProtein: number;
   maxFat: number;
+  fluidIntake: number;
+  maxFluidIntake: number;
+  waterTrackerEnabled: boolean;
 };
 
 export const Summary = ({
@@ -20,8 +23,11 @@ export const Summary = ({
   maxCarbs,
   maxProtein,
   maxFat,
+  fluidIntake,
+  maxFluidIntake,
+  waterTrackerEnabled,
 }: SummaryProps) => {
-  const calories: number = useMemo(() => {
+  const calories = useMemo(() => {
     return currentDayMeals.reduce((acc, meal) => {
       const mealCalories =
         meal.servingQuantity * meal.food.energy * meal.amount;
@@ -54,7 +60,7 @@ export const Summary = ({
   return (
     <>
       <Text className="font-semibold text-lg w-full mt-4">Summary</Text>
-      <Card className="w-full gap-3 p-4 pb-14 rounded-2xl bg-secondary mt-1">
+      <Card className="w-full gap-3 p-4 pb-6 rounded-2xl bg-secondary mt-1">
         <View className="items-center">
           <Text className="mb-1 font-semibold text-lg">Calories</Text>
           <Progress
@@ -66,13 +72,27 @@ export const Summary = ({
             {formatNumber((calories / maxCalories) * 100)}%)
           </Text>
         </View>
-        <View className="flex-row h-6 w-full">
+        <View className="flex-row h-16 w-full">
           <MacroBar label="Carbs" consumed={carbs} max={maxCarbs} />
           <View className="grow" />
           <MacroBar label="Protein" consumed={protein} max={maxProtein} />
           <View className="grow" />
           <MacroBar label="Fat" consumed={fat} max={maxFat} />
         </View>
+        {waterTrackerEnabled && (
+          <View className="items-center">
+            <Text className="mb-1 font-semibold text-md">Water</Text>
+            <Progress
+              value={(fluidIntake / maxFluidIntake) * 100}
+              className="h-2 bg-gray-400 dark:bg-gray-600"
+            />
+            <Text className="font-semibold text-sm text-gray-500 dark:text-gray-300">
+              {formatNumber(fluidIntake)} / {formatNumber(maxFluidIntake)}{" "}
+              {getVolumeUnitForLocale()} (
+              {formatNumber((fluidIntake / maxFluidIntake) * 100)}%)
+            </Text>
+          </View>
+        )}
       </Card>
     </>
   );

@@ -13,7 +13,10 @@ import { formatNumber } from "~/utils/formatting";
 import { Separator } from "~/components/ui/separator";
 import { router } from "expo-router";
 import { useState, useEffect } from "react";
-import Animated, { FadeOut, LightSpeedInLeft } from "react-native-reanimated";
+import Animated, {
+  LightSpeedInLeft,
+  LightSpeedOutRight,
+} from "react-native-reanimated";
 import { getServingUnitLabel } from "~/utils/serving";
 import { FoodTabs } from "~/components/index/meal/add/food-tabs";
 import { MealType } from "~/types/MealType";
@@ -109,7 +112,10 @@ export const SearchProducts = ({
           onScrollBeginDrag={() => Keyboard.dismiss()}
           contentContainerStyle={{ paddingBottom: 40 }}
           renderItem={({ item }) => (
-            <Animated.View entering={LightSpeedInLeft} exiting={FadeOut}>
+            <Animated.View
+              entering={LightSpeedInLeft}
+              exiting={LightSpeedOutRight}
+            >
               <SearchProduct
                 product={item}
                 meal={meal}

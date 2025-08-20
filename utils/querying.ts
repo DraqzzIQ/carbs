@@ -2,7 +2,15 @@ import { MealType } from "~/types/MealType";
 import { yazioGetFoodDetails } from "~/api/yazio";
 import { FoodDetailsDto, ServingDto } from "~/api/types/FoodDetails";
 import { db } from "~/db/client";
-import { favorites, Food, foods, meals, recents, streaks } from "~/db/schema";
+import {
+  favorites,
+  fluidIntake,
+  Food,
+  foods,
+  meals,
+  recents,
+  streaks,
+} from "~/db/schema";
 import { and, eq, isNull, like } from "drizzle-orm";
 import { isBaseUnit } from "~/utils/formatting";
 import { inArray } from "drizzle-orm/sql/expressions/conditions";
@@ -246,6 +254,28 @@ export async function queryCustomFoods(
   } catch (error) {
     console.error("Error querying custom foods:", error);
     return [];
+  }
+}
+
+export async function addFluidIntake(
+  amount: number,
+  date: string,
+): Promise<void> {
+  try {
+    await db.insert(fluidIntake).values({
+      amount: amount,
+      date: date,
+    });
+  } catch (error) {
+    console.error(`Error adding fluid intake for date ${date}:`, error);
+  }
+}
+
+export async function deleteFluidIntake(id: number): Promise<void> {
+  try {
+    await db.delete(fluidIntake).where(eq(fluidIntake.id, id));
+  } catch (error) {
+    console.error(`Error deleting fluid intake with ID ${id}:`, error);
   }
 }
 

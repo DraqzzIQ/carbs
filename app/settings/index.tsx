@@ -4,7 +4,7 @@ import { Text } from "~/components/ui/text";
 import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { useSettings } from "~/contexts/AppSettingsContext";
-import { formatNumber } from "~/utils/formatting";
+import { formatNumber, getVolumeUnitForLocale } from "~/utils/formatting";
 import { KeyboardShift } from "~/components/keyboard-shift";
 import { CountrySelector } from "~/components/country-selector";
 import { MealType } from "~/types/MealType";
@@ -22,10 +22,15 @@ export default function SettingsScreen() {
     displaySnacks,
     setSettings,
     searchDebounceMs,
+    waterTrackerEnabled,
+    maxFluidIntake,
+    fluidSizes,
   } = useSettings();
 
   const totalMaxCalories =
     maxBreakfast + maxLunch + maxDinner + (displaySnacks ? maxSnacks : 0);
+
+  const volumeUnit = getVolumeUnitForLocale();
 
   return (
     <KeyboardShift>
@@ -59,30 +64,34 @@ export default function SettingsScreen() {
         ))}
 
         <View className="flex-row items-center justify-between mt-4">
-          <Text className="font-semibold text-sm">Include Snacks</Text>
+          <Text className="text-lg">Include snack</Text>
           <Switch
             checked={displaySnacks}
             onCheckedChange={(v) => setSettings({ displaySnacks: v })}
           />
         </View>
 
-        <View className="mt-2">
-          <Text className="font-semibold text-sm">{MealType.SNACK} (kcal)</Text>
-          <Input
-            selectTextOnFocus={true}
-            editable={displaySnacks}
-            keyboardType="numeric"
-            value={maxSnacks.toString()}
-            onChangeText={(text) =>
-              setSettings({ maxSnacks: Number(text) || 0 })
-            }
-            className={`border border-primary p-2 rounded-md text-sm ${
-              displaySnacks
-                ? "bg-secondary text-primary"
-                : "bg-gray-200 dark:bg-gray-950 text-gray-400 dark:text-gray-500"
-            }`}
-          />
-        </View>
+        {displaySnacks && (
+          <>
+            <Text className="font-semibold text-sm mt-2">
+              {MealType.SNACK} (kcal)
+            </Text>
+            <Input
+              selectTextOnFocus={true}
+              editable={displaySnacks}
+              keyboardType="numeric"
+              value={maxSnacks.toString()}
+              onChangeText={(text) =>
+                setSettings({ maxSnacks: Number(text) || 0 })
+              }
+              className={`border border-primary p-2 rounded-md text-sm ${
+                displaySnacks
+                  ? "bg-secondary text-primary"
+                  : "bg-gray-200 dark:bg-gray-950 text-gray-400 dark:text-gray-500"
+              }`}
+            />
+          </>
+        )}
 
         <Text className="font-semibold text-sm mt-6">Macros</Text>
         {[
@@ -101,9 +110,59 @@ export default function SettingsScreen() {
             />
           </View>
         ))}
-        <Text className="font-semibold text-sm mt-3">Food Database</Text>
+        <View className="flex-row items-center justify-between mt-4">
+          <Text className="text-lg">Enable water tracker</Text>
+          <Switch
+            checked={waterTrackerEnabled}
+            onCheckedChange={(v) => setSettings({ waterTrackerEnabled: v })}
+          />
+        </View>
+        {waterTrackerEnabled && (
+          <>
+            <Text className="font-semibold text-sm mt-6">
+              Water intake ({volumeUnit})
+            </Text>
+            <Input
+              selectTextOnFocus={true}
+              keyboardType="numeric"
+              value={maxFluidIntake.toString()}
+              onChangeText={(text) =>
+                setSettings({ maxFluidIntake: Number(text) || 0 })
+              }
+              className="border border-primary p-2 rounded-md text-sm text-primary bg-secondary"
+            />
+
+            <Text className="font-semibold text-sm mt-6">Water sizes</Text>
+            {[
+              { label: "XS", value: fluidSizes.xs, key: "xs" },
+              { label: "S", value: fluidSizes.s, key: "s" },
+              { label: "M", value: fluidSizes.m, key: "m" },
+              { label: "L", value: fluidSizes.l, key: "l" },
+              { label: "XL", value: fluidSizes.xl, key: "xl" },
+              { label: "XXL", value: fluidSizes.xxl, key: "xxl" },
+            ].map(({ label, value, key }) => (
+              <View key={label} className="mt-2">
+                <Text className="text-sm">
+                  {label} ({volumeUnit})
+                </Text>
+                <Input
+                  selectTextOnFocus={true}
+                  keyboardType="numeric"
+                  value={value.toString()}
+                  onChangeText={(text) =>
+                    setSettings({
+                      fluidSizes: { ...fluidSizes, [key]: Number(text) || 0 },
+                    })
+                  }
+                  className="border border-primary p-2 rounded-md text-sm text-primary bg-secondary"
+                />
+              </View>
+            ))}
+          </>
+        )}
+        <Text className="font-semibold text-sm mt-3">Food database</Text>
         <CountrySelector />
-        <Text className="font-semibold text-sm mt-3">Search Delay (ms)</Text>
+        <Text className="font-semibold text-sm mt-3">Search delay (ms)</Text>
         <Input
           selectTextOnFocus={true}
           keyboardType="numeric"

@@ -11,6 +11,7 @@ import m0006 from './0006_absurd_iron_monger.sql';
 import m0007 from './0007_petite_husk.sql';
 import m0008 from './0008_yummy_jocasta.sql';
 import m0009 from './0009_cloudy_guardian.sql';
+import m0010 from './0010_true_silver_sable.sql';
 
   export default {
     journal,
@@ -24,7 +25,8 @@ m0005,
 m0006,
 m0007,
 m0008,
-m0009
+m0009,
+m0010
     }
   }
   

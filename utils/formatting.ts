@@ -64,3 +64,7 @@ export function isBaseUnit(serving: string): boolean {
   const baseUnits = ["gram", "milliliter", "ounce", "fluid-ounce"];
   return baseUnits.includes(serving.toLowerCase());
 }
+
+export function getVolumeUnitForLocale(): string {
+  return locales[0].languageTag === "en-US" ? "oz" : "ml";
+}
