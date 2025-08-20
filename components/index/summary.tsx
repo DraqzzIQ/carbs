@@ -59,8 +59,8 @@ export const Summary = ({
 
   return (
     <>
-      <Text className="font-semibold text-lg w-full mt-4">Summary</Text>
-      <Card className="w-full gap-3 p-4 pb-6 rounded-2xl bg-secondary mt-1">
+      <Text className="font-semibold text-xl w-full mt-4">Summary</Text>
+      <Card className="w-full gap-3 p-4 pb-6 rounded-2xl mt-1">
         <View className="items-center">
           <Text className="mb-1 font-semibold text-lg">Calories</Text>
           <Progress

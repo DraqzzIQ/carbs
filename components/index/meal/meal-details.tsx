@@ -155,7 +155,7 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
             renderRightActions(translation, meal.id, width)
           }
         >
-          <Card className="p-3 bg-secondary m-1">
+          <Card className="p-3 m-1">
             <View className="flex-row">
               <View>
                 <Text className="font-semibold">{meal.food.name}</Text>

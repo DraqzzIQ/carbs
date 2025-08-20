@@ -42,8 +42,8 @@ export const Meals = ({
 
   return (
     <>
-      <Text className="font-semibold text-lg w-full mt-7">Nutrition</Text>
-      <Card className="w-full gap-3 p-4 rounded-2xl bg-secondary mt-1">
+      <Text className="font-semibold text-xl w-full mt-7">Nutrition</Text>
+      <Card className="w-full gap-3 p-4 rounded-2xl mt-1">
         {[
           {
             icon: <CoffeeIcon className="mr-3 w-7 h-7 text-primary" />,

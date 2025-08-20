@@ -41,8 +41,8 @@ export const WaterTracker = ({ date, fluidIntake }: WaterTrackerProps) => {
 
   return (
     <>
-      <Text className="font-semibold text-lg w-full mt-4">Water Tracker</Text>
-      <Card className="w-full gap-3 p-4 pb-6 rounded-2xl bg-secondary mt-1">
+      <Text className="font-semibold text-xl w-full mt-7">Water</Text>
+      <Card className="w-full gap-3 p-4 pb-6 rounded-2xl mt-1">
         <View className="flex-row items-end">
           {order.map((k, i) => (
             <React.Fragment key={k}>
@@ -70,7 +70,7 @@ export const WaterTracker = ({ date, fluidIntake }: WaterTrackerProps) => {
                 entering={LightSpeedInLeft}
                 exiting={LightSpeedOutRight}
               >
-                <View className="flex-row items-center rounded-lg bg-secondary shadow-md shadow-primary/40 p-2">
+                <View className="flex-row items-center rounded-lg bg-card shadow-sm shadow-primary/40 p-2">
                   <GlassWaterIcon className="text-primary h-8 w-8" />
                   <Text className="text-primary ml-2">
                     {item.amount} {unit}

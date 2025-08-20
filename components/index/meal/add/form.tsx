@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { Card, CardTitle } from "~/components/ui/card";
 
 export enum FieldType {
   Text = "text",
@@ -53,6 +54,7 @@ export type FormCategory = {
   fields: FieldOrRow[];
   defaultVisible: number;
   style?: StyleProp<any>;
+  titleStyle?: number;
 };
 
 type FoodFormProps = {
@@ -169,9 +171,13 @@ export function Form({
             ? cat.fields.length
             : cat.defaultVisible;
           return (
-            <View key={idx} className="mb-6" style={cat.style}>
-              {cat.category !== "" && (
-                <Text className="font-medium text-lg">{cat.category}</Text>
+            <Card key={idx} className="p-4 mt-2" style={cat.style}>
+              {cat.category !== "" && cat.titleStyle === 2 ? (
+                <CardTitle className="mb-4 text-center">
+                  {cat.category}
+                </CardTitle>
+              ) : (
+                <CardTitle className="mb-4 text-lg">{cat.category}</CardTitle>
               )}
               {cat.fields.slice(0, visibleCount).map((item, idx) =>
                 Array.isArray(item) ? (
@@ -225,7 +231,7 @@ export function Form({
                   </Text>
                 </TouchableOpacity>
               )}
-            </View>
+            </Card>
           );
         })}
         <View className="h-20" />

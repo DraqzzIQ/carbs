@@ -3,7 +3,6 @@ import { KeyboardShift } from "~/components/keyboard-shift";
 import { useEffect, useState } from "react";
 import { MealSelectorHeader } from "~/components/index/meal/add/meal-selector-header";
 import { MealType } from "~/types/MealType";
-import { Text } from "~/components/ui/text";
 import {
   addCustomFood,
   addFoodToMeal,
@@ -110,11 +109,7 @@ export default function QuickEntryScreen() {
           ),
         }}
       />
-      <Form formConfig={formConfig} onSubmit={onSubmit} edit={edit}>
-        <Text className="text-primary text-2xl text-center font-semibold mb-6">
-          Quick Entry
-        </Text>
-      </Form>
+      <Form formConfig={formConfig} onSubmit={onSubmit} edit={edit} />
     </KeyboardShift>
   );
 }

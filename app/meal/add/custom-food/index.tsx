@@ -21,6 +21,7 @@ import {
   updateCustomFood,
 } from "~/utils/querying";
 import { getDefaultServing } from "~/utils/serving";
+import { Card, CardTitle } from "~/components/ui/card";
 
 export default function CustomFoodScreen() {
   const params = useLocalSearchParams();
@@ -101,37 +102,39 @@ export default function CustomFoodScreen() {
         }}
       />
       <Form formConfig={formConfig} onSubmit={onSubmit} edit={edit}>
-        <Text className="text-base text-primary">Barcode</Text>
-        <View className="mb-2 flex-row gap-2 items-center">
-          <Input
-            className="flex-1 bg-secondary"
-            placeholder="(optional)"
-            value={barcode}
-            onChangeText={setBarcode}
-            keyboardType="numeric"
-          />
-          <TouchableOpacity
-            onPress={() => setBarCodeScannerOpen((prev) => !prev)}
-          >
-            {barCodeScannerOpen ? (
-              <XIcon className="text-primary h-10 w-10" />
-            ) : (
-              <ScanBarcodeIcon className="text-primary h-10 w-10" />
-            )}
-          </TouchableOpacity>
-        </View>
-        {barCodeScannerOpen && (
-          <>
-            <BarcodeScanner
-              barCodeScannerOpen={barCodeScannerOpen}
-              onScan={(barcode) => {
-                setBarcode(barcode);
-                setBarCodeScannerOpen(false);
-              }}
+        <Card className="mb-2 p-4">
+          <CardTitle className="text-lg">Barcode</CardTitle>
+          <View className="mt-4 flex-row gap-2 items-center">
+            <Input
+              className="flex-1 bg-secondary"
+              placeholder="(optional)"
+              value={barcode}
+              onChangeText={setBarcode}
+              keyboardType="numeric"
             />
-            <View className="h-8" />
-          </>
-        )}
+            <TouchableOpacity
+              onPress={() => setBarCodeScannerOpen((prev) => !prev)}
+            >
+              {barCodeScannerOpen ? (
+                <XIcon className="text-primary h-10 w-10" />
+              ) : (
+                <ScanBarcodeIcon className="text-primary h-10 w-10" />
+              )}
+            </TouchableOpacity>
+          </View>
+          {barCodeScannerOpen && (
+            <>
+              <BarcodeScanner
+                barCodeScannerOpen={barCodeScannerOpen}
+                onScan={(barcode) => {
+                  setBarcode(barcode);
+                  setBarCodeScannerOpen(false);
+                }}
+              />
+              <View className="h-8" />
+            </>
+          )}
+        </Card>
       </Form>
     </KeyboardShift>
   );

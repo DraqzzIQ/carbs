@@ -3,7 +3,7 @@ import { ServingType } from "~/types/ServingType";
 
 export const CustomFoodFormConfig = [
   {
-    category: "",
+    category: "About",
     fields: [
       {
         key: "name",
@@ -22,12 +22,12 @@ export const CustomFoodFormConfig = [
     style: { marginBottom: 4 },
   },
   {
-    category: "Values Per",
+    category: "Values per",
     fields: [
       [
         {
           key: "valuesPer",
-          label: "Values Per (g/ml/oz/fl oz)",
+          label: "Values per (g/ml/oz/fl oz)",
           required: true,
           type: FieldType.Number,
           allowDecimal: true,
@@ -48,7 +48,7 @@ export const CustomFoodFormConfig = [
     style: { marginBottom: 4 },
   },
   {
-    category: "Serving Size",
+    category: "Serving size",
     fields: [
       [
         {
@@ -61,7 +61,7 @@ export const CustomFoodFormConfig = [
         },
         {
           key: "serving",
-          label: "Select Serving",
+          label: "Select serving",
           required: false,
           type: FieldType.Select,
           options: Object.values(ServingType),
@@ -72,7 +72,7 @@ export const CustomFoodFormConfig = [
     style: { marginBottom: 4 },
   },
   {
-    category: "",
+    category: "Basic nutrition",
     fields: [
       {
         key: "energy",
@@ -477,7 +477,9 @@ export const CustomFoodFormConfig = [
 
 export const QuickEntryFormConfig = [
   {
-    category: "",
+    category: "Quick Entry",
+    style: { paddingTop: 22 },
+    titleStyle: 2,
     fields: [
       {
         key: "description",
