@@ -1,4 +1,4 @@
-import { Animated, View } from "react-native";
+import { Animated, TouchableOpacity, View, Linking } from "react-native";
 import * as React from "react";
 import { Text } from "~/components/ui/text";
 import { Input } from "~/components/ui/input";
@@ -11,6 +11,9 @@ import ScrollView = Animated.ScrollView;
 import { Card, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { router } from "expo-router";
+import { ReactNativeLegal } from "react-native-legal";
+import { GithubIcon } from "lucide-nativewind";
+import * as Application from "expo-application";
 
 export default function SettingsScreen() {
   const {
@@ -194,7 +197,34 @@ export default function SettingsScreen() {
             className="rounded-md border border-primary bg-secondary p-2 text-sm text-primary"
           />
         </Card>
+        <Card className="mb-8 mt-4 p-4">
+          <CardTitle className="text-center">About</CardTitle>
+          <Card className="m-1 mt-4 p-2">
+            <TouchableOpacity
+              onPress={() =>
+                Linking.openURL("https://github.com/DraqzzIQ/better-yazio")
+              }
+            >
+              <View className="flex-row items-center justify-between">
+                <View>
+                  <Text className="text-xl font-bold">Better Yazio</Text>
+                  <Text className="font-semibold">
+                    Version: {Application.nativeApplicationVersion}
+                  </Text>
+                </View>
+                <GithubIcon className="text-primary" size={32} />
+              </View>
+            </TouchableOpacity>
+          </Card>
+          <Button onPress={launchNotice} className="mt-3">
+            <Text>Open source licenses</Text>
+          </Button>
+        </Card>
       </ScrollView>
     </KeyboardShift>
   );
+}
+
+function launchNotice() {
+  ReactNativeLegal.launchLicenseListScreen("OSS Notice");
 }

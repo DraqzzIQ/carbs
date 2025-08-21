@@ -62,7 +62,8 @@
         }
       ],
       "expo-localization",
-      "expo-sqlite"
+      "expo-sqlite",
+      "react-native-legal"
     ],
     "experiments": {
       "typedRoutes": true
