@@ -72,7 +72,9 @@
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
     "world-countries": "^5.1.0",
-    "expo-application": "~6.1.5"
+    "expo-application": "~6.1.5",
+    "expo-sharing": "~13.1.5",
+    "expo-document-picker": "~13.1.6"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",

@@ -55,7 +55,7 @@ export default function CalendarScreen() {
         calendarAdditionalHeight={45}
         calendarRowHorizontalSpacing={14}
         calendarRowVerticalSpacing={14}
-        calendarMonthId={params.dateId}
+        calendarInitialMonthId={params.dateId}
         calendarActiveDateRanges={streaks}
         getCalendarWeekDayFormat={formatWeekDay}
         calendarPastScrollRangeInMonths={pastMonthAmount}
@@ -110,7 +110,7 @@ function subtractMonths(dateId: string, months: number): string {
   return getDateIdFromDate(0, date);
 }
 
-function diffInMonths(date1, date2) {
+function diffInMonths(date1: Date, date2: Date) {
   const years = date2.getFullYear() - date1.getFullYear();
   const months = date2.getMonth() - date1.getMonth();
   return years * 12 + months;
