@@ -1,29 +1,30 @@
-import { FlashlightIcon, FlashlightOffIcon } from "lucide-nativewind";
+import {
+  FlashlightIcon,
+  FlashlightOffIcon,
+  SwitchCameraIcon,
+} from "lucide-nativewind";
 import { TouchableOpacity, View } from "react-native";
 import {
   Camera,
-  useCameraDevice,
+  useCameraDevices,
   useCameraPermission,
   useCodeScanner,
 } from "react-native-vision-camera";
 import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
 
-type CameraProps = {
+interface CameraProps {
   barCodeScannerOpen: boolean;
   onScan: (code: string) => void;
   className?: string;
-};
+}
 
 export const BarcodeScanner = ({
   barCodeScannerOpen,
   onScan,
   className,
 }: CameraProps) => {
-  const [isTorchEnabled, setIsTorchEnabled] = useState(false);
-  const { hasPermission, requestPermission } = useCameraPermission();
-
-  const device = useCameraDevice("back");
+  const devices = useCameraDevices();
   const codeScanner = useCodeScanner({
     codeTypes: ["ean-13", "ean-8", "upc-a", "upc-e"],
     onCodeScanned: async (codes) => {
@@ -38,6 +39,12 @@ export const BarcodeScanner = ({
       }
     },
   });
+
+  const [isTorchEnabled, setIsTorchEnabled] = useState(false);
+  const { hasPermission, requestPermission } = useCameraPermission();
+  const [cameraPosition, setCameraPosition] = useState("back");
+
+  const device = devices.find((d) => d.position === cameraPosition);
 
   useEffect(() => {
     if (barCodeScannerOpen && !hasPermission) {
@@ -55,7 +62,7 @@ export const BarcodeScanner = ({
     <View className="items-center">
       <View
         className={cn(
-          "h-56 w-full my-10 border border-border rounded-lg overflow-hidden",
+          "my-10 h-56 w-full overflow-hidden rounded-lg border border-border",
           className,
         )}
       >
@@ -70,13 +77,23 @@ export const BarcodeScanner = ({
           torch={isTorchEnabled ? "on" : "off"}
         />
       </View>
-      <TouchableOpacity onPress={() => setIsTorchEnabled((prev) => !prev)}>
-        {isTorchEnabled ? (
-          <FlashlightIcon className="text-primary" size={32} />
-        ) : (
-          <FlashlightOffIcon className="text-primary" size={32} />
-        )}
-      </TouchableOpacity>
+      <View className="max-w-48 flex-row items-center">
+        <TouchableOpacity
+          onPress={() => {
+            setCameraPosition((prev) => (prev === "back" ? "front" : "back"));
+          }}
+        >
+          <SwitchCameraIcon className="text-primary" size={32} />
+        </TouchableOpacity>
+        <View className="flex-grow" />
+        <TouchableOpacity onPress={() => setIsTorchEnabled((prev) => !prev)}>
+          {isTorchEnabled ? (
+            <FlashlightIcon className="text-primary" size={32} />
+          ) : (
+            <FlashlightOffIcon className="text-primary" size={32} />
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

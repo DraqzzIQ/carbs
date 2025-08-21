@@ -87,7 +87,7 @@ const FoodDetailsSchema = z.object({
 export type FoodDetailsDto = z.infer<typeof FoodDetailsSchema>;
 
 export function mapApiFoodDetails(
-  apiFood: any,
+  apiFood: unknown,
   productId: string,
 ): FoodDetailsDto | null {
   const result = FoodDetailsSchema.safeParse({

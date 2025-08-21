@@ -9,12 +9,12 @@ import { Dropdown } from "react-native-element-dropdown";
 import { CheckIcon } from "lucide-nativewind";
 import countries from "world-countries";
 
-type Country = {
+interface Country {
   label: string;
   value: string;
-};
+}
 
-export default function FoodDbLocation() {
+export default function FoodDbCountryScreen() {
   const settings = useSettings();
   const [value, setValue] = useState<string | null>(
     getDefaultCountry(settings.countryCode).value,
@@ -38,7 +38,7 @@ export default function FoodDbLocation() {
 
   const renderItem = (country: Country) => {
     return (
-      <View className="flex-row justify-between h-16 p-4 items-center">
+      <View className="h-16 flex-row items-center justify-between p-4">
         <Text>{country.label}</Text>
         {country.value === value && <CheckIcon className="text-primary" />}
       </View>
@@ -49,12 +49,11 @@ export default function FoodDbLocation() {
     <KeyboardShift>
       <View className="p-4">
         <Card className="p-4">
-          <CardTitle className="text-center mb-8">
+          <CardTitle className="mb-8 text-center">
             Select database country
           </CardTitle>
           <Dropdown
-            // @ts-ignore
-            className="border-2 rounded-xl p-2 border-border"
+            className="rounded-xl border-2 border-border p-2"
             containerClassName="border-2 border-border bg-secondary rounded-xl"
             placeholderClassName="text-muted-foreground"
             inputSearchClassName="text-primary rounded-md border-border"

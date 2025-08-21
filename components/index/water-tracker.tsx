@@ -14,23 +14,16 @@ import Animated, {
   LinearTransition,
 } from "react-native-reanimated";
 
-type WaterTrackerProps = {
-  date: string;
+interface WaterTrackerProps {
+  dateId: string;
   fluidIntake: FluidIntake[];
-};
+}
 
-export const WaterTracker = ({ date, fluidIntake }: WaterTrackerProps) => {
+export const WaterTracker = ({ dateId, fluidIntake }: WaterTrackerProps) => {
   const { fluidSizes } = useSettings();
   const unit = getVolumeUnitForLocale();
 
-  const order: Array<keyof typeof fluidSizes> = [
-    "xs",
-    "s",
-    "m",
-    "l",
-    "xl",
-    "xxl",
-  ];
+  const order: (keyof typeof fluidSizes)[] = ["xs", "s", "m", "l", "xl", "xxl"];
   const sizeClasses: Record<keyof typeof fluidSizes, string> = {
     xs: "w-6 h-6",
     s: "w-7 h-7",
@@ -42,14 +35,14 @@ export const WaterTracker = ({ date, fluidIntake }: WaterTrackerProps) => {
 
   return (
     <>
-      <Text className="font-semibold text-xl w-full mt-7">Water</Text>
-      <Card className="w-full gap-3 p-4 pb-6 rounded-2xl mt-1">
+      <Text className="mt-7 w-full text-xl font-semibold">Water</Text>
+      <Card className="mt-1 w-full gap-3 rounded-2xl p-4 pb-6">
         <View className="flex-row items-end">
           {order.map((k, i) => (
             <React.Fragment key={k}>
               <TouchableOpacity
                 onPress={async () => {
-                  await addFluidIntake(fluidSizes[k], date);
+                  await addFluidIntake(fluidSizes[k], dateId);
                 }}
                 className="items-center"
               >
@@ -72,16 +65,16 @@ export const WaterTracker = ({ date, fluidIntake }: WaterTrackerProps) => {
                 entering={FadeIn}
                 exiting={FadeOut}
               >
-                <View className="flex-row items-center rounded-lg bg-card shadow-sm shadow-primary/40 p-2">
-                  <GlassWaterIcon className="text-primary h-8 w-8" />
-                  <Text className="text-primary ml-2">
+                <View className="flex-row items-center rounded-lg bg-card p-2 shadow-sm shadow-primary/40">
+                  <GlassWaterIcon className="h-8 w-8 text-primary" />
+                  <Text className="ml-2 text-primary">
                     {item.amount} {unit}
                   </Text>
                   <View className="flex-grow" />
                   <TouchableOpacity
                     onPress={async () => deleteFluidIntake(item.id)}
                   >
-                    <TrashIcon className="text-primary h-8 w-8" />
+                    <TrashIcon className="h-8 w-8 text-primary" />
                   </TouchableOpacity>
                 </View>
               </Animated.View>

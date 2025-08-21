@@ -19,7 +19,7 @@ export function formatServing(
   serving: string,
   amount: number,
   baseUnit: string,
-  plural: boolean = false,
+  plural = false,
 ): string {
   if (!serving) {
     return `${amount} ${baseUnit}`;

@@ -21,7 +21,6 @@ export const useRelationalLiveQuery = <
   deps: unknown[] = [],
 ) => {
   const [data, setData] = useState<Awaited<T>>(
-    // @ts-ignore
     (is(query, SQLiteRelationalQuery) && query.mode === "first"
       ? undefined
       : []) as Awaited<T>,
@@ -31,10 +30,8 @@ export const useRelationalLiveQuery = <
 
   useEffect(() => {
     const entity = is(query, SQLiteRelationalQuery)
-      ? // @ts-ignore
-        query.table
-      : // @ts-ignore
-        (query as AnySQLiteSelect).config.table;
+      ? query.table
+      : (query as AnySQLiteSelect).config.table;
 
     if (is(entity, Subquery) || is(entity, SQL)) {
       setError(
@@ -47,7 +44,7 @@ export const useRelationalLiveQuery = <
 
     let listener: ReturnType<typeof addDatabaseChangeListener> | undefined;
 
-    const handleData = (data: any) => {
+    const handleData = (data) => {
       setData(data);
       setUpdatedAt(new Date());
     };
@@ -80,7 +77,6 @@ export const useRelationalLiveQuery = <
   } as const;
 };
 
-// @ts-ignore
 const getJoinedTableNames = (query: SQLiteRelationalQuery) => {
   if (query.config.with) {
     return Object.keys(query.config.with).map(
@@ -88,7 +84,6 @@ const getJoinedTableNames = (query: SQLiteRelationalQuery) => {
     );
   } else if (query.config.joins) {
     return query.config.joins.map(
-      // @ts-ignore
       (join) => join.table[Symbol.for("drizzle:BaseName")],
     );
   } else {

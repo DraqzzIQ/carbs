@@ -13,14 +13,14 @@ import { FlatList, View } from "react-native";
 import { NumericInput } from "~/components/numeric-input";
 import { isBaseUnit } from "~/utils/formatting";
 
-type ServingSelectorProps = {
+interface ServingSelectorProps {
   servingOptions?: ServingDto[];
   defaultServingQuantity?: string;
   onServingQuantityChange: (quantity: number) => void;
   defaultServing?: ServingDto;
   onServingChange: (serving: ServingDto) => void;
   baseUnit: string;
-};
+}
 
 export const ServingSelector = ({
   servingOptions,
@@ -44,7 +44,7 @@ export const ServingSelector = ({
   }
 
   return (
-    <View className="flex-1 gap-1 flex-row w-full z-10 left-0 right-0 bottom-0 absolute p-2 bg-secondary border-t border-border">
+    <View className="absolute bottom-0 left-0 right-0 z-10 w-full flex-1 flex-row gap-1 border-t border-border bg-secondary p-2">
       <NumericInput
         allowNegative={false}
         allowDecimal={true}
@@ -63,7 +63,7 @@ export const ServingSelector = ({
       >
         <SelectTrigger className="bg-secondary">
           <SelectValue
-            className="text-primary font-medium"
+            className="font-medium text-primary"
             placeholder="Select Serving"
           />
         </SelectTrigger>
@@ -95,5 +95,5 @@ export const ServingSelector = ({
 };
 
 const WrappedSelectSeparator = () => (
-  <SelectSeparator className="bg-border w-full h-[1px]" />
+  <SelectSeparator className="h-[1px] w-full bg-border" />
 );

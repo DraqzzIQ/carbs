@@ -108,6 +108,18 @@ export default function RootLayout() {
                 }}
               />
               <Stack.Screen
+                name="calendar/index"
+                options={{
+                  headerTitleAlign: "center",
+                  headerShown: true,
+                  title: "Calendar",
+                  headerBackButtonDisplayMode: "minimal",
+                  headerStyle: {
+                    backgroundColor: isDarkColorScheme ? "black" : "white",
+                  },
+                }}
+              />
+              <Stack.Screen
                 name="settings/index"
                 options={{
                   headerTitleAlign: "center",

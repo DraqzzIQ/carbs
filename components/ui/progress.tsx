@@ -61,7 +61,7 @@ function Indicator({
         style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}
       >
         <ProgressPrimitive.Indicator
-          className={cn("h-full w-full ", className)}
+          className={cn("h-full w-full", className)}
         />
       </View>
     );

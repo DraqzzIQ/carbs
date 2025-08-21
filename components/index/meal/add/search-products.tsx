@@ -25,16 +25,16 @@ import { getRecentFoods } from "~/utils/querying";
 import { Toggle } from "~/components/ui/toggle";
 import { FlashList } from "@shopify/flash-list";
 
-type SearchProductsProps = {
+interface SearchProductsProps {
   products: FoodSearchResultDto[];
   loading: boolean;
   notFound: boolean;
   onAddProduct: (product: FoodSearchResultDto) => Promise<void>;
   meal: string;
-  date: string;
+  dateId: string;
   searchFocused: boolean;
   onSetOnlyCustomProducts: (onlyCustom: boolean) => void;
-};
+}
 
 export const SearchProducts = ({
   products,
@@ -42,7 +42,7 @@ export const SearchProducts = ({
   notFound,
   onAddProduct,
   meal,
-  date,
+  dateId,
   searchFocused,
   onSetOnlyCustomProducts,
 }: SearchProductsProps) => {
@@ -59,7 +59,7 @@ export const SearchProducts = ({
     !searchFocused && products.length === 0 && !loading && !notFound;
 
   return displayFoodTabs ? (
-    <FoodTabs mealType={meal as MealType} date={date} />
+    <FoodTabs mealType={meal as MealType} dateId={dateId} />
   ) : (
     <>
       <Toggle
@@ -73,35 +73,35 @@ export const SearchProducts = ({
         className="self-start rounded-full"
       >
         <View className="flex-row items-center">
-          <PenIcon className="text-primary h-4 w-4 mr-1" />
+          <PenIcon className="mr-1 h-4 w-4 text-primary" />
           <Text>Custom only</Text>
         </View>
       </Toggle>
       {loading ? (
-        <View className="flex-1 items-center mt-10">
-          <Text className="text-primary text-lg font-semibold">Loading...</Text>
+        <View className="mt-10 flex-1 items-center">
+          <Text className="text-lg font-semibold text-primary">Loading...</Text>
         </View>
       ) : notFound ? (
         <View
-          className="flex-1 items-center mt-10"
+          className="mt-10 flex-1 items-center"
           onTouchStart={() => Keyboard.dismiss()}
         >
-          <Text className="text-primary text-lg font-semibold">
+          <Text className="text-lg font-semibold text-primary">
             No results found
           </Text>
-          <Text className="text-muted-foreground text-sm">
+          <Text className="text-sm text-muted-foreground">
             Try a different search
           </Text>
         </View>
       ) : products.length === 0 ? (
         <View
-          className="flex-1 items-center mt-10"
+          className="mt-10 flex-1 items-center"
           onTouchStart={() => Keyboard.dismiss()}
         >
-          <Text className="text-primary text-lg font-semibold">
+          <Text className="text-lg font-semibold text-primary">
             Scan a barcode
           </Text>
-          <Text className="text-muted-foreground text-sm">
+          <Text className="text-sm text-muted-foreground">
             or search for a product
           </Text>
         </View>
@@ -124,7 +124,7 @@ export const SearchProducts = ({
                 product={item}
                 meal={meal}
                 onAddProduct={onAddProduct}
-                date={date}
+                dateId={dateId}
                 isRecent={recents.has(item.productId)}
               />
             </Animated.View>
@@ -138,13 +138,13 @@ export const SearchProducts = ({
 function SearchProduct({
   product,
   meal,
-  date,
+  dateId,
   onAddProduct,
   isRecent,
 }: {
   product: FoodSearchResultDto;
   meal: string;
-  date: string;
+  dateId: string;
   onAddProduct: (product: FoodSearchResultDto) => Promise<void>;
   isRecent: boolean;
 }) {
@@ -165,20 +165,20 @@ function SearchProduct({
           params: {
             edit: "false",
             productId: product.productId,
-            date: date,
+            dateId: dateId,
             mealName: meal,
             custom: product.score === -1 ? "true" : "false",
           },
         })
       }
     >
-      <Card className="flex items-start justify-between px-2.5 py-1.5 bg-secondary rounded-lg mb-2">
+      <Card className="mb-2 flex items-start justify-between rounded-lg bg-secondary px-2.5 py-1.5">
         <View className="flex-row items-center">
-          <Text className="text-primary font-semibold max-w-[90%] flex-shrink">
+          <Text className="max-w-[90%] flex-shrink font-semibold text-primary">
             {`${product.name} `}
             {product.isVerified && (
               <View className="justify-end">
-                <VerifiedIcon className="text-primary h-4" />
+                <VerifiedIcon className="h-4 text-primary" />
               </View>
             )}
           </Text>
@@ -197,7 +197,7 @@ function SearchProduct({
           </TouchableOpacity>
         </View>
         {product.producer && (
-          <Text className="text-muted-foreground text-sm">
+          <Text className="text-sm text-muted-foreground">
             {product.producer}
           </Text>
         )}
@@ -210,7 +210,7 @@ function SearchProduct({
               product.baseUnit,
             )}
           </Text>
-          {isRecent && <HistoryIcon className="text-primary w-4 h-4 ml-1" />}
+          {isRecent && <HistoryIcon className="ml-1 h-4 w-4 text-primary" />}
           <View className="flex-grow" />
           <Text className="text-primary">
             {formatNumber(product.nutrients.energy * product.amount)} kcal

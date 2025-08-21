@@ -17,12 +17,12 @@ import { favoritesQuery } from "~/db/queries/favoritesQuery";
 import { frequentsQuery } from "~/db/queries/frequentsQuery";
 import { MealType } from "~/types/MealType";
 
-type FoodTabsProps = {
+interface FoodTabsProps {
   mealType: MealType;
-  date: string;
-};
+  dateId: string;
+}
 
-export const FoodTabs = ({ mealType, date }: FoodTabsProps) => {
+export const FoodTabs = ({ mealType, dateId }: FoodTabsProps) => {
   const [index, setIndex] = useState(0);
   const routes = [
     { key: "frequents", title: "Frequent" },
@@ -40,7 +40,7 @@ export const FoodTabs = ({ mealType, date }: FoodTabsProps) => {
   ) => {
     const inputRange = props.navigationState.routes.map((_, i) => i);
     return (
-      <View className="flex-row bg-secondary border-b border-border">
+      <View className="flex-row border-b border-border bg-secondary">
         {props.navigationState.routes.map((route, i) => {
           const opacity = props.position.interpolate({
             inputRange,
@@ -78,7 +78,7 @@ export const FoodTabs = ({ mealType, date }: FoodTabsProps) => {
           <RecentsList
             query={frequentsQuery()}
             mealType={mealType}
-            date={date}
+            dateId={dateId}
           />
         );
       case "recents":
@@ -86,7 +86,7 @@ export const FoodTabs = ({ mealType, date }: FoodTabsProps) => {
           <RecentsList
             query={recentsQuery()}
             mealType={mealType}
-            date={date}
+            dateId={dateId}
             enableDateHeader={true}
           />
         );
@@ -95,7 +95,7 @@ export const FoodTabs = ({ mealType, date }: FoodTabsProps) => {
           <RecentsList
             query={favoritesQuery()}
             mealType={mealType}
-            date={date}
+            dateId={dateId}
             enableAlphabetHeader={true}
           />
         );

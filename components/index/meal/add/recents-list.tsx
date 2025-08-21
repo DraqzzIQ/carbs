@@ -1,11 +1,10 @@
 import { Text } from "~/components/ui/text";
 import { LoaderCircleIcon, PlusIcon } from "lucide-nativewind";
 import { TouchableOpacity, View } from "react-native";
-import { RecentsQueryType } from "~/db/queries/recentsQuery";
 import { formatServing } from "~/utils/serving";
 import {
   formatNumber,
-  getCurrentDayFormattedDate,
+  getDateIdFromDate,
   getDateSlug,
 } from "~/utils/formatting";
 import { useRelationalLiveQuery } from "~/db/queries/useRelationalLiveQuery";
@@ -14,19 +13,22 @@ import { addFoodToMeal } from "~/utils/querying";
 import { MealType } from "~/types/MealType";
 import { router } from "expo-router";
 import { FlashList } from "@shopify/flash-list";
+import { FrequentsQueryType } from "~/db/queries/frequentsQuery";
+import { FavoritesQueryType } from "~/db/queries/favoritesQuery";
+import { RecentsQueryType } from "~/db/queries/recentsQuery";
 
-type RecentsListProps = {
-  query: any;
+interface RecentsListProps {
+  query: FrequentsQueryType | RecentsQueryType | FavoritesQueryType;
   mealType: MealType;
-  date: string;
+  dateId: string;
   enableDateHeader?: boolean;
   enableAlphabetHeader?: boolean;
-};
+}
 
 export const RecentsList = ({
   query,
   mealType,
-  date,
+  dateId,
   enableDateHeader,
   enableAlphabetHeader,
 }: RecentsListProps) => {
@@ -40,14 +42,14 @@ export const RecentsList = ({
 
   if (!recents || recents.length === 0) {
     return (
-      <View className="flex-1 items-center mt-10">
+      <View className="mt-10 flex-1 items-center">
         <Text className="text-muted-foreground">Nothing logged.</Text>
       </View>
     );
   }
 
   return (
-    <FlashList<any>
+    <FlashList<unknown>
       estimatedItemSize={63}
       data={recents}
       keyExtractor={(item) => item.id.toString()}
@@ -62,15 +64,12 @@ export const RecentsList = ({
 
         if (enableDateHeader) {
           currentDate = getDateSlug(
-            getCurrentDayFormattedDate(0, new Date(item.updatedAt)),
+            getDateIdFromDate(0, new Date(item.updatedAt)),
           );
           displayHeader =
             index === 0 ||
             getDateSlug(
-              getCurrentDayFormattedDate(
-                0,
-                new Date(recents[index - 1].updatedAt),
-              ),
+              getDateIdFromDate(0, new Date(recents[index - 1].updatedAt)),
             ) !== currentDate;
         }
         if (enableAlphabetHeader) {
@@ -84,12 +83,12 @@ export const RecentsList = ({
         return (
           <React.Fragment>
             {displayHeader && (
-              <Text className="text-lg mt-8">{currentDate}</Text>
+              <Text className="mt-8 text-lg">{currentDate}</Text>
             )}
             {displayAlphabetHeader && (
-              <Text className="text-lg mt-8">{firstLetter}</Text>
+              <Text className="mt-8 text-lg">{firstLetter}</Text>
             )}
-            <Recent recent={item} mealType={mealType} date={date} />
+            <Recent recent={item} mealType={mealType} dateId={dateId} />
           </React.Fragment>
         );
       }}
@@ -100,11 +99,11 @@ export const RecentsList = ({
 const Recent = ({
   recent,
   mealType,
-  date,
+  dateId,
 }: {
   recent: RecentsQueryType[number];
   mealType: MealType;
-  date: string;
+  dateId: string;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -116,7 +115,7 @@ const Recent = ({
       recent.servingQuantity,
       recent.amount,
       recent.serving,
-      date,
+      dateId,
       recent.food,
     );
     setIsLoading(false);
@@ -129,7 +128,7 @@ const Recent = ({
           pathname: "/meal/add/product",
           params: {
             productId: recent.foodId,
-            date: date,
+            dateId: dateId,
             mealName: mealType,
             edit: "false",
             serving: recent.serving,
@@ -140,10 +139,10 @@ const Recent = ({
         })
       }
     >
-      <View className="flex-row w-full mt-5">
+      <View className="mt-5 w-full flex-row">
         <View className="flex w-2/3 flex-grow">
-          <Text className="text-primary text-xl">{recent.food.name}</Text>
-          <Text className="text-primary text-base">
+          <Text className="text-xl text-primary">{recent.food.name}</Text>
+          <Text className="text-base text-primary">
             {recent.food.producer ? `${recent.food.producer}, ` : ""}
             {recent.servingQuantity}{" "}
             {recent.amount === 1
@@ -157,7 +156,7 @@ const Recent = ({
           </Text>
         </View>
         <View className="flex-row items-center">
-          <Text className="text-primary mr-2">
+          <Text className="mr-2 text-primary">
             {formatNumber(
               recent.food.energy * recent.amount * recent.servingQuantity,
             )}{" "}

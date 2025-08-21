@@ -11,10 +11,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FlatList, Platform } from "react-native";
 import { useSettings } from "~/contexts/AppSettingsContext";
 
-type MealSelectorHeaderProps = {
+interface MealSelectorHeaderProps {
   defaultSelection: MealType;
   onSelect: (mealType: MealType) => void;
-};
+}
 
 export const MealSelectorHeader = ({
   onSelect,
@@ -40,9 +40,9 @@ export const MealSelectorHeader = ({
       }}
       onValueChange={(meal) => onSelect(meal!.value as MealType)}
     >
-      <SelectTrigger className="bg-secondary border-0">
+      <SelectTrigger className="border-0 bg-secondary">
         <SelectValue
-          className="text-primary text-2xl font-medium"
+          className="text-2xl font-medium text-primary"
           placeholder="Select Meal"
         />
       </SelectTrigger>
@@ -73,5 +73,5 @@ export const MealSelectorHeader = ({
 };
 
 const WrappedSelectSeparator = () => (
-  <SelectSeparator className="bg-border w-full h-[1px]" />
+  <SelectSeparator className="h-[1px] w-full bg-border" />
 );

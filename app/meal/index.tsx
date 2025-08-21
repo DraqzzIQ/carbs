@@ -9,7 +9,7 @@ import { MealType } from "~/types/MealType";
 export default function MealScreen() {
   const params = useLocalSearchParams();
   const name = params["mealName"] as string;
-  const date = params["date"] as string;
+  const dateId = params["dateId"] as string;
 
   return (
     <>
@@ -19,21 +19,21 @@ export default function MealScreen() {
         }}
       />
       <ScrollView
-        className="p-3 bg-secondary h-full"
+        className="h-full bg-secondary p-3"
         showsVerticalScrollIndicator={false}
       >
-        <MealDetails date={date} mealType={name as MealType} />
+        <MealDetails dateId={dateId} mealType={name as MealType} />
         <View className="mb-20" />
       </ScrollView>
       <FloatingActionButton
         onPress={() =>
           router.navigate({
             pathname: "/meal/add",
-            params: { mealName: name, date: date },
+            params: { mealName: name, dateId: dateId },
           })
         }
       >
-        <PlusIcon className="text-secondary h-9 w-9" />
+        <PlusIcon className="h-9 w-9 text-secondary" />
       </FloatingActionButton>
     </>
   );

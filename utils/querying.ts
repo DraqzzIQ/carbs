@@ -11,7 +11,7 @@ import {
   recents,
   streaks,
 } from "~/db/schema";
-import { and, eq, isNull, like } from "drizzle-orm";
+import { and, eq, isNull, like, asc } from "drizzle-orm";
 import { isBaseUnit } from "~/utils/formatting";
 import { inArray } from "drizzle-orm/sql/expressions/conditions";
 import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
@@ -30,7 +30,7 @@ export async function addFoodToMeal(
   servingQuantity: number,
   amount: number,
   serving: string,
-  date: string,
+  dateId: string,
   food: Food | undefined = undefined,
 ): Promise<boolean> {
   if (food === undefined) {
@@ -41,7 +41,7 @@ export async function addFoodToMeal(
     }
   }
 
-  await updateStreak(date);
+  await updateStreak(dateId);
   await updateOrAddRecent(foodId, servingQuantity, amount, serving);
 
   try {
@@ -51,7 +51,7 @@ export async function addFoodToMeal(
       amount: amount,
       serving: serving,
       mealType: meal,
-      date: date,
+      dateId: dateId,
     });
   } catch (error) {
     console.error(
@@ -219,7 +219,7 @@ export async function deleteCustomFood(foodId: string) {
 
 export async function queryCustomFoods(
   query: string,
-  barCode: boolean = false,
+  barCode = false,
 ): Promise<FoodSearchResultDto[]> {
   try {
     const result = await db.query.foods.findMany({
@@ -259,15 +259,15 @@ export async function queryCustomFoods(
 
 export async function addFluidIntake(
   amount: number,
-  date: string,
+  dateId: string,
 ): Promise<void> {
   try {
     await db.insert(fluidIntake).values({
       amount: amount,
-      date: date,
+      dateId: dateId,
     });
   } catch (error) {
-    console.error(`Error adding fluid intake for date ${date}:`, error);
+    console.error(`Error adding fluid intake for dateId ${dateId}:`, error);
   }
 }
 
@@ -276,6 +276,19 @@ export async function deleteFluidIntake(id: number): Promise<void> {
     await db.delete(fluidIntake).where(eq(fluidIntake.id, id));
   } catch (error) {
     console.error(`Error deleting fluid intake with ID ${id}:`, error);
+  }
+}
+
+export async function getAllStreaks(): Promise<string[]> {
+  try {
+    const results = await db.query.streaks.findMany({
+      columns: { dateId: true },
+      orderBy: (streaks) => [asc(streaks.dateId)],
+    });
+    return results.map((streak) => streak.dateId);
+  } catch (error) {
+    console.error("Error getting all streaks:", error);
+    return [];
   }
 }
 
@@ -326,17 +339,17 @@ async function getSavedFood(foodId: string) {
   }
 }
 
-async function updateStreak(date: string) {
+async function updateStreak(dateId: string) {
   try {
     const existingStreak = await db.query.streaks.findFirst({
-      where: eq(streaks.day, date),
+      where: eq(streaks.dateId, dateId),
     });
 
     if (!existingStreak) {
-      await db.insert(streaks).values({ day: date });
+      await db.insert(streaks).values({ dateId: dateId });
     }
   } catch (error) {
-    console.error(`Error updating streak for date ${date}:`, error);
+    console.error(`Error updating streak for dateId ${dateId}:`, error);
   }
 }
 

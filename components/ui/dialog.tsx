@@ -22,7 +22,7 @@ function DialogOverlayWeb({
   return (
     <DialogPrimitive.Overlay
       className={cn(
-        "bg-black/80 flex justify-center items-center p-2 absolute top-0 right-0 bottom-0 left-0",
+        "absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center bg-black/80 p-2",
         open
           ? "web:animate-in web:fade-in-0"
           : "web:animate-out web:fade-out-0",
@@ -45,7 +45,7 @@ function DialogOverlayNative({
     <DialogPrimitive.Overlay
       style={StyleSheet.absoluteFill}
       className={cn(
-        "flex bg-black/80 justify-center items-center p-2",
+        "flex items-center justify-center bg-black/80 p-2",
         className,
       )}
       {...props}
@@ -81,7 +81,7 @@ function DialogContent({
       <DialogOverlay>
         <DialogPrimitive.Content
           className={cn(
-            "max-w-lg gap-4 border border-border web:cursor-default bg-background p-6 shadow-lg web:duration-200 rounded-lg",
+            "max-w-lg gap-4 rounded-lg border border-border bg-background p-6 shadow-lg web:cursor-default web:duration-200",
             open
               ? "web:animate-in web:fade-in-0 web:zoom-in-95"
               : "web:animate-out web:fade-out-0 web:zoom-out-95",
@@ -112,7 +112,7 @@ function DialogFooter({ className, ...props }: ViewProps) {
   return (
     <View
       className={cn(
-        "flex flex-col-reverse sm:flex-row sm:justify-end gap-2",
+        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
         className,
       )}
       {...props}
@@ -129,7 +129,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       className={cn(
-        "text-lg native:text-xl text-foreground font-semibold leading-none tracking-tight",
+        "native:text-xl text-lg font-semibold leading-none tracking-tight text-foreground",
         className,
       )}
       {...props}
@@ -146,7 +146,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       className={cn(
-        "text-sm native:text-base text-muted-foreground",
+        "native:text-base text-sm text-muted-foreground",
         className,
       )}
       {...props}

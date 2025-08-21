@@ -2,9 +2,9 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { ReactNode } from "react";
 
-type KeyboardShiftProps = {
+interface KeyboardShiftProps {
   children: ReactNode;
-};
+}
 
 export const KeyboardShift = ({ children }: KeyboardShiftProps) => {
   const height = useHeaderHeight();

@@ -16,15 +16,15 @@ import { MealType } from "~/types/MealType";
 import { Fragment, ReactNode } from "react";
 import { MealDetailsQueryType } from "~/db/queries/mealDetailsQuery";
 
-type MealsProps = {
+interface MealsProps {
   currentDayMeals: MealDetailsQueryType;
   maxBreakfast: number;
   maxLunch: number;
   maxDinner: number;
   maxSnacks: number;
   displaySnacks: boolean;
-  date: string;
-};
+  dateId: string;
+}
 
 export const Meals = ({
   currentDayMeals,
@@ -33,7 +33,7 @@ export const Meals = ({
   maxDinner,
   maxSnacks,
   displaySnacks,
-  date,
+  dateId,
 }: MealsProps) => {
   const breakfast = getMealData(currentDayMeals, MealType.BREAKFAST);
   const lunch = getMealData(currentDayMeals, MealType.LUNCH);
@@ -42,29 +42,29 @@ export const Meals = ({
 
   return (
     <>
-      <Text className="font-semibold text-xl w-full mt-7">Nutrition</Text>
-      <Card className="w-full gap-3 p-4 rounded-2xl mt-1">
+      <Text className="mt-7 w-full text-xl font-semibold">Nutrition</Text>
+      <Card className="mt-1 w-full gap-3 rounded-2xl p-4">
         {[
           {
-            icon: <CoffeeIcon className="mr-3 w-7 h-7 text-primary" />,
+            icon: <CoffeeIcon className="mr-3 h-7 w-7 text-primary" />,
             name: MealType.BREAKFAST,
             consumed: breakfast,
             max: maxBreakfast,
-            date: date,
+            dateId: dateId,
           },
           {
-            icon: <SandwichIcon className="mr-3 w-7 h-7 text-primary" />,
+            icon: <SandwichIcon className="mr-3 h-7 w-7 text-primary" />,
             name: MealType.LUNCH,
             consumed: lunch,
             max: maxLunch,
-            date: date,
+            dateId: dateId,
           },
           {
-            icon: <UtensilsIcon className="mr-3 w-7 h-7 text-primary" />,
+            icon: <UtensilsIcon className="mr-3 h-7 w-7 text-primary" />,
             name: MealType.DINNER,
             consumed: dinner,
             max: maxDinner,
-            date: date,
+            dateId: dateId,
           },
         ].map((meal, index, arr) => (
           <Fragment key={meal.name}>
@@ -74,11 +74,11 @@ export const Meals = ({
         ))}
         {displaySnacks && (
           <MealBar
-            icon={<CandyIcon className="mr-3 w-7 h-7 text-primary" />}
+            icon={<CandyIcon className="mr-3 h-7 w-7 text-primary" />}
             name={MealType.SNACK}
             consumed={snacks}
             max={maxSnacks}
-            date={date}
+            dateId={dateId}
           />
         )}
       </Card>
@@ -91,13 +91,13 @@ function MealBar({
   name,
   consumed,
   max,
-  date,
+  dateId,
 }: {
   icon: ReactNode;
   name: string;
   consumed: { calories: number; carbs: number; protein: number; fat: number };
   max: number;
-  date: string;
+  dateId: string;
 }) {
   const percentage = (consumed.calories / max) * 100;
 
@@ -106,19 +106,19 @@ function MealBar({
       onPress={() =>
         router.navigate({
           pathname: "/meal",
-          params: { mealName: name, date: date },
+          params: { mealName: name, dateId: dateId },
         })
       }
     >
       <View className="flex-row items-center">
         {icon}
-        <View className="items-center w-2/3">
-          <Text className="mb-1 font-semibold w-full">{name}</Text>
+        <View className="w-2/3 items-center">
+          <Text className="mb-1 w-full font-semibold">{name}</Text>
           <Progress
             value={percentage}
             className="h-2 bg-gray-400 dark:bg-gray-600"
           />
-          <Text className="text-xs text-gray-500 dark:text-gray-300 font-semibold w-full">
+          <Text className="w-full text-xs font-semibold text-gray-500 dark:text-gray-300">
             {formatNumber(consumed.calories)} / {max} kcal (
             {formatNumber(percentage)}%)
           </Text>
@@ -128,16 +128,16 @@ function MealBar({
           onPress={() =>
             router.navigate({
               pathname: "/meal/add",
-              params: { mealName: name, date: date },
+              params: { mealName: name, dateId: dateId },
             })
           }
         >
-          <View className="w-10 h-10 items-center justify-center">
+          <View className="h-10 w-10 items-center justify-center">
             <PlusIcon className="h-7 w-7 text-primary" />
           </View>
         </TouchableOpacity>
       </View>
-      <View className="flex-row justify-between mt-1">
+      <View className="mt-1 flex-row justify-between">
         <View className="items-center">
           <Text className="text-xs font-semibold">
             {formatNumber(consumed.carbs, 1)} g
@@ -166,7 +166,7 @@ function getMealData(
   mealType: MealType,
 ): { calories: number; carbs: number; protein: number; fat: number } {
   const filteredMeals = meals.filter((meal) => meal.mealType === mealType);
-  let result = { calories: 0, carbs: 0, protein: 0, fat: 0 };
+  const result = { calories: 0, carbs: 0, protein: 0, fat: 0 };
   filteredMeals.forEach((meal) => {
     const quantity = meal.servingQuantity * meal.amount;
     result.calories += meal.food.energy * quantity;

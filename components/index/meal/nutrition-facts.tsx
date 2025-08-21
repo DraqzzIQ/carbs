@@ -162,14 +162,21 @@ const buildEmptyTotals = (): NutrientTotals =>
     return acc;
   }, {} as NutrientTotals);
 
-type NutritionHeaderItem = { type: "header"; key: string; title: string };
-type NutritionValueItem = { type: "item"; key: NutrientKey };
+interface NutritionHeaderItem {
+  type: "header";
+  key: string;
+  title: string;
+}
+interface NutritionValueItem {
+  type: "item";
+  key: NutrientKey;
+}
 type NutritionDataItem = NutritionHeaderItem | NutritionValueItem;
 
-type NutritionFactsProps = {
+interface NutritionFactsProps {
   foods: (Food & { amount: number; servingQuantity: number })[];
   className?: string;
-};
+}
 
 export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
   const nutritionData = useMemo<NutritionDataItem[]>(() => {
@@ -189,7 +196,7 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
       const quantity = food.servingQuantity * food.amount;
       for (const key of NUTRIENT_KEYS) {
         const sourceKey = SOURCE_KEY_ALIAS[key] || key;
-        const raw = (food as any)[sourceKey];
+        const raw = food[sourceKey];
         if (raw == null) continue;
         const multiplier = UNIT_MULTIPLIER[totals[key].unit] || 1;
         totals[key].value += raw * quantity * multiplier;
@@ -199,7 +206,7 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
   }, [foods]);
 
   return (
-    <Card className={cn("p-4 pt-5 rounded-2xl", className)}>
+    <Card className={cn("rounded-2xl p-4 pt-5", className)}>
       <CardTitle className="text-center">Nutrition Facts</CardTitle>
       <FlashList<NutritionDataItem>
         estimatedItemSize={31}
@@ -210,14 +217,14 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
         renderItem={({ item }) => {
           if (item.type === "header") {
             return (
-              <Text className="font-semibold mt-2 mb-1 text-primary">
+              <Text className="mb-1 mt-2 font-semibold text-primary">
                 {item.title}
               </Text>
             );
           }
           const data = totalNutrition[item.key];
           return (
-            <View className="p-2 flex-row justify-between">
+            <View className="flex-row justify-between p-2">
               <Text className="text-sm capitalize text-primary">
                 {displayLabelCache[item.key]}
               </Text>

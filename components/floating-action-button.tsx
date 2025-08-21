@@ -3,13 +3,13 @@ import { ReactNode } from "react";
 import { cn } from "~/lib/utils";
 import { LoaderCircleIcon } from "lucide-nativewind";
 
-type FloatingActionButtonProps = {
+interface FloatingActionButtonProps {
   children?: ReactNode;
   onPress: () => void;
   bottom?: string;
   disabled?: boolean;
   loading?: boolean;
-};
+}
 
 export const FloatingActionButton = ({
   children,
@@ -21,14 +21,14 @@ export const FloatingActionButton = ({
   return (
     <View
       className={cn(
-        "bg-primary rounded-full h-14 w-14 absolute right-4 items-center justify-center",
+        "absolute right-4 h-14 w-14 items-center justify-center rounded-full bg-primary",
         bottom,
       )}
     >
       <TouchableOpacity onPress={() => onPress()} disabled={disabled}>
         {loading ? (
           <View className="animate-spin">
-            <LoaderCircleIcon className="text-secondary h-9 w-9" />
+            <LoaderCircleIcon className="h-9 w-9 text-secondary" />
           </View>
         ) : (
           children

@@ -6,7 +6,7 @@ import { formatNumber, getVolumeUnitForLocale } from "~/utils/formatting";
 import { useMemo } from "react";
 import { MealDetailsQueryType } from "~/db/queries/mealDetailsQuery";
 
-type SummaryProps = {
+interface SummaryProps {
   currentDayMeals: MealDetailsQueryType;
   maxCalories: number;
   maxCarbs: number;
@@ -15,7 +15,7 @@ type SummaryProps = {
   fluidIntake: number;
   maxFluidIntake: number;
   waterTrackerEnabled: boolean;
-};
+}
 
 export const Summary = ({
   currentDayMeals,
@@ -59,20 +59,20 @@ export const Summary = ({
 
   return (
     <>
-      <Text className="font-semibold text-xl w-full mt-4">Summary</Text>
-      <Card className="w-full gap-3 p-4 pb-6 rounded-2xl mt-1">
+      <Text className="mt-4 w-full text-xl font-semibold">Summary</Text>
+      <Card className="mt-1 w-full gap-3 rounded-2xl p-4 pb-6">
         <View className="items-center">
-          <Text className="mb-1 font-semibold text-lg">Calories</Text>
+          <Text className="mb-1 text-lg font-semibold">Calories</Text>
           <Progress
             value={(calories / maxCalories) * 100}
             className="h-2 bg-gray-400 dark:bg-gray-600"
           />
-          <Text className="font-semibold text-sm text-gray-500 dark:text-gray-300">
+          <Text className="text-sm font-semibold text-gray-500 dark:text-gray-300">
             {formatNumber(calories)} / {formatNumber(maxCalories)} kcal (
             {formatNumber((calories / maxCalories) * 100)}%)
           </Text>
         </View>
-        <View className="flex-row h-16 w-full">
+        <View className="h-16 w-full flex-row">
           <MacroBar label="Carbs" consumed={carbs} max={maxCarbs} />
           <View className="grow" />
           <MacroBar label="Protein" consumed={protein} max={maxProtein} />
@@ -81,12 +81,12 @@ export const Summary = ({
         </View>
         {waterTrackerEnabled && (
           <View className="items-center">
-            <Text className="mb-1 font-semibold text-md">Water</Text>
+            <Text className="text-md mb-1 font-semibold">Water</Text>
             <Progress
               value={(fluidIntake / maxFluidIntake) * 100}
               className="h-2 bg-gray-400 dark:bg-gray-600"
             />
-            <Text className="font-semibold text-sm text-gray-500 dark:text-gray-300">
+            <Text className="text-sm font-semibold text-gray-500 dark:text-gray-300">
               {formatNumber(fluidIntake)} / {formatNumber(maxFluidIntake)}{" "}
               {getVolumeUnitForLocale()} (
               {formatNumber((fluidIntake / maxFluidIntake) * 100)}%)
@@ -114,10 +114,10 @@ function MacroBar({
         value={(consumed / max) * 100}
         className="h-2 bg-gray-400 dark:bg-gray-600"
       />
-      <Text className="font-semibold text-gray-500 dark:text-gray-300 text-xs text-center">
+      <Text className="text-center text-xs font-semibold text-gray-500 dark:text-gray-300">
         {formatNumber(consumed)} / {max} g
       </Text>
-      <Text className="font-semibold text-gray-500 dark:text-gray-300 text-xs text-center">
+      <Text className="text-center text-xs font-semibold text-gray-500 dark:text-gray-300">
         ({formatNumber((consumed / max) * 100)}%)
       </Text>
     </View>

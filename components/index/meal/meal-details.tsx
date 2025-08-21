@@ -24,15 +24,15 @@ import { router } from "expo-router";
 import { MacroHeader } from "~/components/index/meal/macro-header";
 import { formatServing } from "~/utils/serving";
 
-type MealDetailProps = {
-  date: string;
+interface MealDetailProps {
+  dateId: string;
   mealType: MealType;
-};
+}
 
-export const MealDetails = ({ date, mealType }: MealDetailProps) => {
+export const MealDetails = ({ dateId, mealType }: MealDetailProps) => {
   const { data: currentDayMeals, error: queryError } = useRelationalLiveQuery(
-    mealDetailsQuery(date, mealType),
-    [date],
+    mealDetailsQuery(dateId, mealType),
+    [dateId],
   );
 
   useEffect(() => {
@@ -77,7 +77,7 @@ export const MealDetails = ({ date, mealType }: MealDetailProps) => {
         renderItem={({ item }) => <MealItem meal={item} key={item.id} />}
       />
       {currentDayMeals.length === 0 && (
-        <Text className="text-center text-muted-foreground mt-4">
+        <Text className="mt-4 text-center text-muted-foreground">
           Nothing added yet.
         </Text>
       )}
@@ -104,9 +104,9 @@ const RightAction = ({
   }));
 
   return (
-    <View className="w-full items-center justify-center h-full p-1">
+    <View className="h-full w-full items-center justify-center p-1">
       <TouchableOpacity
-        className="w-full bg-[#ff526b] pr-4 rounded-lg"
+        className="w-full rounded-lg bg-[#ff526b] pr-4"
         onPress={async () => {
           await removeFoodFromMeal(mealId);
         }}
@@ -114,9 +114,9 @@ const RightAction = ({
         <View className="flex-grow" />
         <Animated.View
           style={[animatedStyle]}
-          className="items-center justify-center h-full"
+          className="h-full items-center justify-center"
         >
-          <Trash2Icon className="w-8 h-8 text-primary" />
+          <Trash2Icon className="h-8 w-8 text-primary" />
         </Animated.View>
       </TouchableOpacity>
     </View>
@@ -134,7 +134,7 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
 
   return (
     <Animated.View
-      className="mt-1.5 rounded-lg overflow-hidden"
+      className="mt-1.5 overflow-hidden rounded-lg"
       onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
       exiting={FadeOut}
       layout={LinearTransition}
@@ -144,16 +144,16 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
           renderRightActions(translation, meal.id, width)
         }
       >
-        <Card className="p-3 m-1">
+        <Card className="m-1 p-3">
           <TouchableOpacity
             onPress={async () => {
               const path = `/meal/add/${meal.food.category === "quick-entry" ? "/quick-entry" : "product"}`;
               router.navigate({
-                pathname: path as any,
+                pathname: path,
                 params: {
                   edit: "true",
                   mealId: meal.id,
-                  date: meal.date,
+                  dateId: meal.dateId,
                   mealName: meal.mealType,
                 },
               });
@@ -188,7 +188,7 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
                 kcal
               </Text>
             </View>
-            <View className="flex-row justify-between mt-1">
+            <View className="mt-1 flex-row justify-between">
               <View className="items-center">
                 <Text className="text-xs font-semibold">
                   {formatNumber(

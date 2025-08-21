@@ -96,7 +96,7 @@ export default function CustomFoodScreen() {
     <KeyboardShift>
       <Stack.Screen
         options={{
-          headerTitle: (_) => (
+          headerTitle: () => (
             <Text className="text-2xl font-semibold">{`${edit ? "Edit" : "Create"} Custom Food`}</Text>
           ),
         }}
@@ -104,7 +104,7 @@ export default function CustomFoodScreen() {
       <Form formConfig={formConfig} onSubmit={onSubmit} edit={edit}>
         <Card className="mb-2 p-4">
           <CardTitle className="text-lg">Barcode</CardTitle>
-          <View className="mt-4 flex-row gap-2 items-center">
+          <View className="mt-4 flex-row items-center gap-2">
             <Input
               className="flex-1 bg-secondary"
               placeholder="(optional)"
@@ -116,9 +116,9 @@ export default function CustomFoodScreen() {
               onPress={() => setBarCodeScannerOpen((prev) => !prev)}
             >
               {barCodeScannerOpen ? (
-                <XIcon className="text-primary h-10 w-10" />
+                <XIcon className="h-10 w-10 text-primary" />
               ) : (
-                <ScanBarcodeIcon className="text-primary h-10 w-10" />
+                <ScanBarcodeIcon className="h-10 w-10 text-primary" />
               )}
             </TouchableOpacity>
           </View>

@@ -3,12 +3,12 @@ import { Text } from "~/components/ui/text";
 import { formatNumber } from "~/utils/formatting";
 import { Card } from "~/components/ui/card";
 
-type MacroHeaderProps = {
+interface MacroHeaderProps {
   energy: number;
   carbs: number;
   protein: number;
   fat: number;
-};
+}
 
 export const MacroHeader = ({
   energy,
@@ -17,7 +17,7 @@ export const MacroHeader = ({
   fat,
 }: MacroHeaderProps) => {
   return (
-    <Card className="p-2 m-1 bg-secondary border-2 border-foreground">
+    <Card className="m-1 border-2 border-foreground bg-secondary p-2">
       <View className="flex-row justify-between">
         <View className="items-center">
           <Text className="font-semibold">{formatNumber(energy)} kcal</Text>

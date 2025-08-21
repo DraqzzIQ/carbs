@@ -28,7 +28,7 @@ export enum FieldType {
   Select = "select",
 }
 
-type Field = {
+interface Field {
   key: string;
   label: string;
   placeholder?: string;
@@ -39,25 +39,25 @@ type Field = {
   selectTextOnFocus?: boolean;
   options?: string[];
   type: FieldType;
-  style?: StyleProp<any>;
-};
+  style?: StyleProp<unknown>;
+}
 
 type FieldOrRow = Field | Field[];
 
-export type FormCategory = {
+export interface FormCategory {
   category: string;
   fields: FieldOrRow[];
   defaultVisible: number;
-  style?: StyleProp<any>;
+  style?: StyleProp<unknown>;
   titleStyle?: number;
-};
+}
 
-type FoodFormProps = {
+interface FoodFormProps {
   formConfig: FormCategory[];
   onSubmit: (values: Record<string, string>) => Promise<void>;
   edit?: boolean;
   children?: ReactNode;
-};
+}
 
 export function Form({
   formConfig,
@@ -132,7 +132,7 @@ export function Form({
   };
 
   const handleSubmit = async () => {
-    let newErrors: Record<string, string> = {};
+    const newErrors: Record<string, string> = {};
     formConfig.forEach((cat) => {
       cat.fields.forEach((item) => {
         const fields = Array.isArray(item) ? item : [item];
@@ -166,7 +166,7 @@ export function Form({
             ? cat.fields.length
             : cat.defaultVisible;
           return (
-            <Card key={idx} className="p-4 mt-2" style={cat.style}>
+            <Card key={idx} className="mt-2 p-4" style={cat.style}>
               {cat.category !== "" && cat.titleStyle === 2 ? (
                 <CardTitle className="mb-4 text-center">
                   {cat.category}
@@ -176,7 +176,7 @@ export function Form({
               )}
               {cat.fields.slice(0, visibleCount).map((item, idx) =>
                 Array.isArray(item) ? (
-                  <View key={idx} className="flex-row gap-2 mb-2">
+                  <View key={idx} className="mb-2 flex-row gap-2">
                     {item.map((field) => (
                       <View
                         key={field.key}
@@ -208,7 +208,7 @@ export function Form({
               )}
               {cat.fields.length > cat.defaultVisible && (
                 <TouchableOpacity
-                  className="flex-row items-center mt-2"
+                  className="mt-2 flex-row items-center"
                   onPress={() =>
                     setShowMore((prev) => ({
                       ...prev,
@@ -241,23 +241,23 @@ export function Form({
         disabled={isLoading}
       >
         {edit ? (
-          <SaveIcon className="text-secondary h-9 w-9" />
+          <SaveIcon className="h-9 w-9 text-secondary" />
         ) : (
-          <PlusIcon className="text-secondary h-9 w-9" />
+          <PlusIcon className="h-9 w-9 text-secondary" />
         )}
       </FloatingActionButton>
     </View>
   );
 }
 
-type FieldProps = {
+interface FieldProps {
   field: Field;
   value: string | undefined;
   onChange: (value: string) => void;
   onBlur: () => void;
   error?: string;
   touched?: boolean;
-};
+}
 
 function Field({ field, value, onChange, onBlur, error, touched }: FieldProps) {
   return (
@@ -303,7 +303,7 @@ function Field({ field, value, onChange, onBlur, error, touched }: FieldProps) {
         }
       })()}
       {field.required && touched && error && (
-        <Text className="text-red-500 text-xs mt-1">{error}</Text>
+        <Text className="mt-1 text-xs text-red-500">{error}</Text>
       )}
     </>
   );

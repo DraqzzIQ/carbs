@@ -9,13 +9,14 @@ import { streaks } from "~/db/schema";
 import { db } from "~/db/client";
 import { useEffect } from "react";
 
-type HeaderProps = {
-  date: string;
-};
+interface HeaderProps {
+  dateSlug: string;
+  dateId: string;
+}
 
-export const Header = ({ date }: HeaderProps) => {
+export const Header = ({ dateSlug, dateId }: HeaderProps) => {
   const { data: streakDays, error: queryError } = useRelationalLiveQuery(
-    db.select().from(streaks).orderBy(desc(streaks.id)),
+    db.select().from(streaks).orderBy(desc(streaks.dateId)),
   );
 
   useEffect(() => {
@@ -25,11 +26,17 @@ export const Header = ({ date }: HeaderProps) => {
   }, [queryError]);
 
   return (
-    <View className="flex-row w-full items-center">
-      <Text className="text-xl font-semibold">{date}</Text>
-      <CalendarIcon className="text-primary ml-3" />
+    <View className="w-full flex-row items-center">
+      <Text className="text-xl font-semibold">{dateSlug}</Text>
+      <TouchableOpacity
+        onPress={() =>
+          router.navigate({ pathname: "/calendar", params: { dateId: dateId } })
+        }
+      >
+        <CalendarIcon className="ml-3 text-primary" />
+      </TouchableOpacity>
       <View className="grow" />
-      <View className="flex-row mr-3 items-center">
+      <View className="mr-3 flex-row items-center">
         <FlameIcon className="text-primary" />
         <Text className="text-xl font-semibold text-primary">
           {getStreakCount(streakDays)}
@@ -38,7 +45,7 @@ export const Header = ({ date }: HeaderProps) => {
       <TouchableOpacity
         onPress={() => router.navigate({ pathname: "/settings" })}
       >
-        <View className="w-10 h-10 items-center justify-center">
+        <View className="h-10 w-10 items-center justify-center">
           <SettingsIcon className="text-primary" />
         </View>
       </TouchableOpacity>

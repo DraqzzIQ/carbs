@@ -1,38 +1,31 @@
 import { Streak } from "~/db/schema";
-import {
-  convertDayFormatToDate,
-  getCurrentDayFormattedDate,
-} from "~/utils/formatting";
+import { convertDateIdToDate, getDateIdFromDate } from "~/utils/formatting";
 
 export function getStreakCount(streakDays: Streak[]): number {
   if (streakDays.length === 0) {
     return 0;
   }
 
-  streakDays.sort((a, b) => {
-    return +convertDayFormatToDate(b.day) - +convertDayFormatToDate(a.day);
-  });
-
-  const today = getCurrentDayFormattedDate();
-  const yesterday = getCurrentDayFormattedDate(-1);
+  const today = getDateIdFromDate();
+  const yesterday = getDateIdFromDate(-1);
 
   const firstStreakIndex = streakDays.findIndex(
-    (streak) => streak.day === today || streak.day === yesterday,
+    (streak) => streak.dateId === today || streak.dateId === yesterday,
   );
   if (firstStreakIndex === -1) {
     return 0;
   }
 
   let count = 1;
-  let currentDayDate = convertDayFormatToDate(streakDays[firstStreakIndex].day);
+  let currentDayDate = convertDateIdToDate(streakDays[firstStreakIndex].dateId);
   for (let i = firstStreakIndex + 1; i < streakDays.length; i++) {
     const previousDayDate = currentDayDate;
-    currentDayDate = convertDayFormatToDate(streakDays[i].day);
+    currentDayDate = convertDateIdToDate(streakDays[i].dateId);
 
-    if (
-      previousDayDate.getTime() - currentDayDate.getTime() ===
-      24 * 60 * 60 * 1000
-    ) {
+    const prevDay = toUtcDayMs(previousDayDate);
+    const currDay = toUtcDayMs(currentDayDate);
+
+    if (prevDay - currDay === 86_400_000) {
       count++;
     } else {
       break;
@@ -40,3 +33,6 @@ export function getStreakCount(streakDays: Streak[]): number {
   }
   return count;
 }
+
+const toUtcDayMs = (d: Date) =>
+  Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());

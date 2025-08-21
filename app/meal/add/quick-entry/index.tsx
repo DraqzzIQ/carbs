@@ -20,7 +20,7 @@ import {
 
 export default function QuickEntryScreen() {
   const params = useLocalSearchParams();
-  const date = params["date"] as string;
+  const dateId = params["dateId"] as string;
   const mealName = params["mealName"] as string;
   const edit = (params["edit"] as string) == "true";
   const mealId = edit ? parseInt(params["mealId"] as string, 10) : null;
@@ -89,7 +89,7 @@ export default function QuickEntryScreen() {
         1,
         1,
         "Gram",
-        date,
+        dateId,
         addedFood,
       );
     }
@@ -101,7 +101,7 @@ export default function QuickEntryScreen() {
     <KeyboardShift>
       <Stack.Screen
         options={{
-          headerTitle: (_) => (
+          headerTitle: () => (
             <MealSelectorHeader
               onSelect={(mealType) => setMealType(mealType)}
               defaultSelection={mealType}

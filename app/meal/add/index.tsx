@@ -26,7 +26,7 @@ import { useSettings } from "~/contexts/AppSettingsContext";
 export default function AddToMealScreen() {
   const params = useLocalSearchParams();
   const meal = params["mealName"] as string;
-  const date = params["date"] as string;
+  const dateId = params["dateId"] as string;
 
   const { hasPermission, requestPermission } = useCameraPermission();
   const navigation = useNavigation();
@@ -44,7 +44,7 @@ export default function AddToMealScreen() {
   const abortRef = useRef<AbortController | null>(null);
   const requestIdRef = useRef(0);
   const cacheRef = useRef<Map<string, FoodSearchResultDto[]>>(new Map());
-  const [_, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   // Focus listener & camera permission
   useEffect(() => {
@@ -123,7 +123,7 @@ export default function AddToMealScreen() {
             params: {
               edit: "false",
               productId: merged[0].productId,
-              date,
+              dateId: dateId,
               mealName: meal,
               custom: merged[0].score === -1 ? "true" : "false",
             },
@@ -144,7 +144,7 @@ export default function AddToMealScreen() {
         }
       }
     },
-    [onlyCustomProducts, date, meal],
+    [onlyCustomProducts, dateId, meal],
   );
 
   // Debounced search effect (keyboard input)
@@ -189,7 +189,7 @@ export default function AddToMealScreen() {
       servingQuantity,
       amount,
       food.serving,
-      date,
+      dateId,
     );
   }
 
@@ -202,7 +202,7 @@ export default function AddToMealScreen() {
 
   return (
     <KeyboardShift>
-      <View className="p-4 bg-secondary h-full">
+      <View className="h-full bg-secondary p-4">
         <Stack.Screen
           options={{
             title: `${meal}`,
@@ -215,7 +215,7 @@ export default function AddToMealScreen() {
                   onPress={() =>
                     router.navigate({
                       pathname: "/meal/add/custom-food",
-                      params: { date, mealName: meal },
+                      params: { dateId: dateId, mealName: meal },
                     })
                   }
                 >
@@ -225,7 +225,7 @@ export default function AddToMealScreen() {
                   onPress={() =>
                     router.navigate({
                       pathname: "/meal/add/quick-entry",
-                      params: { date, mealName: meal },
+                      params: { dateId: dateId, mealName: meal },
                     })
                   }
                 >
@@ -235,13 +235,13 @@ export default function AddToMealScreen() {
             ),
           }}
         />
-        <View className="flex-row justify-center items-center border border-muted-foreground px-4 rounded-lg bg-secondary">
+        <View className="flex-row items-center justify-center rounded-lg border border-muted-foreground bg-secondary px-4">
           <SearchIcon className="text-primary" />
           <Input
             onFocus={() => setSearchFocused(true)}
             onEndEditing={() => setSearchFocused(false)}
             selectTextOnFocus
-            className="flex-1 ml-4 border-0 bg-secondary"
+            className="ml-4 flex-1 border-0 bg-secondary"
             placeholder="Search Product"
             onChangeText={onSearchQueryChange}
             value={searchQuery}
@@ -256,7 +256,7 @@ export default function AddToMealScreen() {
             <XIcon className="text-primary" />
           </TouchableOpacity>
         </View>
-        <View className="h-full w-full mt-2">
+        <View className="mt-2 h-full w-full">
           {barCodeScannerOpen ? (
             <BarcodeScanner
               barCodeScannerOpen={barCodeScannerOpen}
@@ -264,7 +264,7 @@ export default function AddToMealScreen() {
             />
           ) : (
             <SearchProducts
-              date={date}
+              dateId={dateId}
               products={products}
               loading={loading}
               notFound={noResults}
@@ -279,9 +279,9 @@ export default function AddToMealScreen() {
           onPress={() => setBarCodeScannerOpen((prev) => !prev)}
         >
           {barCodeScannerOpen ? (
-            <XIcon className="text-secondary h-9 w-9" />
+            <XIcon className="h-9 w-9 text-secondary" />
           ) : (
-            <ScanBarcodeIcon className="text-secondary h-9 w-9" />
+            <ScanBarcodeIcon className="h-9 w-9 text-secondary" />
           )}
         </FloatingActionButton>
       </View>

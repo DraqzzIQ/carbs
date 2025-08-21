@@ -89,7 +89,7 @@ export const meals = sqliteTable("meals", {
   amount: integer("amount").notNull(),
   serving: text("serving").notNull(),
   mealType: text("meal_type").notNull(),
-  date: text("date").notNull(),
+  dateId: text("date_id").notNull(),
 });
 
 export const favorites = sqliteTable("favorites", {
@@ -123,7 +123,7 @@ export const recents = sqliteTable("recents", {
 
 export const streaks = sqliteTable("streaks", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  day: text("day").notNull(),
+  dateId: text("date_id").notNull(),
 });
 
 export const recipes = sqliteTable("recipes", {
@@ -155,7 +155,7 @@ export const recipeEntries = sqliteTable("recipe_entries", {
 export const fluidIntake = sqliteTable("fluid_intake", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   amount: integer("amount").notNull(),
-  date: text("date").notNull(),
+  dateId: text("date_id").notNull(),
 });
 
 export type Food = typeof foods.$inferSelect;

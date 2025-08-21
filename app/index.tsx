@@ -4,12 +4,9 @@ import { Header } from "~/components/index/header";
 import { Summary } from "~/components/index/summary";
 import { Meals } from "~/components/index/meals";
 import { useRelationalLiveQuery } from "~/db/queries/useRelationalLiveQuery";
-import {
-  getCurrentDayFormattedDate,
-  offsetDateByDays,
-} from "~/utils/formatting";
+import { getDateIdFromDate, offsetDateIdByDays } from "~/utils/formatting";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import { getDateSlug } from "~/utils/formatting";
 import { runOnJS } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -35,14 +32,21 @@ export default function Screen() {
   } = useSettings();
   const maxCalories =
     maxBreakfast + maxLunch + maxDinner + (displaySnacks ? maxSnacks : 0);
+  const params = useLocalSearchParams<{
+    dateId?: string;
+  }>();
 
-  const [currentDay, setCurrentDay] = useState(getCurrentDayFormattedDate);
-  const [dateString, setDateString] = useState<string>(getDateSlug(currentDay));
+  const [currentDayId, setCurrentDayId] = useState(
+    params.dateId ?? getDateIdFromDate(),
+  );
+  const [dateString, setDateString] = useState<string>(
+    getDateSlug(currentDayId),
+  );
 
   const { waterTrackerEnabled } = useSettings();
 
   const { data: currentDayMeals, error: mealDetailsQueryError } =
-    useRelationalLiveQuery(mealDetailsQuery(currentDay), [currentDay]);
+    useRelationalLiveQuery(mealDetailsQuery(currentDayId), [currentDayId]);
 
   useEffect(() => {
     if (mealDetailsQueryError) {
@@ -56,8 +60,8 @@ export default function Screen() {
         .select()
         .from(fluidIntake)
         .orderBy(desc(fluidIntake.id))
-        .where(eq(fluidIntake.date, currentDay)),
-      [currentDay],
+        .where(eq(fluidIntake.dateId, currentDayId)),
+      [currentDayId],
     );
   const totalFluidIntake = useMemo(() => {
     return (
@@ -73,13 +77,13 @@ export default function Screen() {
 
   const onSwipe = (direction: "left" | "right") => {
     const offset = direction === "left" ? 1 : -1;
-    const newDate = offsetDateByDays(currentDay, offset);
-    setCurrentDay(newDate);
+    const newDate = offsetDateIdByDays(currentDayId, offset);
+    setCurrentDayId(newDate);
     setDateString(getDateSlug(newDate));
   };
 
   const panGesture = Gesture.Pan()
-    .activeOffsetX([-10, 10])
+    .activeOffsetX([-50, 50])
     .onEnd((event) => {
       if (event.translationX < -50) {
         runOnJS(onSwipe)("left");
@@ -92,9 +96,9 @@ export default function Screen() {
   const navigation = useNavigation();
   useEffect(() => {
     return navigation.addListener("focus", () => {
-      setDateString(getDateSlug(currentDay));
+      setDateString(getDateSlug(currentDayId));
     });
-  }, [navigation, currentDay]);
+  }, [navigation, currentDayId]);
 
   const appState = useRef(AppState.currentState);
   useEffect(() => {
@@ -103,22 +107,22 @@ export default function Screen() {
         appState.current.match(/inactive|background/) &&
         nextAppState === "active"
       ) {
-        setDateString(getDateSlug(currentDay));
+        setDateString(getDateSlug(currentDayId));
       }
       appState.current = nextAppState;
     });
     return () => {
       subscription.remove();
     };
-  }, [currentDay]);
+  }, [currentDayId]);
   //endregion
 
   return (
     <ScrollView className="bg-secondary" showsVerticalScrollIndicator={false}>
       <GestureDetector gesture={panGesture}>
-        <View className="w-full items-center h-full">
-          <View className="flex-1 items-center p-4 text-primary w-full max-w-xl">
-            <Header date={dateString} />
+        <View className="h-full w-full items-center">
+          <View className="w-full max-w-xl flex-1 items-center p-4 text-primary">
+            <Header dateSlug={dateString} dateId={currentDayId} />
             <View className="w-full">
               <Summary
                 currentDayMeals={currentDayMeals}
@@ -131,7 +135,7 @@ export default function Screen() {
                 waterTrackerEnabled={waterTrackerEnabled}
               />
               <Meals
-                date={currentDay}
+                dateId={currentDayId}
                 currentDayMeals={currentDayMeals}
                 maxBreakfast={maxBreakfast}
                 maxLunch={maxLunch}
@@ -141,7 +145,7 @@ export default function Screen() {
               />
               {waterTrackerEnabled && (
                 <WaterTracker
-                  date={currentDay}
+                  dateId={currentDayId}
                   fluidIntake={fluidIntakeResult}
                 />
               )}

@@ -10,11 +10,11 @@ export function mealDetailsQuery(day: string, mealType?: MealType) {
       servingQuantity: true,
       amount: true,
       mealType: true,
-      date: true,
+      dateId: true,
       serving: true,
     },
     where: and(
-      eq(meals.date, day),
+      eq(meals.dateId, day),
       mealType !== undefined ? eq(meals.mealType, mealType) : undefined,
     ),
     with: {

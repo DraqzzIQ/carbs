@@ -36,7 +36,7 @@ import { isBaseUnit } from "~/utils/formatting";
 
 export default function ProductDetailScreen() {
   const params = useLocalSearchParams<{
-    date: string;
+    dateId: string;
     edit: string;
     mealName: string;
     mealId?: string;
@@ -154,13 +154,13 @@ export default function ProductDetailScreen() {
     <KeyboardShift>
       <Stack.Screen
         options={{
-          headerTitle: (_) => (
+          headerTitle: () => (
             <MealSelectorHeader
               onSelect={(mealType) => setMealType(mealType)}
               defaultSelection={mealType}
             />
           ),
-          headerRight: (_) => (
+          headerRight: () => (
             <HeaderOptions
               foodId={food?.id || ""}
               servingQuantity={servingQuantity}
@@ -168,26 +168,26 @@ export default function ProductDetailScreen() {
               amount={amount}
               isCustom={food?.isCustom}
               isDeleted={!!food?.deletedAt}
-              eans={food?.eans}
+              eans={food?.eans ?? undefined}
             />
           ),
         }}
       />
       <ScrollView
-        className="p-4 bg-secondary h-full"
+        className="h-full bg-secondary p-4"
         showsVerticalScrollIndicator={false}
       >
         {food === undefined ? (
           <ProductDetailsLoadingSkeleton />
         ) : (
           <>
-            <Text className="text-primary text-2xl text-center font-semibold">
+            <Text className="text-center text-2xl font-semibold text-primary">
               {food.name}
             </Text>
-            <Text className="text-muted-foreground text-xl text-center font-semibold mb-8">
+            <Text className="mb-8 text-center text-xl font-semibold text-muted-foreground">
               {food.producer}
             </Text>
-            <View className="flex flex-row justify-center mb-4">
+            <View className="mb-4 flex flex-row justify-center">
               {food.isVerified && (
                 <View className="flex flex-row items-center">
                   <VerifiedIcon className="h-5 text-primary" />
@@ -250,7 +250,7 @@ export default function ProductDetailScreen() {
                   servingQuantity,
                   amount,
                   serving,
-                  params.date,
+                  params.dateId,
                   food,
                 );
               }
@@ -261,9 +261,9 @@ export default function ProductDetailScreen() {
             disabled={isLoading}
           >
             {edit ? (
-              <SaveIcon className="text-secondary h-9 w-9" />
+              <SaveIcon className="h-9 w-9 text-secondary" />
             ) : (
-              <PlusIcon className="text-secondary h-9 w-9" />
+              <PlusIcon className="h-9 w-9 text-secondary" />
             )}
           </FloatingActionButton>
         </>

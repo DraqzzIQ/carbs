@@ -36,7 +36,7 @@ import {
   BarcodeFormat,
 } from "react-native-barcode-creator";
 
-type HeaderOptionProps = {
+interface HeaderOptionProps {
   foodId: string;
   servingQuantity: number;
   serving: string;
@@ -44,7 +44,7 @@ type HeaderOptionProps = {
   isCustom?: boolean;
   isDeleted?: boolean;
   eans?: string[];
-};
+}
 
 export const HeaderOptions = ({
   foodId,
@@ -83,7 +83,7 @@ export const HeaderOptions = ({
       <View className="flex-row gap-5">
         <TouchableOpacity onPress={onPressFavorite}>
           <HeartIcon
-            className={`h-8 w-8 text-primary${isFavorite ? " fill-primary" : ""}`}
+            className={`h-8 w-8 text-primary${isFavorite ? "fill-primary" : ""}`}
           />
         </TouchableOpacity>
 
@@ -99,19 +99,19 @@ export const HeaderOptions = ({
             >
               <View className="flex-row gap-2">
                 <EditIcon className="h-6 w-6 text-primary" />
-                <Text className="text-primary text-base">Edit product</Text>
+                <Text className="text-base text-primary">Edit product</Text>
               </View>
             </DropdownMenuItem>
             <DropdownMenuItem onPress={() => setDeleteDialogOpen(true)}>
               <View className="flex-row gap-2">
                 <TrashIcon className="h-6 w-6 text-red-500" />
-                <Text className="text-red-500 text-base">Delete product</Text>
+                <Text className="text-base text-red-500">Delete product</Text>
               </View>
             </DropdownMenuItem>
             <DropdownMenuItem onPress={() => setBarcodeOpen(true)}>
               <View className="flex-row gap-2">
                 <BarcodeIcon className="h-6 w-6 text-primary" />
-                <Text className="text-primary text-base">View barcode</Text>
+                <Text className="text-base text-primary">View barcode</Text>
               </View>
             </DropdownMenuItem>
           </ThreeDotMenu>
@@ -148,7 +148,7 @@ export const HeaderOptions = ({
       <Dialog open={barcodeOpen} onOpenChange={setBarcodeOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-center mb-2">Barcode</DialogTitle>
+            <DialogTitle className="mb-2 text-center">Barcode</DialogTitle>
             <DialogDescription>
               {eans.length === 0 ||
               !BARCODE_LENGTHS.includes(eans[0].length) ? (

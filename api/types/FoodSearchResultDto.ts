@@ -23,7 +23,7 @@ const FoodSearchResultSchema = z.object({
 });
 export type FoodSearchResultDto = z.infer<typeof FoodSearchResultSchema>;
 
-function transformApiFoodResult(apiResult: any): any {
+function transformApiFoodResult(apiResult: unknown): unknown {
   const nutrientsMap: Record<string, keyof z.infer<typeof NutrientsSchema>> = {
     "energy.energy": "energy",
     "nutrient.carb": "carb",
@@ -53,10 +53,10 @@ function transformApiFoodResult(apiResult: any): any {
 }
 
 export function mapApiFoodsSearchResult(
-  apiSearchResults: any,
+  apiSearchResults: unknown[],
 ): FoodSearchResultDto[] {
   return apiSearchResults
-    .map((searchResult: any) => {
+    .map((searchResult: unknown) => {
       const mapped = transformApiFoodResult(searchResult);
       const result = FoodSearchResultSchema.safeParse(mapped);
       if (!result.success) {

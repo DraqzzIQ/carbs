@@ -9,15 +9,15 @@ import { ReactNode } from "react";
 import { FlatList } from "react-native";
 import React from "react";
 
-type ThreeDotMenuProps = {
+interface ThreeDotMenuProps {
   children?: ReactNode;
-};
+}
 
 export const ThreeDotMenu = ({ children }: ThreeDotMenuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <EllipsisVerticalIcon className="w-8 h-8 text-primary" />
+        <EllipsisVerticalIcon className="h-8 w-8 text-primary" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-secondary">
         <FlatList

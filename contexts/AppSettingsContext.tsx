@@ -4,7 +4,7 @@ import { getLocales } from "expo-localization";
 
 const STORAGE_KEY = "APP_SETTINGS";
 
-type Settings = {
+interface Settings {
   maxCarbs: number;
   maxProtein: number;
   maxFat: number;
@@ -25,7 +25,7 @@ type Settings = {
     xl: number;
     xxl: number;
   };
-};
+}
 
 type SettingsContextType = Settings & {
   setSettings: (updates: Partial<Settings>) => void;

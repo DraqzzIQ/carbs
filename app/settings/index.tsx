@@ -37,12 +37,12 @@ export default function SettingsScreen() {
   return (
     <KeyboardShift>
       <ScrollView
-        className="p-4 bg-secondary h-full"
+        className="h-full bg-secondary p-4"
         showsVerticalScrollIndicator={false}
       >
         <Card className="p-4">
           <CardTitle className="text-center">Calories</CardTitle>
-          <Text className="font-semibold text-lg text-center mt-2 text-primary">
+          <Text className="mt-2 text-center text-lg font-semibold text-primary">
             Total Calorie Budget: {formatNumber(totalMaxCalories)} kcal
           </Text>
 
@@ -64,12 +64,12 @@ export default function SettingsScreen() {
                 onChangeText={(text) =>
                   setSettings({ [key]: Number(text) || 0 })
                 }
-                className="border border-primary p-2 rounded-md text-sm text-primary bg-secondary"
+                className="rounded-md border border-primary bg-secondary p-2 text-sm text-primary"
               />
             </View>
           ))}
 
-          <View className="flex-row items-center justify-between mt-4">
+          <View className="mt-4 flex-row items-center justify-between">
             <Text className="text-lg">Snack</Text>
             <Switch
               checked={displaySnacks}
@@ -78,7 +78,7 @@ export default function SettingsScreen() {
           </View>
           {displaySnacks && (
             <>
-              <Text className="text-sm mt-2">{MealType.SNACK} (kcal)</Text>
+              <Text className="mt-2 text-sm">{MealType.SNACK} (kcal)</Text>
               <Input
                 selectTextOnFocus={true}
                 editable={displaySnacks}
@@ -87,16 +87,16 @@ export default function SettingsScreen() {
                 onChangeText={(text) =>
                   setSettings({ maxSnacks: Number(text) || 0 })
                 }
-                className={`border border-primary p-2 rounded-md text-sm ${
+                className={`rounded-md border border-primary p-2 text-sm ${
                   displaySnacks
                     ? "bg-secondary text-primary"
-                    : "bg-gray-200 dark:bg-gray-950 text-gray-400 dark:text-gray-500"
+                    : "bg-gray-200 text-gray-400 dark:bg-gray-950 dark:text-gray-500"
                 }`}
               />
             </>
           )}
         </Card>
-        <Card className="p-4 mt-4">
+        <Card className="mt-4 p-4">
           <CardTitle className="text-center">Macros</CardTitle>
           {[
             { label: "Carbs", value: maxCarbs, key: "maxCarbs" },
@@ -112,14 +112,14 @@ export default function SettingsScreen() {
                 onChangeText={(text) =>
                   setSettings({ [key]: Number(text) || 0 })
                 }
-                className="border border-primary p-2 rounded-md text-sm text-primary bg-secondary"
+                className="rounded-md border border-primary bg-secondary p-2 text-sm text-primary"
               />
             </View>
           ))}
         </Card>
-        <Card className="p-4 mt-4">
+        <Card className="mt-4 p-4">
           <CardTitle className="text-center">Water Tracker</CardTitle>
-          <View className="flex-row items-center justify-between mt-4">
+          <View className="mt-4 flex-row items-center justify-between">
             <Text className="text-lg">Enable</Text>
             <Switch
               checked={waterTrackerEnabled}
@@ -128,7 +128,7 @@ export default function SettingsScreen() {
           </View>
           {waterTrackerEnabled && (
             <>
-              <Text className="font-semibold text-sm mt-6">
+              <Text className="mt-6 text-sm font-semibold">
                 Water goal ({volumeUnit})
               </Text>
               <Input
@@ -138,10 +138,10 @@ export default function SettingsScreen() {
                 onChangeText={(text) =>
                   setSettings({ maxFluidIntake: Number(text) || 0 })
                 }
-                className="border border-primary p-2 rounded-md text-sm text-primary bg-secondary"
+                className="rounded-md border border-primary bg-secondary p-2 text-sm text-primary"
               />
 
-              <Text className="font-semibold text-sm mt-6">Water sizes</Text>
+              <Text className="mt-6 text-sm font-semibold">Water sizes</Text>
               {[
                 { label: "XS", value: fluidSizes.xs, key: "xs" },
                 { label: "S", value: fluidSizes.s, key: "s" },
@@ -163,27 +163,27 @@ export default function SettingsScreen() {
                         fluidSizes: { ...fluidSizes, [key]: Number(text) || 0 },
                       })
                     }
-                    className="border border-primary p-2 rounded-md text-sm text-primary bg-secondary"
+                    className="rounded-md border border-primary bg-secondary p-2 text-sm text-primary"
                   />
                 </View>
               ))}
             </>
           )}
         </Card>
-        <Card className="p-4 mt-4">
-          <CardTitle className="text-center mb-4">Food database</CardTitle>
+        <Card className="mt-4 p-4">
+          <CardTitle className="mb-4 text-center">Food database</CardTitle>
           <Button
             onPress={() =>
               router.navigate({ pathname: "/settings/food-db-location" })
             }
             className="w-full"
           >
-            <Text>Change database location</Text>
+            <Text>Change database country</Text>
           </Button>
         </Card>
-        <Card className="p-4 mt-4 mb-8">
+        <Card className="mb-8 mt-4 p-4">
           <CardTitle className="text-center">Advanced</CardTitle>
-          <Text className="font-semibold text-sm mt-3">Search delay (ms)</Text>
+          <Text className="mt-3 text-sm font-semibold">Search delay (ms)</Text>
           <Input
             selectTextOnFocus={true}
             keyboardType="numeric"
@@ -191,7 +191,7 @@ export default function SettingsScreen() {
             onChangeText={(text) =>
               setSettings({ searchDebounceMs: Number(text) || 0 })
             }
-            className="border border-primary p-2 rounded-md text-sm text-primary bg-secondary"
+            className="rounded-md border border-primary bg-secondary p-2 text-sm text-primary"
           />
         </Card>
       </ScrollView>
