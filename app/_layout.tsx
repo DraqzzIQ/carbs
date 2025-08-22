@@ -129,7 +129,7 @@ export default function RootLayout() {
                   headerStyle: {
                     backgroundColor: isDarkColorScheme ? "black" : "white",
                   },
-                  headerRight: () => <ThemeToggle />,
+                  headerRight: __DEV__ ? () => <ThemeToggle /> : undefined,
                 }}
               />
               <Stack.Screen
