@@ -154,9 +154,12 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
         <Card className="m-1 p-3">
           <TouchableOpacity
             onPress={async () => {
-              const path = `/meal/add/${meal.food.category === "quick-entry" ? "/quick-entry" : "product"}`;
+              const pathname =
+                meal.food.category === "quick-entry"
+                  ? "/meal/add/quick-entry"
+                  : "/meal/add/product";
               router.navigate({
-                pathname: path,
+                pathname,
                 params: {
                   edit: "true",
                   mealId: meal.id,
