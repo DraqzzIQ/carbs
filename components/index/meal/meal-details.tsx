@@ -23,6 +23,8 @@ import { removeFoodFromMeal } from "~/utils/querying";
 import { router } from "expo-router";
 import { MacroHeader } from "~/components/index/meal/macro-header";
 import { formatServing } from "~/utils/serving";
+import { NutritionFacts } from "~/components/index/meal/nutrition-facts";
+import { mapMealsToNutritionFacts } from "~/utils/mapMealsToNutritionFacts";
 
 interface MealDetailProps {
   dateId: string;
@@ -61,7 +63,7 @@ export const MealDetails = ({ dateId, mealType }: MealDetailProps) => {
   return (
     <>
       <FlatList
-        className="h-full bg-secondary pb-6"
+        className="h-full bg-secondary"
         showsVerticalScrollIndicator={false}
         scrollEnabled={false}
         ListHeaderComponent={
@@ -72,14 +74,19 @@ export const MealDetails = ({ dateId, mealType }: MealDetailProps) => {
             fat={mealData.totalFat}
           />
         }
-        contentContainerClassName="pb-32"
+        contentContainerClassName="pb-10"
         data={currentDayMeals}
         renderItem={({ item }) => <MealItem meal={item} key={item.id} />}
       />
-      {currentDayMeals.length === 0 && (
+      {currentDayMeals.length === 0 ? (
         <Text className="mt-4 text-center text-muted-foreground">
           Nothing added yet.
         </Text>
+      ) : (
+        <NutritionFacts
+          foods={mapMealsToNutritionFacts(currentDayMeals)}
+          className="mb-10"
+        />
       )}
     </>
   );

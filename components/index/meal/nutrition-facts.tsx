@@ -209,6 +209,7 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
     <Card className={cn("rounded-2xl p-4 pt-5", className)}>
       <CardTitle className="text-center">Nutrition Facts</CardTitle>
       <FlashList<NutritionDataItem>
+        extraData={totalNutrition}
         estimatedItemSize={31}
         className="mt-4"
         scrollEnabled={false}

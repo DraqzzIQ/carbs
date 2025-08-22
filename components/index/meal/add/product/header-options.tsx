@@ -83,7 +83,7 @@ export const HeaderOptions = ({
       <View className="flex-row gap-5">
         <TouchableOpacity onPress={onPressFavorite}>
           <HeartIcon
-            className={`h-8 w-8 text-primary${isFavorite ? "fill-primary" : ""}`}
+            className={`h-8 w-8 text-primary ${isFavorite ? "fill-primary" : ""}`}
           />
         </TouchableOpacity>
 
