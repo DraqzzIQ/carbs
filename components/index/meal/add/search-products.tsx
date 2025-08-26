@@ -3,6 +3,8 @@ import { Keyboard, TouchableOpacity, View } from "react-native";
 import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
 import { Card } from "~/components/ui/card";
 import {
+  ChefHatIcon,
+  HeartIcon,
   HistoryIcon,
   LoaderCircleIcon,
   PenIcon,
@@ -12,7 +14,7 @@ import {
 import { formatNumber } from "~/utils/formatting";
 import { Separator } from "~/components/ui/separator";
 import { router } from "expo-router";
-import { useState, useEffect } from "react";
+import { useCallback, useState } from "react";
 import Animated, {
   LightSpeedInLeft,
   LightSpeedOutRight,
@@ -21,9 +23,9 @@ import Animated, {
 import { getServingUnitLabel } from "~/utils/serving";
 import { FoodTabs } from "~/components/index/meal/add/food-tabs";
 import { MealType } from "~/types/MealType";
-import { getRecentFoods } from "~/utils/querying";
-import { Toggle } from "~/components/ui/toggle";
 import { FlashList } from "@shopify/flash-list";
+import { getIsLocalSearchType, SearchFilterType } from "~/types/SearchFilter";
+import { SearchFilterToggle } from "~/components/index/meal/add/search-filter-toggle";
 
 interface SearchProductsProps {
   products: FoodSearchResultDto[];
@@ -33,7 +35,11 @@ interface SearchProductsProps {
   meal: string;
   dateId: string;
   searchFocused: boolean;
-  onSetOnlyCustomProducts: (onlyCustom: boolean) => void;
+  onSetSearchFilter: (filter: SearchFilterType) => void;
+  initialSearchFilter?: SearchFilterType;
+  favorites: Set<string>;
+  recents: Set<string>;
+  recipeFoodId: string | null;
 }
 
 export const SearchProducts = ({
@@ -44,39 +50,89 @@ export const SearchProducts = ({
   meal,
   dateId,
   searchFocused,
-  onSetOnlyCustomProducts,
+  onSetSearchFilter,
+  initialSearchFilter = SearchFilterType.NONE,
+  favorites,
+  recents,
+  recipeFoodId,
 }: SearchProductsProps) => {
-  const [recents, setRecents] = useState<Set<string>>(new Set());
-  const [onlyCustomProducts, setOnlyCustomProducts] = useState(false);
-
-  useEffect(() => {
-    getRecentFoods(products.map((product) => product.productId)).then(
-      setRecents,
-    );
-  }, [products]);
+  const [searchFilter, setSearchFilter] = useState(initialSearchFilter);
 
   const displayFoodTabs =
     !searchFocused && products.length === 0 && !loading && !notFound;
 
+  const setSearchFilterWrapper = useCallback(
+    (filter: SearchFilterType) => {
+      if (searchFilter !== filter) {
+        setSearchFilter(filter);
+        onSetSearchFilter(filter);
+      } else {
+        setSearchFilter(SearchFilterType.NONE);
+        onSetSearchFilter(SearchFilterType.NONE);
+      }
+    },
+    [searchFilter, onSetSearchFilter],
+  );
+
+  const filteredProducts = getIsLocalSearchType(searchFilter)
+    ? products
+    : products.filter((product) => {
+        if (searchFilter === SearchFilterType.FAVORITES) {
+          return favorites.has(product.productId);
+        }
+        if (searchFilter === SearchFilterType.RECENTS) {
+          return recents.has(product.productId);
+        }
+        return true;
+      });
+
   return displayFoodTabs ? (
-    <FoodTabs mealType={meal as MealType} dateId={dateId} />
+    <FoodTabs
+      mealType={meal as MealType}
+      dateId={dateId}
+      recipeFoodId={recipeFoodId}
+    />
   ) : (
     <>
-      <Toggle
-        size="sm"
-        variant="outline"
-        pressed={onlyCustomProducts}
-        onPressedChange={(pressed) => {
-          setOnlyCustomProducts(pressed);
-          onSetOnlyCustomProducts(pressed);
-        }}
-        className="self-start rounded-full"
-      >
-        <View className="flex-row items-center">
-          <PenIcon className="mr-1 h-4 w-4 text-primary" />
-          <Text>Custom only</Text>
-        </View>
-      </Toggle>
+      <View className="flex-row items-center justify-between">
+        <SearchFilterToggle
+          selectedSearchFilter={searchFilter}
+          searchFilter={SearchFilterType.CUSTOM}
+          onSetSearchFilter={setSearchFilterWrapper}
+          content="Created food"
+          icon={(className) => {
+            return <PenIcon className={className} />;
+          }}
+        />
+        <SearchFilterToggle
+          selectedSearchFilter={searchFilter}
+          searchFilter={SearchFilterType.FAVORITES}
+          onSetSearchFilter={setSearchFilterWrapper}
+          content="Favorites"
+          icon={(className) => {
+            return <HeartIcon className={className} />;
+          }}
+        />
+        <SearchFilterToggle
+          selectedSearchFilter={searchFilter}
+          searchFilter={SearchFilterType.RECENTS}
+          onSetSearchFilter={setSearchFilterWrapper}
+          content="Recents"
+          icon={(className) => {
+            return <HistoryIcon className={className} />;
+          }}
+        />
+        <SearchFilterToggle
+          selectedSearchFilter={searchFilter}
+          searchFilter={SearchFilterType.RECIPES}
+          onSetSearchFilter={setSearchFilterWrapper}
+          content="Recipes"
+          icon={(className) => {
+            return <ChefHatIcon className={className} />;
+          }}
+          disabled={!!recipeFoodId}
+        />
+      </View>
       {loading ? (
         <View className="mt-10 flex-1 items-center">
           <Text className="text-lg font-semibold text-primary">Loading...</Text>
@@ -93,7 +149,7 @@ export const SearchProducts = ({
             Try a different search
           </Text>
         </View>
-      ) : products.length === 0 ? (
+      ) : filteredProducts.length === 0 ? (
         <View
           className="mt-10 flex-1 items-center"
           onTouchStart={() => Keyboard.dismiss()}
@@ -109,7 +165,8 @@ export const SearchProducts = ({
         <FlashList
           estimatedItemSize={120}
           className="mt-2"
-          data={products}
+          extraData={{ recents, favorites }}
+          data={filteredProducts}
           keyExtractor={(item) => item.productId}
           showsVerticalScrollIndicator={false}
           onScrollBeginDrag={() => Keyboard.dismiss()}
@@ -126,6 +183,8 @@ export const SearchProducts = ({
                 onAddProduct={onAddProduct}
                 dateId={dateId}
                 isRecent={recents.has(item.productId)}
+                isFavorite={favorites.has(item.productId)}
+                recipeFoodId={recipeFoodId}
               />
             </Animated.View>
           )}
@@ -141,12 +200,16 @@ function SearchProduct({
   dateId,
   onAddProduct,
   isRecent,
+  isFavorite,
+  recipeFoodId,
 }: {
   product: FoodSearchResultDto;
   meal: string;
   dateId: string;
   onAddProduct: (product: FoodSearchResultDto) => Promise<void>;
   isRecent: boolean;
+  isFavorite: boolean;
+  recipeFoodId: string | null;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -157,22 +220,22 @@ function SearchProduct({
   }
 
   return (
-    <TouchableOpacity
-      className="p-0.5"
-      onPress={() =>
-        router.navigate({
-          pathname: "/meal/add/product",
-          params: {
-            edit: "false",
-            productId: product.productId,
-            dateId: dateId,
-            mealName: meal,
-            custom: product.score === -1 ? "true" : "false",
-          },
-        })
-      }
-    >
-      <Card className="mb-2 flex items-start justify-between rounded-lg bg-secondary px-2.5 py-1.5">
+    <Card className="m-1 px-2.5 py-1.5">
+      <TouchableOpacity
+        className="flex items-start justify-between"
+        onPress={() =>
+          router.navigate({
+            pathname: "/meal/add/product",
+            params: {
+              productId: product.productId,
+              dateId: dateId,
+              mealName: meal,
+              custom: product.score === -1 ? "true" : "false",
+              recipeFoodId: recipeFoodId ?? undefined,
+            },
+          })
+        }
+      >
         <View className="flex-row items-center">
           <Text className="max-w-[90%] flex-shrink font-semibold text-primary">
             {`${product.name} `}
@@ -211,35 +274,59 @@ function SearchProduct({
             )}
           </Text>
           {isRecent && <HistoryIcon className="ml-1 h-4 w-4 text-primary" />}
+          {isFavorite && <HeartIcon className="ml-1 h-4 w-4 text-primary" />}
           <View className="flex-grow" />
           <Text className="text-primary">
-            {formatNumber(product.nutrients.energy * product.amount)} kcal
+            {formatNumber(
+              product.nutrients.energy *
+                product.amount *
+                product.servingQuantity,
+            )}{" "}
+            kcal
           </Text>
         </View>
         <Separator className="my-2" />
         <View className="flex-row items-center">
           <View className="items-center">
             <Text className="text-primary">
-              {formatNumber(product.nutrients.carb * product.amount, 1)} g
+              {formatNumber(
+                product.nutrients.carb *
+                  product.amount *
+                  product.servingQuantity,
+                1,
+              )}{" "}
+              g
             </Text>
             <Text className="text-sm text-muted-foreground">Carbs</Text>
           </View>
           <View className="flex-grow" />
           <View className="items-center">
             <Text className="text-primary">
-              {formatNumber(product.nutrients.protein * product.amount, 1)} g
+              {formatNumber(
+                product.nutrients.protein *
+                  product.amount *
+                  product.servingQuantity,
+                1,
+              )}{" "}
+              g
             </Text>
             <Text className="text-sm text-muted-foreground">Protein</Text>
           </View>
           <View className="flex-grow" />
           <View className="items-center">
             <Text className="text-primary">
-              {formatNumber(product.nutrients.fat * product.amount, 1)} g
+              {formatNumber(
+                product.nutrients.fat *
+                  product.amount *
+                  product.servingQuantity,
+                1,
+              )}{" "}
+              g
             </Text>
             <Text className="text-sm text-muted-foreground">Fat</Text>
           </View>
         </View>
-      </Card>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </Card>
   );
 }

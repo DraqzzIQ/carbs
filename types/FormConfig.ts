@@ -524,6 +524,30 @@ export const QuickEntryFormConfig = [
   },
 ];
 
+export const RecipeFormConfig = [
+  {
+    category: "Recipe",
+    style: { paddingTop: 22 },
+    titleStyle: 2,
+    fields: [
+      {
+        key: "name",
+        label: "Recipe name",
+        required: true,
+        type: FieldType.Text,
+      },
+      {
+        key: "servingQuantity",
+        label: "Number of servings",
+        required: true,
+        type: FieldType.Number,
+        defaultValue: "1",
+      },
+    ],
+    defaultVisible: 2,
+  },
+];
+
 export function enrichFormConfigWithDefaultValues(
   formConfig: FormCategory[],
   defaultValues: Record<string, string>,

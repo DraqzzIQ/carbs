@@ -3,7 +3,7 @@ import { Text } from "~/components/ui/text";
 import { FluidIntake } from "~/db/schema";
 import { Card } from "~/components/ui/card";
 import { TouchableOpacity, View } from "react-native";
-import { GlassWaterIcon, TrashIcon } from "lucide-nativewind";
+import { CircleXIcon, GlassWaterIcon, TrashIcon } from "lucide-nativewind";
 import { useSettings } from "~/contexts/AppSettingsContext";
 import { getVolumeUnitForLocale } from "~/utils/formatting";
 import { addFluidIntake, deleteFluidIntake } from "~/utils/querying";
@@ -74,7 +74,7 @@ export const WaterTracker = ({ dateId, fluidIntake }: WaterTrackerProps) => {
                   <TouchableOpacity
                     onPress={async () => deleteFluidIntake(item.id)}
                   >
-                    <TrashIcon className="h-8 w-8 text-primary" />
+                    <CircleXIcon className="h-6 w-6 text-primary" />
                   </TouchableOpacity>
                 </View>
               </Animated.View>

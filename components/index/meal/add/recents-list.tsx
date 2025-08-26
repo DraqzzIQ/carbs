@@ -1,28 +1,37 @@
 import { Text } from "~/components/ui/text";
 import { LoaderCircleIcon, PlusIcon } from "lucide-nativewind";
 import { TouchableOpacity, View } from "react-native";
-import { formatServing } from "~/utils/serving";
+import {
+  formatFoodSubtitle,
+  getDefaultValuesForServing,
+} from "~/utils/serving";
 import {
   formatNumber,
   getDateIdFromDate,
   getDateSlug,
 } from "~/utils/formatting";
 import { useRelationalLiveQuery } from "~/db/queries/useRelationalLiveQuery";
-import React, { useEffect, useState } from "react";
-import { addFoodToMeal } from "~/utils/querying";
+import React, { useCallback, useEffect, useState } from "react";
+import { addRecipeEntry, addFoodToMeal } from "~/utils/querying";
 import { MealType } from "~/types/MealType";
 import { router } from "expo-router";
 import { FlashList } from "@shopify/flash-list";
 import { FrequentsQueryType } from "~/db/queries/frequentsQuery";
 import { FavoritesQueryType } from "~/db/queries/favoritesQuery";
 import { RecentsQueryType } from "~/db/queries/recentsQuery";
+import { CustomQueryType } from "~/db/queries/customQuery";
 
 interface RecentsListProps {
-  query: FrequentsQueryType | RecentsQueryType | FavoritesQueryType;
+  query:
+    | FrequentsQueryType
+    | RecentsQueryType
+    | FavoritesQueryType
+    | CustomQueryType;
   mealType: MealType;
   dateId: string;
   enableDateHeader?: boolean;
   enableAlphabetHeader?: boolean;
+  recipeFoodId: string | null;
 }
 
 export const RecentsList = ({
@@ -31,8 +40,11 @@ export const RecentsList = ({
   dateId,
   enableDateHeader,
   enableAlphabetHeader,
+  recipeFoodId,
 }: RecentsListProps) => {
-  const { data: recents, error: recentsError } = useRelationalLiveQuery(query);
+  const { data: recents, error: recentsError } = useRelationalLiveQuery(query, [
+    query,
+  ]);
 
   useEffect(() => {
     if (recentsError) {
@@ -57,7 +69,7 @@ export const RecentsList = ({
       contentContainerStyle={{ paddingBottom: 40 }}
       ListFooterComponent={<View className="h-36" />}
       renderItem={({ item, index }) => {
-        let displayHeader = false;
+        let displayDateHeader = false;
         let currentDate = "";
         let displayAlphabetHeader = false;
         let firstLetter = "";
@@ -66,7 +78,7 @@ export const RecentsList = ({
           currentDate = getDateSlug(
             getDateIdFromDate(0, new Date(item.updatedAt)),
           );
-          displayHeader =
+          displayDateHeader =
             index === 0 ||
             getDateSlug(
               getDateIdFromDate(0, new Date(recents[index - 1].updatedAt)),
@@ -82,13 +94,18 @@ export const RecentsList = ({
 
         return (
           <React.Fragment>
-            {displayHeader && (
+            {displayDateHeader && (
               <Text className="mt-8 text-lg">{currentDate}</Text>
             )}
             {displayAlphabetHeader && (
               <Text className="mt-8 text-lg">{firstLetter}</Text>
             )}
-            <Recent recent={item} mealType={mealType} dateId={dateId} />
+            <Recent
+              recent={item}
+              mealType={mealType}
+              dateId={dateId}
+              recipeFoodId={recipeFoodId}
+            />
           </React.Fragment>
         );
       }}
@@ -100,59 +117,76 @@ const Recent = ({
   recent,
   mealType,
   dateId,
+  recipeFoodId,
 }: {
   recent: RecentsQueryType[number];
   mealType: MealType;
   dateId: string;
+  recipeFoodId: string | null;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const onAddPress = async () => {
+  const onAddPress = useCallback(async () => {
     setIsLoading(true);
-    await addFoodToMeal(
-      mealType,
-      recent.foodId,
-      recent.servingQuantity,
-      recent.amount,
-      recent.serving,
-      dateId,
-      recent.food,
-    );
+    await (recipeFoodId
+      ? addRecipeEntry(
+          recipeFoodId,
+          recent.foodId,
+          recent.servingQuantity,
+          recent.amount,
+          recent.serving,
+          recent.food,
+        )
+      : addFoodToMeal(
+          mealType,
+          recent.foodId,
+          recent.servingQuantity,
+          recent.amount,
+          recent.serving,
+          dateId,
+          recent.food,
+        ));
     setIsLoading(false);
-  };
+  }, [mealType, recent, dateId, recipeFoodId]);
+
+  if (!recent.servingQuantity) {
+    const servingValues = getDefaultValuesForServing(
+      recent.food.servings,
+      recent.food.baseUnit,
+    );
+    recent.serving = servingValues.serving;
+    recent.servingQuantity = servingValues.servingQuantity;
+    recent.amount = servingValues.amount;
+  }
 
   return (
     <TouchableOpacity
-      onPress={() =>
+      onPress={() => {
         router.navigate({
           pathname: "/meal/add/product",
           params: {
             productId: recent.foodId,
             dateId: dateId,
             mealName: mealType,
-            edit: "false",
             serving: recent.serving,
             amount: recent.amount,
             servingQuantity: recent.servingQuantity,
             custom: recent.food.isCustom ? "true" : "false",
+            recipeFoodId: recipeFoodId ?? undefined,
           },
-        })
-      }
+        });
+      }}
     >
       <View className="mt-5 w-full flex-row">
         <View className="flex w-2/3 flex-grow">
           <Text className="text-xl text-primary">{recent.food.name}</Text>
           <Text className="text-base text-primary">
-            {recent.food.producer ? `${recent.food.producer}, ` : ""}
-            {recent.servingQuantity}{" "}
-            {recent.amount === 1
-              ? recent.food.baseUnit
-              : formatServing(
-                  recent.serving,
-                  recent.amount * recent.servingQuantity,
-                  recent.food.baseUnit,
-                  recent.servingQuantity > 1,
-                )}
+            {formatFoodSubtitle(
+              recent.food,
+              recent.serving,
+              recent.servingQuantity,
+              recent.amount,
+            )}
           </Text>
         </View>
         <View className="flex-row items-center">

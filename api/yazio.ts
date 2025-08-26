@@ -47,7 +47,7 @@ export const yazioSearchFoods = async (
   const response = await fetch(request);
 
   if (!response.ok) {
-    console.log(`Failed to fetch products: ${response.status}`);
+    console.error(`Failed to fetch products: ${response.status}`);
     return [];
   }
 
@@ -63,7 +63,7 @@ export const yazioGetFoodDetails = async (
   const response = await fetch(request);
 
   if (!response.ok) {
-    console.log(`Failed to fetch product details: ${response.status}`);
+    console.error(`Failed to fetch product details: ${response.status}`);
     return null;
   }
 

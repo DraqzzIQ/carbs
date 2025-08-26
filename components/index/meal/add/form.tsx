@@ -56,14 +56,16 @@ interface FoodFormProps {
   formConfig: FormCategory[];
   onSubmit: (values: Record<string, string>) => Promise<void>;
   edit?: boolean;
-  children?: ReactNode;
+  headerComponent?: ReactNode;
+  footerComponent?: ReactNode;
 }
 
 export function Form({
   formConfig,
   onSubmit,
   edit = false,
-  children,
+  headerComponent,
+  footerComponent,
 }: FoodFormProps) {
   const getInitialForm = () => {
     const initial: Record<string, string> = {};
@@ -160,7 +162,7 @@ export function Form({
   return (
     <View className="h-full p-4">
       <ScrollView showsVerticalScrollIndicator={false}>
-        {children}
+        {headerComponent}
         {formConfig.map((cat, idx) => {
           const visibleCount = showMore[cat.category]
             ? cat.fields.length
@@ -229,6 +231,7 @@ export function Form({
             </Card>
           );
         })}
+        {footerComponent}
         <View className="h-20" />
       </ScrollView>
       <FloatingActionButton

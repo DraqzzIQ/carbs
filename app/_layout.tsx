@@ -199,6 +199,18 @@ export default function RootLayout() {
                   },
                 }}
               />
+              <Stack.Screen
+                name="meal/add/recipe/index"
+                options={{
+                  headerTitle: "Create Recipe",
+                  headerTitleAlign: "center",
+                  headerShown: true,
+                  headerBackButtonDisplayMode: "minimal",
+                  headerStyle: {
+                    backgroundColor: isDarkColorScheme ? "black" : "white",
+                  },
+                }}
+              />
             </Stack>
           </View>
           <PortalHost />

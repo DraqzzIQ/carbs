@@ -63,17 +63,18 @@ export default function Screen() {
         .where(eq(fluidIntake.dateId, currentDayId)),
       [currentDayId],
     );
-  const totalFluidIntake = useMemo(() => {
-    return (
-      fluidIntakeResult?.reduce((total, day) => total + day.amount, 0) || 0
-    );
-  }, [fluidIntakeResult]);
 
   useEffect(() => {
     if (fluidIntakeQueryError) {
       console.error("Error fetching fluid intake: ", fluidIntakeQueryError);
     }
   }, [fluidIntakeQueryError]);
+
+  const totalFluidIntake = useMemo(() => {
+    return (
+      fluidIntakeResult?.reduce((total, day) => total + day.amount, 0) || 0
+    );
+  }, [fluidIntakeResult]);
 
   const onSwipe = (direction: "left" | "right") => {
     const offset = direction === "left" ? 1 : -1;
@@ -104,7 +105,7 @@ export default function Screen() {
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (
-        appState.current.match(/inactive|background/) &&
+        /inactive|background/.exec(appState.current) &&
         nextAppState === "active"
       ) {
         setDateString(getDateSlug(currentDayId));

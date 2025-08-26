@@ -11,11 +11,14 @@ import { mealQuery, MealQueryType } from "~/db/queries/mealQuery";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { MealSelectorHeader } from "~/components/index/meal/add/meal-selector-header";
 import { MealType } from "~/types/MealType";
-import { Food } from "~/db/schema";
+import { Food, RecipeEntry } from "~/db/schema";
 import {
   addFoodToMeal,
+  addRecipeEntry,
+  editRecipeEntry,
   getAndSaveFood,
   getCustomFood,
+  getRecipeEntry,
   isRecent,
   updateMeal,
 } from "~/utils/querying";
@@ -37,7 +40,6 @@ import { isBaseUnit } from "~/utils/formatting";
 export default function ProductDetailScreen() {
   const params = useLocalSearchParams<{
     dateId: string;
-    edit: string;
     mealName: string;
     mealId?: string;
     productId?: string;
@@ -45,11 +47,17 @@ export default function ProductDetailScreen() {
     servingQuantity?: string;
     serving?: string;
     custom?: string;
+    recipeFoodId?: string;
+    recipeEntryId?: string;
   }>();
-  const edit = params.edit === "true";
-  const mealId = edit ? parseInt(params.mealId!, 10) : null;
+  const mealId = params.mealId ? parseInt(params.mealId, 10) : null;
+  const edit = !!mealId || !!params.recipeEntryId;
   const custom = params.custom === "true";
+  const isRecipeFood = !!params.recipeFoodId || !!params.recipeEntryId;
 
+  const [recipeEntry, setRecipeEntry] = useState<RecipeEntry | undefined>(
+    undefined,
+  );
   const [meal, setMeal] = useState<MealQueryType | undefined>(undefined);
   const [food, setFood] = useState<Food | undefined>(undefined);
   const [servingQuantity, setServingQuantity] = useState<number>(
@@ -76,28 +84,47 @@ export default function ProductDetailScreen() {
   }, [edit, params.productId]);
 
   // i hate this
-  async function handleEffect() {
+  const handleEffect = useCallback(async () => {
     let fetchedFood: Food | undefined;
-    let meal: MealQueryType | undefined;
+    let mealLocal: MealQueryType | undefined;
+    let recipeEntry: RecipeEntry | undefined;
+
     if (edit) {
-      try {
-        const mealData = await mealQuery(mealId!);
-        setMeal(mealData);
-        meal = mealData;
-        fetchedFood = mealData?.food;
-        if (mealData?.food) {
-          setFoodIsRecent(await isRecent(mealData.food.id));
+      if (params.recipeEntryId) {
+        try {
+          const recipeEntryId = parseInt(params.recipeEntryId, 10);
+          const recipeEntryData = await getRecipeEntry(recipeEntryId);
+          if (recipeEntryData) {
+            recipeEntry = recipeEntryData;
+            fetchedFood = recipeEntryData?.component;
+            setRecipeEntry(recipeEntryData);
+          }
+        } catch {
+          console.error(
+            "Error fetching recipe entry with id ",
+            params.recipeEntryId,
+          );
+          return;
         }
-      } catch {
-        console.error("Error fetching meal with meal id ", mealId);
-        return;
+      } else {
+        try {
+          const mealData = await mealQuery(mealId!);
+          setMeal(mealData);
+          mealLocal = mealData;
+          fetchedFood = mealData?.food;
+          if (mealData?.food) {
+            setFoodIsRecent(await isRecent(mealData.food.id));
+          }
+        } catch {
+          console.error("Error fetching meal with meal id ", mealId);
+          return;
+        }
       }
     } else {
-      if (custom) {
-        fetchedFood = await getCustomFood(params.productId!);
-      } else {
-        fetchedFood = await getAndSaveFood(params.productId!);
-      }
+      fetchedFood = custom
+        ? await getCustomFood(params.productId!)
+        : await getAndSaveFood(params.productId!);
+
       if (fetchedFood) {
         setFoodIsRecent(await isRecent(fetchedFood.id));
       }
@@ -106,24 +133,36 @@ export default function ProductDetailScreen() {
     if (fetchedFood) {
       setFood(fetchedFood);
       if (!params.serving) {
-        const initialServing = meal
-          ? { serving: meal.serving, amount: meal.amount }
-          : (fetchedFood.servings?.[0] ?? {
-              serving: getDefaultServing(fetchedFood.baseUnit),
-              amount: 1,
-            });
+        const initialServing = recipeEntry
+          ? { serving: recipeEntry.serving, amount: recipeEntry.amount }
+          : mealLocal
+            ? { serving: mealLocal.serving, amount: mealLocal.amount }
+            : (fetchedFood.servings?.[0] ?? {
+                serving: getDefaultServing(fetchedFood.baseUnit),
+                amount: 1,
+              });
+
         setServing(initialServing.serving);
         setAmount(initialServing.amount);
         setServingQuantity(
-          meal
-            ? meal.servingQuantity
-            : isBaseUnit(initialServing.serving)
-              ? 100
-              : 1,
+          recipeEntry
+            ? recipeEntry.servingQuantity
+            : mealLocal
+              ? mealLocal.servingQuantity
+              : isBaseUnit(initialServing.serving)
+                ? 100
+                : 1,
         );
       }
     }
-  }
+  }, [
+    edit,
+    mealId,
+    custom,
+    params.productId,
+    params.serving,
+    params.recipeEntryId,
+  ]);
 
   const handleServingChange = useCallback(
     (serving: { serving: string; amount: number }) => {
@@ -138,8 +177,13 @@ export default function ProductDetailScreen() {
   }, []);
 
   const defaultServing = useMemo(() => {
-    if (edit && meal) {
-      return { serving: meal.serving, amount: meal.amount };
+    if (edit) {
+      if (meal) {
+        return { serving: meal.serving, amount: meal.amount };
+      }
+      if (recipeEntry) {
+        return { serving: recipeEntry.serving, amount: recipeEntry.amount };
+      }
     }
     if (params.serving) {
       return {
@@ -148,25 +192,33 @@ export default function ProductDetailScreen() {
       };
     }
     return undefined;
-  }, [edit, meal, params.serving, params.amount]);
+  }, [edit, meal, params.serving, params.amount, recipeEntry]);
 
   return (
     <KeyboardShift>
       <Stack.Screen
         options={{
-          headerTitle: () => (
-            <MealSelectorHeader
-              onSelect={(mealType) => setMealType(mealType)}
-              defaultSelection={mealType}
-            />
-          ),
+          title: isRecipeFood
+            ? params.recipeEntryId
+              ? "Edit Ingredient"
+              : "Add Ingredient"
+            : undefined,
+          headerTitle: isRecipeFood
+            ? undefined
+            : () => (
+                <MealSelectorHeader
+                  onSelect={(mealType) => setMealType(mealType)}
+                  defaultSelection={mealType}
+                />
+              ),
           headerRight: () => (
             <HeaderOptions
-              foodId={food?.id || ""}
+              foodId={food?.id ?? ""}
               servingQuantity={servingQuantity}
               serving={serving}
               amount={amount}
               isCustom={food?.isCustom}
+              isRecipe={food?.isRecipe}
               isDeleted={!!food?.deletedAt}
               eans={food?.eans ?? undefined}
             />
@@ -223,10 +275,10 @@ export default function ProductDetailScreen() {
             defaultServing={defaultServing}
             defaultServingQuantity={
               edit
-                ? meal!.servingQuantity.toString()
-                : params.servingQuantity
-                  ? params.servingQuantity
-                  : undefined
+                ? recipeEntry
+                  ? recipeEntry.servingQuantity.toString()
+                  : meal!.servingQuantity.toString()
+                : (params.servingQuantity ?? undefined)
             }
             onServingChange={handleServingChange}
             onServingQuantityChange={handleServingQuantityChange}
@@ -236,25 +288,41 @@ export default function ProductDetailScreen() {
             onPress={async () => {
               setIsLoading(true);
               if (edit) {
-                await updateMeal(
-                  meal!.id,
-                  servingQuantity,
-                  amount,
-                  serving,
-                  mealType,
-                );
+                await (params.recipeEntryId
+                  ? editRecipeEntry(
+                      Number(params.recipeEntryId),
+                      servingQuantity,
+                      amount,
+                      serving,
+                    )
+                  : updateMeal(
+                      meal!.id,
+                      servingQuantity,
+                      amount,
+                      serving,
+                      mealType,
+                    ));
               } else {
-                await addFoodToMeal(
-                  mealType,
-                  food.id,
-                  servingQuantity,
-                  amount,
-                  serving,
-                  params.dateId,
-                  food,
-                );
+                await (isRecipeFood
+                  ? addRecipeEntry(
+                      params.recipeFoodId!,
+                      food.id,
+                      servingQuantity,
+                      amount,
+                      serving,
+                      food,
+                    )
+                  : addFoodToMeal(
+                      mealType,
+                      food.id,
+                      servingQuantity,
+                      amount,
+                      serving,
+                      params.dateId,
+                      food,
+                    ));
               }
-              router.dismiss(1);
+              router.dismiss();
             }}
             bottom="bottom-20"
             loading={isLoading}

@@ -1,4 +1,6 @@
 import { pluralizeServingType } from "~/utils/plurals";
+import { Food } from "~/db/schema";
+import { ServingDto } from "~/api/types/FoodDetails";
 
 export function getDefaultServing(baseUnit: string): string {
   switch (baseUnit) {
@@ -64,3 +66,32 @@ export function getServingUnitLabel(
       return formatServing(serving, amount, baseUnit);
   }
 }
+
+export const formatFoodSubtitle = (
+  food: Food,
+  serving: string,
+  servingQuantity: number,
+  amount: number,
+) => {
+  const producer = food.producer ? `${food.producer}, ` : "";
+  const unit =
+    amount === 1
+      ? food.baseUnit
+      : formatServing(
+          serving,
+          amount * servingQuantity,
+          food.baseUnit,
+          servingQuantity > 1,
+        );
+  return `${producer}${servingQuantity} ${unit}`;
+};
+
+export const getDefaultValuesForServing = (
+  servings: ServingDto[],
+  baseUnit: string,
+): { serving: string; amount: number; servingQuantity: number } => {
+  const amount = servings[0]?.amount ?? 1;
+  const servingQuantity = amount === 1 ? 100 : 1;
+  const serving = servings[0]?.serving ?? getDefaultServing(baseUnit);
+  return { serving, amount, servingQuantity };
+};

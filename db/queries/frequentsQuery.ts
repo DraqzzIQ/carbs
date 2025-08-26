@@ -20,10 +20,11 @@ export function frequentsQuery() {
         gte(recents.count, 3),
         not(eq(foods.category, "quick-entry")),
         isNull(foods.deletedAt),
+        not(foods.isRecipe),
       ),
     )
     .orderBy(desc(recents.count))
-    .limit(100);
+    .limit(1000);
 }
 
-export type FrequentsQueryType = Awaited<ReturnType<typeof frequentsQuery>>;
+export type FrequentsQueryType = ReturnType<typeof frequentsQuery>;

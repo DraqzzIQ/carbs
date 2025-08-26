@@ -1,6 +1,6 @@
 import { BarcodeIcon, EditIcon, HeartIcon, TrashIcon } from "lucide-nativewind";
 import { TouchableOpacity, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   addFavorite,
   deleteCustomFood,
@@ -42,6 +42,7 @@ interface HeaderOptionProps {
   serving: string;
   amount: number;
   isCustom?: boolean;
+  isRecipe?: boolean;
   isDeleted?: boolean;
   eans?: string[];
 }
@@ -52,6 +53,7 @@ export const HeaderOptions = ({
   serving,
   amount,
   isCustom = false,
+  isRecipe = false,
   isDeleted = false,
   eans = [],
 }: HeaderOptionProps) => {
@@ -67,14 +69,14 @@ export const HeaderOptions = ({
     })();
   }, [foodId]);
 
-  const onPressFavorite = async () => {
+  const onPressFavorite = useCallback(async () => {
     if (isFavorite) {
       await removeFavorite(foodId);
     } else {
       await addFavorite(foodId, servingQuantity, amount, serving);
     }
     setIsFavorite((prev) => !prev);
-  };
+  }, [isFavorite, foodId, servingQuantity, amount, serving]);
 
   if (isDeleted) return null;
 
@@ -92,28 +94,36 @@ export const HeaderOptions = ({
             <DropdownMenuItem
               onPress={() =>
                 router.navigate({
-                  pathname: "/meal/add/custom-food",
-                  params: { edit: "true", foodId },
+                  pathname: isRecipe
+                    ? "/meal/add/recipe"
+                    : "/meal/add/custom-food",
+                  params: { foodId: foodId },
                 })
               }
             >
               <View className="flex-row gap-2">
                 <EditIcon className="h-6 w-6 text-primary" />
-                <Text className="text-base text-primary">Edit product</Text>
+                <Text className="text-base text-primary">
+                  Edit {isRecipe ? "recipe" : "product"}
+                </Text>
               </View>
             </DropdownMenuItem>
             <DropdownMenuItem onPress={() => setDeleteDialogOpen(true)}>
               <View className="flex-row gap-2">
                 <TrashIcon className="h-6 w-6 text-red-500" />
-                <Text className="text-base text-red-500">Delete product</Text>
+                <Text className="text-base text-red-500">
+                  Delete {isRecipe ? "recipe" : "product"}
+                </Text>
               </View>
             </DropdownMenuItem>
-            <DropdownMenuItem onPress={() => setBarcodeOpen(true)}>
-              <View className="flex-row gap-2">
-                <BarcodeIcon className="h-6 w-6 text-primary" />
-                <Text className="text-base text-primary">View barcode</Text>
-              </View>
-            </DropdownMenuItem>
+            {!isRecipe && (
+              <DropdownMenuItem onPress={() => setBarcodeOpen(true)}>
+                <View className="flex-row gap-2">
+                  <BarcodeIcon className="h-6 w-6 text-primary" />
+                  <Text className="text-base text-primary">View barcode</Text>
+                </View>
+              </DropdownMenuItem>
+            )}
           </ThreeDotMenu>
         ) : (
           <TouchableOpacity onPress={() => setBarcodeOpen(true)}>
@@ -126,8 +136,8 @@ export const HeaderOptions = ({
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This cannot be undone. This will permanently delete your custom
-              food.
+              This cannot be undone. This will permanently delete your{" "}
+              {isRecipe ? "recipe" : "custom product"}.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

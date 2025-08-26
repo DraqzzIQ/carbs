@@ -1,6 +1,6 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { KeyboardShift } from "~/components/keyboard-shift";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MealSelectorHeader } from "~/components/index/meal/add/meal-selector-header";
 import { MealType } from "~/types/MealType";
 import {
@@ -20,10 +20,10 @@ import {
 
 export default function QuickEntryScreen() {
   const params = useLocalSearchParams();
-  const dateId = params["dateId"] as string;
-  const mealName = params["mealName"] as string;
-  const edit = (params["edit"] as string) == "true";
-  const mealId = edit ? parseInt(params["mealId"] as string, 10) : null;
+  const dateId = params.dateId as string;
+  const mealName = params.mealName as string;
+  const mealId = params.mealId ? parseInt(params.mealId as string, 10) : null;
+  const edit = !!mealId;
   const [mealType, setMealType] = useState<MealType>(mealName as MealType);
   const [food, setFood] = useState<Food | undefined>(undefined);
   const [formConfig, setFormConfig] =
@@ -35,7 +35,7 @@ export default function QuickEntryScreen() {
         return;
       }
       try {
-        const meal = await mealQuery(mealId!);
+        const meal = await mealQuery(mealId);
         setFood(meal?.food);
         if (meal?.food) {
           setFormConfig(
@@ -55,47 +55,50 @@ export default function QuickEntryScreen() {
     })();
   }, []);
 
-  async function onSubmit(values: Record<string, string>) {
-    const { description, energy, carb, protein, fat } = values;
+  const onSubmit = useCallback(
+    async (values: Record<string, string>) => {
+      const { description, energy, carb, protein, fat } = values;
 
-    if (edit) {
-      if (!food) {
-        console.error("Food is undefined, cannot update meal.");
-        return;
+      if (edit) {
+        if (!food) {
+          console.error("Food is undefined, cannot update meal.");
+          return;
+        }
+        food.name = description;
+        food.energy = Number(energy);
+        food.carb = Number(carb);
+        food.protein = Number(protein);
+        food.fat = Number(fat);
+        await updateCustomFood(food);
+        await updateMeal(mealId, 1, 1, "Gram", mealType);
+      } else {
+        const addedFood: Food = {
+          ...createDefaultFood(),
+          name: description,
+          energy: Number(energy),
+          carb: Number(carb) || 0,
+          protein: Number(protein) || 0,
+          fat: Number(fat) || 0,
+          producer: "Quick Entry",
+          category: "quick-entry",
+        };
+
+        await addCustomFood(addedFood);
+        await addFoodToMeal(
+          mealType,
+          addedFood.id,
+          1,
+          1,
+          "Gram",
+          dateId,
+          addedFood,
+        );
       }
-      food.name = description;
-      food.energy = Number(energy);
-      food.carb = Number(carb);
-      food.protein = Number(protein);
-      food.fat = Number(fat);
-      await updateCustomFood(food);
-      await updateMeal(mealId!, 1, 1, "Gram", mealType);
-    } else {
-      const addedFood: Food = {
-        ...createDefaultFood(),
-        name: description,
-        energy: Number(energy),
-        carb: Number(carb) || 0,
-        protein: Number(protein) || 0,
-        fat: Number(fat) || 0,
-        producer: "Quick Entry",
-        category: "quick-entry",
-      };
 
-      await addCustomFood(addedFood);
-      await addFoodToMeal(
-        mealType,
-        addedFood.id,
-        1,
-        1,
-        "Gram",
-        dateId,
-        addedFood,
-      );
-    }
-
-    router.dismiss(1);
-  }
+      router.dismiss();
+    },
+    [edit, food, mealId, mealType, dateId],
+  );
 
   return (
     <KeyboardShift>

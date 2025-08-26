@@ -16,18 +16,21 @@ import { recentsQuery } from "~/db/queries/recentsQuery";
 import { favoritesQuery } from "~/db/queries/favoritesQuery";
 import { frequentsQuery } from "~/db/queries/frequentsQuery";
 import { MealType } from "~/types/MealType";
+import { customQuery } from "~/db/queries/customQuery";
 
 interface FoodTabsProps {
   mealType: MealType;
   dateId: string;
+  recipeFoodId: string | null;
 }
 
-export const FoodTabs = ({ mealType, dateId }: FoodTabsProps) => {
+export const FoodTabs = ({ mealType, dateId, recipeFoodId }: FoodTabsProps) => {
   const [index, setIndex] = useState(0);
   const routes = [
     { key: "frequents", title: "Frequent" },
     { key: "recents", title: "Recent" },
     { key: "favorites", title: "Favorites" },
+    { key: "custom", title: "Created" },
   ];
 
   const renderTabBar = (
@@ -79,6 +82,7 @@ export const FoodTabs = ({ mealType, dateId }: FoodTabsProps) => {
             query={frequentsQuery()}
             mealType={mealType}
             dateId={dateId}
+            recipeFoodId={recipeFoodId}
           />
         );
       case "recents":
@@ -88,15 +92,27 @@ export const FoodTabs = ({ mealType, dateId }: FoodTabsProps) => {
             mealType={mealType}
             dateId={dateId}
             enableDateHeader={true}
+            recipeFoodId={recipeFoodId}
           />
         );
       case "favorites":
         return (
           <RecentsList
-            query={favoritesQuery()}
+            query={favoritesQuery(!!recipeFoodId)}
             mealType={mealType}
             dateId={dateId}
             enableAlphabetHeader={true}
+            recipeFoodId={recipeFoodId}
+          />
+        );
+      case "custom":
+        return (
+          <RecentsList
+            query={customQuery(!!recipeFoodId)}
+            mealType={mealType}
+            dateId={dateId}
+            enableAlphabetHeader={true}
+            recipeFoodId={recipeFoodId}
           />
         );
       default:

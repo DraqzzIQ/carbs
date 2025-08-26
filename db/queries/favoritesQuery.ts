@@ -1,8 +1,8 @@
 import { db } from "~/db/client";
-import { asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, not, sql } from "drizzle-orm";
 import { favorites, foods } from "~/db/schema";
 
-export function favoritesQuery() {
+export function favoritesQuery(excludeRecipes = false) {
   return db
     .select({
       id: favorites.id,
@@ -15,6 +15,7 @@ export function favoritesQuery() {
     })
     .from(favorites)
     .innerJoin(foods, eq(foods.id, favorites.foodId))
+    .where(and(excludeRecipes ? not(foods.isRecipe) : undefined))
     .orderBy(
       asc(sql`lower (
     ${foods.name}
@@ -22,4 +23,4 @@ export function favoritesQuery() {
     );
 }
 
-export type FavoritesQueryType = Awaited<ReturnType<typeof favoritesQuery>>;
+export type FavoritesQueryType = ReturnType<typeof favoritesQuery>;

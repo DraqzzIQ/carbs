@@ -11,6 +11,8 @@ export const foods = sqliteTable("foods", {
   id: text("id").primaryKey(),
   updatedAt: text("updated_at"),
   deletedAt: text("deleted_at"),
+  isRecipe: integer("is_recipe", { mode: "boolean" }).notNull().default(false),
+  recipeServingQuantity: integer("recipe_serving_quantity"),
   isCustom: integer("is_custom", { mode: "boolean" }).notNull(),
   isVerified: integer("is_verified", { mode: "boolean" }).notNull(),
   hasEan: integer("has_ean", { mode: "boolean" }).notNull(),
@@ -126,21 +128,14 @@ export const streaks = sqliteTable("streaks", {
   dateId: text("date_id").notNull(),
 });
 
-export const recipes = sqliteTable("recipes", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name").notNull(),
-  updatedAt: text("updated_at")
-    .notNull()
-    .default(sql`(CURRENT_TIMESTAMP)`)
-    .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
-});
-
+// A recipe is a food with isRecipe = true.
+// Each entry links that recipe food to a component food.
 export const recipeEntries = sqliteTable("recipe_entries", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  recipeId: integer("recipe_id")
+  recipeFoodId: text("recipe_food_id")
     .notNull()
-    .references(() => recipes.id),
-  foodId: text("food_id")
+    .references(() => foods.id),
+  componentFoodId: text("component_food_id")
     .notNull()
     .references(() => foods.id),
   amount: integer("amount").notNull(),
@@ -163,7 +158,6 @@ export type Meal = typeof meals.$inferSelect;
 export type Favorite = typeof favorites.$inferSelect;
 export type Recent = typeof recents.$inferSelect;
 export type Streak = typeof streaks.$inferSelect;
-export type Recipe = typeof recipes.$inferSelect;
 export type RecipeEntry = typeof recipeEntries.$inferSelect;
 export type FluidIntake = typeof fluidIntake.$inferSelect;
 
@@ -171,6 +165,10 @@ export const foodsRelations = relations(foods, ({ many }) => ({
   meals: many(meals),
   favorites: many(favorites),
   recents: many(recents),
+  // If isRecipe, these are its components
+  recipeAssembledFrom: many(recipeEntries, { relationName: "recipe" }),
+  // If not isRecipe, where this food is used as a component
+  usedInRecipes: many(recipeEntries, { relationName: "component" }),
 }));
 
 export const mealsRelations = relations(meals, ({ one }) => ({
@@ -194,17 +192,15 @@ export const recentsRelations = relations(recents, ({ one }) => ({
   }),
 }));
 
-export const recipesRelations = relations(recipes, ({ many }) => ({
-  entries: many(recipeEntries),
-}));
-
 export const recipeEntriesRelations = relations(recipeEntries, ({ one }) => ({
-  recipe: one(recipes, {
-    fields: [recipeEntries.recipeId],
-    references: [recipes.id],
-  }),
-  food: one(foods, {
-    fields: [recipeEntries.foodId],
+  recipe: one(foods, {
+    fields: [recipeEntries.recipeFoodId],
     references: [foods.id],
+    relationName: "recipe",
+  }),
+  component: one(foods, {
+    fields: [recipeEntries.componentFoodId],
+    references: [foods.id],
+    relationName: "component",
   }),
 }));

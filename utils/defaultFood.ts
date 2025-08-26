@@ -11,6 +11,8 @@ export function createDefaultFood(): Food {
 
 const defaultFood: Food = {
   id: Date.now().toString(),
+  isRecipe: false,
+  recipeServingQuantity: null,
   name: "",
   energy: 0,
   carb: 0,
@@ -82,162 +84,152 @@ export function createCustomFood(
   values: Record<string, string>,
   barcode: string | undefined,
 ): Food {
-  const valuesPer = parseFloat(values["valuesPer"]) || 1;
-  const amount = parseFloat(values["amount"]);
-  const serving = values["serving"];
+  const valuesPer = parseFloat(values.valuesPer) || 1;
+  const amount = parseFloat(values.amount);
+  const serving = values.serving;
   return {
     ...createDefaultFood(),
-    name: values["name"],
-    energy: (parseFloat(values["energy"]) || 0) / valuesPer,
-    carb: (parseFloat(values["carb"]) || 0) / valuesPer,
-    protein: (parseFloat(values["protein"]) || 0) / valuesPer,
-    fat: (parseFloat(values["fat"]) || 0) / valuesPer,
+    name: values.name,
+    energy: (parseFloat(values.energy) || 0) / valuesPer,
+    carb: (parseFloat(values.carb) || 0) / valuesPer,
+    protein: (parseFloat(values.protein) || 0) / valuesPer,
+    fat: (parseFloat(values.fat) || 0) / valuesPer,
     hasEan: !!barcode,
     eans: barcode ? [barcode] : [],
     valuesPer: valuesPer,
-    producer: values["producer"] || null,
-    baseUnit: values["unit"] || "g",
+    producer: values.producer || null,
+    baseUnit: values.unit || "g",
     servings:
       amount && serving?.length > 0
         ? [{ amount: amount, serving: serving }]
         : [],
-    dietaryFiber: values["dietaryFiber"]
-      ? parseFloat(values["dietaryFiber"]) / valuesPer
+    dietaryFiber: values.dietaryFiber
+      ? parseFloat(values.dietaryFiber) / valuesPer
       : null,
-    sugar: (parseFloat(values["sugar"]) || 0) / valuesPer,
-    saturatedFat: (parseFloat(values["saturatedFat"]) || 0) / valuesPer,
-    monoUnsaturatedFat: values["monoUnsaturatedFat"]
-      ? parseFloat(values["monoUnsaturatedFat"]) / valuesPer
+    sugar: (parseFloat(values.sugar) || 0) / valuesPer,
+    saturatedFat: (parseFloat(values.saturatedFat) || 0) / valuesPer,
+    monoUnsaturatedFat: values.monoUnsaturatedFat
+      ? parseFloat(values.monoUnsaturatedFat) / valuesPer
       : null,
-    polyUnsaturatedFat: values["polyUnsaturatedFat"]
-      ? parseFloat(values["polyUnsaturatedFat"]) / valuesPer
+    polyUnsaturatedFat: values.polyUnsaturatedFat
+      ? parseFloat(values.polyUnsaturatedFat) / valuesPer
       : null,
-    transFat: values["transFat"]
-      ? parseFloat(values["transFat"]) / valuesPer
+    transFat: values.transFat ? parseFloat(values.transFat) / valuesPer : null,
+    alcohol: values.alcohol ? parseFloat(values.alcohol) / valuesPer : null,
+    cholesterol: values.cholesterol
+      ? parseFloat(values.cholesterol) / 1_000 / valuesPer
       : null,
-    alcohol: values["alcohol"]
-      ? parseFloat(values["alcohol"]) / valuesPer
+    sodium: values.sodium
+      ? parseFloat(values.sodium) / 1_000 / valuesPer
       : null,
-    cholesterol: values["cholesterol"]
-      ? parseFloat(values["cholesterol"]) / 1_000 / valuesPer
+    salt: (parseFloat(values.salt) || 0) / valuesPer,
+    water: values.water ? parseFloat(values.water) / valuesPer : null,
+    vitaminA: values.vitaminA
+      ? parseFloat(values.vitaminA) / 1_000_000 / valuesPer
       : null,
-    sodium: values["sodium"]
-      ? parseFloat(values["sodium"]) / 1_000 / valuesPer
+    vitaminB1: values.vitaminB1
+      ? parseFloat(values.vitaminB1) / 1_000 / valuesPer
       : null,
-    salt: (parseFloat(values["salt"]) || 0) / valuesPer,
-    water: values["water"] ? parseFloat(values["water"]) / valuesPer : null,
-    vitaminA: values["vitaminA"]
-      ? parseFloat(values["vitaminA"]) / 1_000_000 / valuesPer
+    vitaminB11: values.vitaminB11
+      ? parseFloat(values.vitaminB11) / 1_000_000 / valuesPer
       : null,
-    vitaminB1: values["vitaminB1"]
-      ? parseFloat(values["vitaminB1"]) / 1_000 / valuesPer
+    vitaminB12: values.vitaminB12
+      ? parseFloat(values.vitaminB12) / 1_000_000 / valuesPer
       : null,
-    vitaminB11: values["vitaminB11"]
-      ? parseFloat(values["vitaminB11"]) / 1_000_000 / valuesPer
+    vitaminB2: values.vitaminB2
+      ? parseFloat(values.vitaminB2) / 1_000 / valuesPer
       : null,
-    vitaminB12: values["vitaminB12"]
-      ? parseFloat(values["vitaminB12"]) / 1_000_000 / valuesPer
+    vitaminB3: values.vitaminB3
+      ? parseFloat(values.vitaminB3) / 1_000 / valuesPer
       : null,
-    vitaminB2: values["vitaminB2"]
-      ? parseFloat(values["vitaminB2"]) / 1_000 / valuesPer
+    vitaminB5: values.vitaminB5
+      ? parseFloat(values.vitaminB5) / 1_000 / valuesPer
       : null,
-    vitaminB3: values["vitaminB3"]
-      ? parseFloat(values["vitaminB3"]) / 1_000 / valuesPer
+    vitaminB6: values.vitaminB6
+      ? parseFloat(values.vitaminB6) / 1_000 / valuesPer
       : null,
-    vitaminB5: values["vitaminB5"]
-      ? parseFloat(values["vitaminB5"]) / 1_000 / valuesPer
+    vitaminB7: values.vitaminB7
+      ? parseFloat(values.vitaminB7) / 1_000_000 / valuesPer
       : null,
-    vitaminB6: values["vitaminB6"]
-      ? parseFloat(values["vitaminB6"]) / 1_000 / valuesPer
+    vitaminC: values.vitaminC
+      ? parseFloat(values.vitaminC) / 1_000 / valuesPer
       : null,
-    vitaminB7: values["vitaminB7"]
-      ? parseFloat(values["vitaminB7"]) / 1_000_000 / valuesPer
+    vitaminD: values.vitaminD
+      ? parseFloat(values.vitaminD) / 1_000_000 / valuesPer
       : null,
-    vitaminC: values["vitaminC"]
-      ? parseFloat(values["vitaminC"]) / 1_000 / valuesPer
+    vitaminE: values.vitaminE
+      ? parseFloat(values.vitaminE) / 1_000 / valuesPer
       : null,
-    vitaminD: values["vitaminD"]
-      ? parseFloat(values["vitaminD"]) / 1_000_000 / valuesPer
+    vitaminK: values.vitaminK
+      ? parseFloat(values.vitaminK) / 1_000_000 / valuesPer
       : null,
-    vitaminE: values["vitaminE"]
-      ? parseFloat(values["vitaminE"]) / 1_000 / valuesPer
+    arsenic: values.arsenic
+      ? parseFloat(values.arsenic) / 1_000_000 / valuesPer
       : null,
-    vitaminK: values["vitaminK"]
-      ? parseFloat(values["vitaminK"]) / 1_000_000 / valuesPer
+    biotin: values.biotin
+      ? parseFloat(values.biotin) / 1_000_000 / valuesPer
       : null,
-    arsenic: values["arsenic"]
-      ? parseFloat(values["arsenic"]) / 1_000_000 / valuesPer
+    boron: values.boron ? parseFloat(values.boron) / 1_000 / valuesPer : null,
+    calcium: values.calcium
+      ? parseFloat(values.calcium) / 1_000 / valuesPer
       : null,
-    biotin: values["biotin"]
-      ? parseFloat(values["biotin"]) / 1_000_000 / valuesPer
+    chlorine: values.chlorine
+      ? parseFloat(values.chlorine) / 1_000 / valuesPer
       : null,
-    boron: values["boron"]
-      ? parseFloat(values["boron"]) / 1_000 / valuesPer
+    choline: values.choline
+      ? parseFloat(values.choline) / 1_000 / valuesPer
       : null,
-    calcium: values["calcium"]
-      ? parseFloat(values["calcium"]) / 1_000 / valuesPer
+    chrome: values.chrome
+      ? parseFloat(values.chrome) / 1_000_000 / valuesPer
       : null,
-    chlorine: values["chlorine"]
-      ? parseFloat(values["chlorine"]) / 1_000 / valuesPer
+    cobalt: values.cobalt
+      ? parseFloat(values.cobalt) / 1_000_000 / valuesPer
       : null,
-    choline: values["choline"]
-      ? parseFloat(values["choline"]) / 1_000 / valuesPer
+    copper: values.copper
+      ? parseFloat(values.copper) / 1_000 / valuesPer
       : null,
-    chrome: values["chrome"]
-      ? parseFloat(values["chrome"]) / 1_000_000 / valuesPer
+    fluoride: values.fluoride
+      ? parseFloat(values.fluoride) / 1_000 / valuesPer
       : null,
-    cobalt: values["cobalt"]
-      ? parseFloat(values["cobalt"]) / 1_000_000 / valuesPer
+    fluorine: values.fluorine
+      ? parseFloat(values.fluorine) / 1_000 / valuesPer
       : null,
-    copper: values["copper"]
-      ? parseFloat(values["copper"]) / 1_000 / valuesPer
+    iodine: values.iodine
+      ? parseFloat(values.iodine) / 1_000_000 / valuesPer
       : null,
-    fluoride: values["fluoride"]
-      ? parseFloat(values["fluoride"]) / 1_000 / valuesPer
+    iron: values.iron ? parseFloat(values.iron) / 1_000 / valuesPer : null,
+    magnesium: values.magnesium
+      ? parseFloat(values.magnesium) / 1_000 / valuesPer
       : null,
-    fluorine: values["fluorine"]
-      ? parseFloat(values["fluorine"]) / 1_000 / valuesPer
+    manganese: values.manganese
+      ? parseFloat(values.manganese) / 1_000 / valuesPer
       : null,
-    iodine: values["iodine"]
-      ? parseFloat(values["iodine"]) / 1_000_000 / valuesPer
+    molybdenum: values.molybdenum
+      ? parseFloat(values.molybdenum) / 1_000_000 / valuesPer
       : null,
-    iron: values["iron"]
-      ? parseFloat(values["iron"]) / 1_000 / valuesPer
+    phosphorus: values.phosphorus
+      ? parseFloat(values.phosphorus) / 1_000 / valuesPer
       : null,
-    magnesium: values["magnesium"]
-      ? parseFloat(values["magnesium"]) / 1_000 / valuesPer
+    potassium: values.potassium
+      ? parseFloat(values.potassium) / 1_000 / valuesPer
       : null,
-    manganese: values["manganese"]
-      ? parseFloat(values["manganese"]) / 1_000 / valuesPer
+    rubidium: values.rubidium
+      ? parseFloat(values.rubidium) / 1_000 / valuesPer
       : null,
-    molybdenum: values["molybdenum"]
-      ? parseFloat(values["molybdenum"]) / 1_000_000 / valuesPer
+    selenium: values.selenium
+      ? parseFloat(values.selenium) / 1_000_000 / valuesPer
       : null,
-    phosphorus: values["phosphorus"]
-      ? parseFloat(values["phosphorus"]) / 1_000 / valuesPer
+    silicon: values.silicon
+      ? parseFloat(values.silicon) / 1_000 / valuesPer
       : null,
-    potassium: values["potassium"]
-      ? parseFloat(values["potassium"]) / 1_000 / valuesPer
+    sulfur: values.sulfur
+      ? parseFloat(values.sulfur) / 1_000 / valuesPer
       : null,
-    rubidium: values["rubidium"]
-      ? parseFloat(values["rubidium"]) / 1_000 / valuesPer
+    tin: values.tin ? parseFloat(values.tin) / 1_000 / valuesPer : null,
+    vanadium: values.vanadium
+      ? parseFloat(values.vanadium) / 1_000_000 / valuesPer
       : null,
-    selenium: values["selenium"]
-      ? parseFloat(values["selenium"]) / 1_000_000 / valuesPer
-      : null,
-    silicon: values["silicon"]
-      ? parseFloat(values["silicon"]) / 1_000 / valuesPer
-      : null,
-    sulfur: values["sulfur"]
-      ? parseFloat(values["sulfur"]) / 1_000 / valuesPer
-      : null,
-    tin: values["tin"] ? parseFloat(values["tin"]) / 1_000 / valuesPer : null,
-    vanadium: values["vanadium"]
-      ? parseFloat(values["vanadium"]) / 1_000_000 / valuesPer
-      : null,
-    zinc: values["zinc"]
-      ? parseFloat(values["zinc"]) / 1_000 / valuesPer
-      : null,
+    zinc: values.zinc ? parseFloat(values.zinc) / 1_000 / valuesPer : null,
   };
 }
 
@@ -249,7 +241,7 @@ export function foodToFormValues(food: Food): Record<string, string> {
     protein: roundToInt(food.protein * food.valuesPer, 2).toString(),
     fat: roundToInt(food.fat * food.valuesPer, 2).toString(),
     valuesPer: food.valuesPer.toString(),
-    producer: food.producer || "",
+    producer: food.producer ?? "",
     unit: food.baseUnit || "g",
     amount: food.servings.length > 0 ? food.servings[0].amount.toString() : "",
     serving: food.servings.length > 0 ? food.servings[0].serving : "",
@@ -394,5 +386,19 @@ export function foodToFormValues(food: Food): Record<string, string> {
     zinc: food.zinc
       ? roundToInt(food.zinc * 1_000 * food.valuesPer, 2).toString()
       : "",
+  };
+}
+
+export function createRecipeFood(
+  name: string,
+  recipeServingQuantity: number,
+): Food {
+  return {
+    ...createDefaultFood(),
+    name: name,
+    isRecipe: true,
+    recipeServingQuantity: recipeServingQuantity,
+    category: "custom-recipe",
+    producer: "Recipe",
   };
 }

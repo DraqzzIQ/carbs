@@ -21,10 +21,11 @@ export function recentsQuery() {
         gte(recents.updatedAt, lastYear.toISOString()),
         not(eq(foods.category, "quick-entry")),
         isNull(foods.deletedAt),
+        not(foods.isRecipe),
       ),
     )
     .orderBy(desc(recents.updatedAt))
-    .limit(100);
+    .limit(1000);
 }
 
-export type RecentsQueryType = Awaited<ReturnType<typeof recentsQuery>>;
+export type RecentsQueryType = ReturnType<typeof recentsQuery>;

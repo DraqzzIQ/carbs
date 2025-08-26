@@ -16,7 +16,7 @@ const toggleVariants = cva(
       },
       size: {
         default: "h-10 px-3 native:h-12 native:px-[12]",
-        sm: "h-9 px-2.5 native:h-10 native:px-[9]",
+        sm: "h-9 px-2.5 native:h-9 native:px-[6]",
         lg: "h-11 px-5 native:h-14 native:px-6",
       },
     },
@@ -38,7 +38,7 @@ const toggleTextVariants = cva(
       },
       size: {
         default: "",
-        sm: "",
+        sm: "native:text-sm",
         lg: "",
       },
     },

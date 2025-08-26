@@ -9,12 +9,16 @@ import {
   foods,
   meals,
   recents,
+  recipeEntries,
+  RecipeEntry,
   streaks,
 } from "~/db/schema";
-import { and, eq, isNull, like, asc } from "drizzle-orm";
-import { isBaseUnit } from "~/utils/formatting";
+import { and, asc, eq, isNull, like, ne } from "drizzle-orm";
+import { formatNumber, isBaseUnit } from "~/utils/formatting";
 import { inArray } from "drizzle-orm/sql/expressions/conditions";
 import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
+import { ServingType } from "~/types/ServingType";
+import { getDefaultValuesForServing } from "~/utils/serving";
 
 export async function removeFoodFromMeal(mealId: number) {
   try {
@@ -124,7 +128,7 @@ export async function isRecent(foodId: string): Promise<boolean> {
     if (!recent) {
       return false;
     }
-    return new Date(recent!.updatedAt) >= lastYear;
+    return new Date(recent.updatedAt) >= lastYear;
   } catch (error) {
     console.error(`Error checking if food is recent with ID ${foodId}:`, error);
     return false;
@@ -171,6 +175,25 @@ export async function removeFavorite(foodId: string) {
   }
 }
 
+export async function getFavoriteFoods(
+  foodIds: string[],
+): Promise<Set<string>> {
+  const uniqueFoodIds = [...new Set(foodIds)];
+  if (uniqueFoodIds.length === 0) return new Set();
+  try {
+    const favoriteFoodIds = await db.query.favorites.findMany({
+      where: inArray(favorites.foodId, uniqueFoodIds),
+      columns: {
+        foodId: true,
+      },
+    });
+    return new Set(favoriteFoodIds.map((favorite) => favorite.foodId));
+  } catch (error) {
+    console.error("Error fetching favorite foods:", error);
+    return new Set();
+  }
+}
+
 export async function addFavorite(
   foodId: string,
   servingQuantity: number,
@@ -212,6 +235,9 @@ export async function deleteCustomFood(foodId: string) {
       .update(foods)
       .set({ deletedAt: new Date().toISOString() })
       .where(eq(foods.id, foodId));
+    await db
+      .delete(recipeEntries)
+      .where(eq(recipeEntries.recipeFoodId, foodId));
   } catch (error) {
     console.error(`Error deleting custom food with ID ${foodId}:`, error);
   }
@@ -220,37 +246,46 @@ export async function deleteCustomFood(foodId: string) {
 export async function queryCustomFoods(
   query: string,
   barCode = false,
+  isRecipe: boolean | undefined = undefined,
 ): Promise<FoodSearchResultDto[]> {
   try {
     const result = await db.query.foods.findMany({
       where: and(
         eq(foods.isCustom, true),
         isNull(foods.deletedAt),
+        ne(foods.category, "quick-entry"),
         barCode
           ? like(foods.eans, `%${query}%`)
           : like(foods.name, `%${query}%`),
+        isRecipe === undefined ? undefined : eq(foods.isRecipe, isRecipe),
       ),
       limit: 5,
     });
-    return result.map((food) => ({
-      score: -1,
-      name: food.name,
-      productId: food.id,
-      serving: food.servings?.[0]?.serving ?? "",
-      servingQuantity: 1,
-      amount: food.servings?.[0]?.amount ?? 0,
-      baseUnit: food.baseUnit,
-      producer: food.producer ?? "",
-      isVerified: food.isVerified,
-      nutrients: {
-        energy: food.energy,
-        carb: food.carb,
-        fat: food.fat,
-        protein: food.protein,
-      },
-      countries: [],
-      language: "",
-    }));
+    return result.map((food) => {
+      const servingValues = getDefaultValuesForServing(
+        food.servings,
+        food.baseUnit,
+      );
+      return {
+        score: -1,
+        name: food.name,
+        productId: food.id,
+        serving: servingValues.serving,
+        servingQuantity: servingValues.servingQuantity,
+        amount: servingValues.amount,
+        baseUnit: food.baseUnit,
+        producer: food.producer ?? "",
+        isVerified: food.isVerified,
+        nutrients: {
+          energy: food.energy,
+          carb: food.carb,
+          fat: food.fat,
+          protein: food.protein,
+        },
+        countries: [],
+        language: "",
+      };
+    });
   } catch (error) {
     console.error("Error querying custom foods:", error);
     return [];
@@ -289,6 +324,97 @@ export async function getAllStreaks(): Promise<string[]> {
   } catch (error) {
     console.error("Error getting all streaks:", error);
     return [];
+  }
+}
+
+export async function addRecipeEntry(
+  recipeFoodId: string,
+  componentFoodId: string,
+  servingQuantity: number,
+  amount: number,
+  serving: string,
+  food: Food | undefined = undefined,
+): Promise<boolean> {
+  try {
+    if (food === undefined) {
+      food = await getAndSaveFood(componentFoodId);
+      if (food === undefined) {
+        console.error(
+          `Couldn't save FoodComponent with ID ${componentFoodId}.`,
+        );
+        return false;
+      }
+    }
+    await db.insert(recipeEntries).values({
+      recipeFoodId,
+      componentFoodId,
+      servingQuantity,
+      amount,
+      serving,
+    });
+
+    await updateRecipeNutrients(recipeFoodId);
+    return true;
+  } catch (error) {
+    console.error(
+      `Error adding food component to recipe. Recipe ID: ${recipeFoodId}, Component ID: ${componentFoodId}`,
+      error,
+    );
+    return false;
+  }
+}
+
+export async function editRecipeEntry(
+  entryId: number,
+  servingQuantity: number,
+  amount: number,
+  serving: string,
+) {
+  try {
+    const entry = await db.query.recipeEntries.findFirst({
+      where: eq(recipeEntries.id, entryId),
+      columns: { recipeFoodId: true },
+    });
+
+    await db
+      .update(recipeEntries)
+      .set({ servingQuantity, amount, serving })
+      .where(eq(recipeEntries.id, entryId));
+
+    if (entry?.recipeFoodId) {
+      await updateRecipeNutrients(entry.recipeFoodId);
+    }
+  } catch (error) {
+    console.error(`Error editing recipe entry with ID ${entryId}:`, error);
+  }
+}
+
+export async function deleteRecipeEntry(entryId: number) {
+  try {
+    const entry = await db.query.recipeEntries.findFirst({
+      where: eq(recipeEntries.id, entryId),
+      columns: { recipeFoodId: true },
+    });
+
+    await db.delete(recipeEntries).where(eq(recipeEntries.id, entryId));
+
+    if (entry?.recipeFoodId) {
+      await updateRecipeNutrients(entry.recipeFoodId);
+    }
+  } catch (error) {
+    console.error(`Error deleting recipe entry with ID ${entryId}:`, error);
+  }
+}
+
+export async function getRecipeEntry(entryId: number) {
+  try {
+    return await db.query.recipeEntries.findFirst({
+      where: eq(recipeEntries.id, entryId),
+      with: { component: true },
+    });
+  } catch (error) {
+    console.error(`Error getting recipe entry with ID ${entryId}:`, error);
+    return null;
   }
 }
 
@@ -388,6 +514,110 @@ async function updateOrAddRecent(
   } catch (error) {
     console.error(
       `Error updating or adding recent for food ID ${foodId}:`,
+      error,
+    );
+  }
+}
+
+export async function updateRecipeServings(
+  recipeFoodId: string,
+  totalWeight: number,
+) {
+  try {
+    const recipeFood = await db.query.foods.findFirst({
+      where: eq(foods.id, recipeFoodId),
+      columns: {
+        recipeServingQuantity: true,
+      },
+    });
+    await db
+      .update(foods)
+      .set({
+        servings:
+          totalWeight > 0
+            ? [
+                {
+                  amount: Number(
+                    formatNumber(
+                      totalWeight / (recipeFood?.recipeServingQuantity ?? 1),
+                    ),
+                  ),
+                  serving: ServingType.Serving,
+                },
+                {
+                  amount: totalWeight,
+                  serving: ServingType.Whole,
+                },
+              ]
+            : [],
+      })
+      .where(eq(foods.id, recipeFoodId));
+  } catch (error) {
+    console.error(
+      `Error updating recipe servings for recipe ID ${recipeFoodId}:`,
+      error,
+    );
+  }
+}
+
+async function updateRecipeNutrients(recipeFoodId: string) {
+  try {
+    const entries = await db.query.recipeEntries.findMany({
+      where: eq(recipeEntries.recipeFoodId, recipeFoodId),
+      columns: {
+        componentFoodId: true,
+        servingQuantity: true,
+        amount: true,
+      },
+    });
+
+    // Aggregate duplicate components and compute total weight (denominator)
+    const weightByFoodId = new Map<string, number>();
+    let totalWeight = 0;
+    for (const e of entries) {
+      const w = (e.servingQuantity ?? 0) * (e.amount ?? 0);
+      if (w <= 0) continue;
+      totalWeight += w;
+      weightByFoodId.set(
+        e.componentFoodId,
+        (weightByFoodId.get(e.componentFoodId) ?? 0) + w,
+      );
+    }
+
+    const totals = Object.fromEntries(
+      NUTRIENT_KEYS.map((k) => [k, 0]),
+    ) as Record<NutrientKey, number>;
+
+    if (weightByFoodId.size === 0 || totalWeight === 0) {
+      await db.update(foods).set(totals).where(eq(foods.id, recipeFoodId));
+      await updateRecipeServings(recipeFoodId, totalWeight);
+      return;
+    }
+
+    // Fetch all component foods in one query
+    const componentFoods = await db.query.foods.findMany({
+      where: inArray(foods.id, [...weightByFoodId.keys()]),
+    });
+
+    // Weighted sum: sum(nutrient * weight)
+    for (const food of componentFoods) {
+      const w = weightByFoodId.get(food.id) ?? 0;
+      const f = food as Partial<Record<NutrientKey, number | null | undefined>>;
+      for (const k of NUTRIENT_KEYS) {
+        totals[k] += (f[k] ?? 0) * w;
+      }
+    }
+
+    // Divide by total weight to get per-gram averages
+    for (const k of NUTRIENT_KEYS) {
+      totals[k] = totals[k] / totalWeight;
+    }
+
+    await db.update(foods).set(totals).where(eq(foods.id, recipeFoodId));
+    await updateRecipeServings(recipeFoodId, totalWeight);
+  } catch (error) {
+    console.error(
+      `Error updating recipe nutrients for recipe ID ${recipeFoodId}:`,
       error,
     );
   }
@@ -524,3 +754,60 @@ function getProductProperties(food: FoodDetailsDto): {
     zinc: food.nutrients["mineral.zinc"],
   };
 }
+
+const NUTRIENT_KEYS = [
+  "energy",
+  "protein",
+  "carb",
+  "dietaryFiber",
+  "sugar",
+  "fat",
+  "saturatedFat",
+  "monoUnsaturatedFat",
+  "polyUnsaturatedFat",
+  "transFat",
+  "alcohol",
+  "cholesterol",
+  "sodium",
+  "salt",
+  "water",
+  "vitaminA",
+  "vitaminB1",
+  "vitaminB11",
+  "vitaminB12",
+  "vitaminB2",
+  "vitaminB3",
+  "vitaminB5",
+  "vitaminB6",
+  "vitaminB7",
+  "vitaminC",
+  "vitaminD",
+  "vitaminE",
+  "vitaminK",
+  "arsenic",
+  "biotin",
+  "boron",
+  "calcium",
+  "chlorine",
+  "choline",
+  "chrome",
+  "cobalt",
+  "copper",
+  "fluoride",
+  "fluorine",
+  "iodine",
+  "iron",
+  "magnesium",
+  "manganese",
+  "molybdenum",
+  "phosphorus",
+  "potassium",
+  "rubidium",
+  "selenium",
+  "silicon",
+  "sulfur",
+  "tin",
+  "vanadium",
+  "zinc",
+] as const;
+type NutrientKey = (typeof NUTRIENT_KEYS)[number];

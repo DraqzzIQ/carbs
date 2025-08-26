@@ -22,7 +22,7 @@ import { Trash2Icon } from "lucide-nativewind";
 import { removeFoodFromMeal } from "~/utils/querying";
 import { router } from "expo-router";
 import { MacroHeader } from "~/components/index/meal/macro-header";
-import { formatServing } from "~/utils/serving";
+import { formatFoodSubtitle } from "~/utils/serving";
 import { NutritionFacts } from "~/components/index/meal/nutrition-facts";
 import { mapMealsToNutritionFacts } from "~/utils/mapMealsToNutritionFacts";
 
@@ -34,7 +34,7 @@ interface MealDetailProps {
 export const MealDetails = ({ dateId, mealType }: MealDetailProps) => {
   const { data: currentDayMeals, error: queryError } = useRelationalLiveQuery(
     mealDetailsQuery(dateId, mealType),
-    [dateId],
+    [dateId, mealType],
   );
 
   useEffect(() => {
@@ -161,7 +161,6 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
               router.navigate({
                 pathname,
                 params: {
-                  edit: "true",
                   mealId: meal.id,
                   dateId: meal.dateId,
                   mealName: meal.mealType,
@@ -173,21 +172,14 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
               <View>
                 <Text className="font-semibold">{meal.food.name}</Text>
                 <Text className="text-sm">
-                  {meal.food.producer ? meal.food.producer : ""}
-                  {meal.food.category !== "quick-entry" && (
-                    <>
-                      {meal.food.producer ? ", " : ""}
-                      {meal.servingQuantity}{" "}
-                      {meal.amount === 1
-                        ? meal.food.baseUnit
-                        : formatServing(
-                            meal.serving,
-                            meal.amount * meal.servingQuantity,
-                            meal.food.baseUnit,
-                            meal.servingQuantity > 1,
-                          )}
-                    </>
-                  )}
+                  {meal.food.category === "quick-entry"
+                    ? "Quick Entry"
+                    : formatFoodSubtitle(
+                        meal.food,
+                        meal.serving,
+                        meal.servingQuantity,
+                        meal.amount,
+                      )}
                 </Text>
               </View>
               <View className="flex-grow" />

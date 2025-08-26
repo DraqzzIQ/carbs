@@ -16,4 +16,5 @@ export enum ServingType {
   Teaspoon = "Teaspoon",
   Tablet = "Tablet",
   Plate = "Plate",
+  Whole = "Whole",
 }

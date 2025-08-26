@@ -17,6 +17,7 @@ interface HeaderProps {
 export const Header = ({ dateSlug, dateId }: HeaderProps) => {
   const { data: streakDays, error: queryError } = useRelationalLiveQuery(
     db.select().from(streaks).orderBy(desc(streaks.dateId)),
+    [],
   );
 
   useEffect(() => {
