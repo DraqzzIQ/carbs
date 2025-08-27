@@ -204,7 +204,9 @@ export default function SettingsScreen() {
           <Card className="mb-8 mt-4 p-4">
             <CardTitle className="text-center">Backup and Restore</CardTitle>
             <Button
-              onPress={async () => await exportDbAsync()}
+              onPress={() => {
+                void exportDbAsync();
+              }}
               className="mt-3"
             >
               <Text>Backup</Text>
@@ -236,9 +238,11 @@ export default function SettingsScreen() {
             <CardTitle className="text-center">About</CardTitle>
             <Card className="m-1 mt-4 p-2">
               <TouchableOpacity
-                onPress={() =>
-                  Linking.openURL("https://github.com/DraqzzIQ/better-yazio")
-                }
+                onPress={() => {
+                  void Linking.openURL(
+                    "https://github.com/DraqzzIQ/better-yazio",
+                  );
+                }}
               >
                 <View className="flex-row items-center justify-between">
                   <View>
@@ -273,10 +277,12 @@ export default function SettingsScreen() {
             <Text>Cancel</Text>
           </AlertDialogCancel>
           <AlertDialogAction
-            onPress={async () => {
-              if (await importDbAsync()) {
-                await reloadAppAsync();
-              }
+            onPress={() => {
+              void (async () => {
+                if (await importDbAsync()) {
+                  await reloadAppAsync();
+                }
+              })();
             }}
           >
             <Text>Import</Text>

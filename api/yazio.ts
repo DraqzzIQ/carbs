@@ -51,8 +51,8 @@ export const yazioSearchFoods = async (
     return [];
   }
 
-  const data = await response.json();
-  return mapApiFoodsSearchResult(data);
+  const data: unknown = await response.json();
+  return mapApiFoodsSearchResult(data as unknown[]);
 };
 
 export const yazioGetFoodDetails = async (
@@ -67,6 +67,6 @@ export const yazioGetFoodDetails = async (
     return null;
   }
 
-  const data = await response.json();
+  const data: unknown = await response.json();
   return mapApiFoodDetails(data, productId);
 };

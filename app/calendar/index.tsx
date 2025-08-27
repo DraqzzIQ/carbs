@@ -28,7 +28,7 @@ export default function CalendarScreen() {
   const [streaks, setStreaks] = useState<CalendarActiveDateRange[]>([]);
 
   useEffect(() => {
-    (async () => {
+    void (async () => {
       const streaks = await getAllStreaks();
       const fetchedId = streaks[0] || null;
       setPastMonthAmount(12);

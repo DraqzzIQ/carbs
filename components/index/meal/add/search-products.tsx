@@ -248,7 +248,9 @@ function SearchProduct({
           <View className="flex-grow" />
           <TouchableOpacity
             disabled={loading}
-            onPress={async () => await localOnAddProduct(product)}
+            onPress={() => {
+              void localOnAddProduct(product);
+            }}
           >
             {loading ? (
               <View className="animate-spin">

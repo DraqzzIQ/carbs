@@ -19,7 +19,6 @@ import {
   removeFavorite,
   updateCustomFood,
 } from "~/utils/querying";
-import { getDefaultServing } from "~/utils/serving";
 import { Card, CardTitle } from "~/components/ui/card";
 
 export default function CustomFoodScreen() {
@@ -33,7 +32,7 @@ export default function CustomFoodScreen() {
 
   useEffect(() => {
     if (edit) {
-      (async () => {
+      void (async () => {
         try {
           const fetchedFood = await getCustomFood(foodId);
           if (fetchedFood) {
@@ -73,13 +72,6 @@ export default function CustomFoodScreen() {
           console.error("Error creating custom food:", error);
         }
       }
-      const serving =
-        food.servings.length > 0
-          ? food.servings[0]
-          : {
-              amount: 1,
-              serving: getDefaultServing(food.baseUnit).toLowerCase(),
-            };
       if (await getIsFavorite(food.id)) {
         await removeFavorite(food.id);
       }

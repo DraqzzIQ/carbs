@@ -114,8 +114,8 @@ const RightAction = ({
     <View className="h-full w-full items-center justify-center p-1">
       <TouchableOpacity
         className="w-full rounded-lg bg-[#ff526b] pr-4"
-        onPress={async () => {
-          await removeFoodFromMeal(mealId);
+        onPress={() => {
+          void removeFoodFromMeal(mealId);
         }}
       >
         <View className="flex-grow" />
@@ -153,7 +153,7 @@ function MealItem({ meal }: { meal: MealDetailsQueryType[number] }) {
       >
         <Card className="m-1 p-3">
           <TouchableOpacity
-            onPress={async () => {
+            onPress={() => {
               const pathname =
                 meal.food.category === "quick-entry"
                   ? "/meal/add/quick-entry"

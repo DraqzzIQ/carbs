@@ -1,5 +1,11 @@
 import { useState, useEffect, ReactNode } from "react";
-import { View, TouchableOpacity, StyleProp, StyleSheet } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  StyleProp,
+  StyleSheet,
+  ViewStyle,
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Text } from "~/components/ui/text";
 import { NumericInput } from "~/components/numeric-input";
@@ -39,7 +45,7 @@ interface Field {
   selectTextOnFocus?: boolean;
   options?: string[];
   type: FieldType;
-  style?: StyleProp<unknown>;
+  style?: StyleProp<ViewStyle>;
 }
 
 type FieldOrRow = Field | Field[];
@@ -48,7 +54,7 @@ export interface FormCategory {
   category: string;
   fields: FieldOrRow[];
   defaultVisible: number;
-  style?: StyleProp<unknown>;
+  style?: StyleProp<ViewStyle>;
   titleStyle?: number;
 }
 
@@ -159,6 +165,11 @@ export function Form({
     }
   };
 
+  const handlePress = () => {
+    setIsLoading(true);
+    void handleSubmit().finally(() => setIsLoading(false));
+  };
+
   return (
     <View className="h-full p-4">
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -235,11 +246,7 @@ export function Form({
         <View className="h-20" />
       </ScrollView>
       <FloatingActionButton
-        onPress={async () => {
-          setIsLoading(true);
-          await handleSubmit();
-          setIsLoading(false);
-        }}
+        onPress={handlePress}
         loading={isLoading}
         disabled={isLoading}
       >

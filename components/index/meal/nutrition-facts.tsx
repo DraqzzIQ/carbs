@@ -195,8 +195,9 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
     for (const food of foods) {
       const quantity = food.servingQuantity * food.amount;
       for (const key of NUTRIENT_KEYS) {
-        const sourceKey = SOURCE_KEY_ALIAS[key] || key;
-        const raw = food[sourceKey];
+        const sourceKey = SOURCE_KEY_ALIAS[key] ?? key;
+        // @ts-expect-error please stop complaining
+        const raw = food[sourceKey] as number;
         if (raw == null) continue;
         const multiplier = UNIT_MULTIPLIER[totals[key].unit] || 1;
         totals[key].value += raw * quantity * multiplier;

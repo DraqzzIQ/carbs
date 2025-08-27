@@ -3,7 +3,7 @@ import { Text } from "~/components/ui/text";
 import { FluidIntake } from "~/db/schema";
 import { Card } from "~/components/ui/card";
 import { TouchableOpacity, View } from "react-native";
-import { CircleXIcon, GlassWaterIcon, TrashIcon } from "lucide-nativewind";
+import { CircleXIcon, GlassWaterIcon } from "lucide-nativewind";
 import { useSettings } from "~/contexts/AppSettingsContext";
 import { getVolumeUnitForLocale } from "~/utils/formatting";
 import { addFluidIntake, deleteFluidIntake } from "~/utils/querying";
@@ -41,8 +41,8 @@ export const WaterTracker = ({ dateId, fluidIntake }: WaterTrackerProps) => {
           {order.map((k, i) => (
             <React.Fragment key={k}>
               <TouchableOpacity
-                onPress={async () => {
-                  await addFluidIntake(fluidSizes[k], dateId);
+                onPress={() => {
+                  void addFluidIntake(fluidSizes[k], dateId);
                 }}
                 className="items-center"
               >
@@ -72,7 +72,9 @@ export const WaterTracker = ({ dateId, fluidIntake }: WaterTrackerProps) => {
                   </Text>
                   <View className="flex-grow" />
                   <TouchableOpacity
-                    onPress={async () => deleteFluidIntake(item.id)}
+                    onPress={() => {
+                      void deleteFluidIntake(item.id);
+                    }}
                   >
                     <CircleXIcon className="h-6 w-6 text-primary" />
                   </TouchableOpacity>

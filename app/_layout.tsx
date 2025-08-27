@@ -51,7 +51,9 @@ export default function RootLayout() {
       return;
     }
 
-    setAndroidNavigationBar(colorScheme);
+    setAndroidNavigationBar(colorScheme).catch((error) => {
+      console.error("Error setting navigation bar color", error);
+    });
     setIsColorSchemeLoaded(true);
     hasMounted.current = true;
   }, []);
@@ -74,7 +76,11 @@ export default function RootLayout() {
     return null;
   }
 
-  setBackgroundColorAsync(isDarkColorScheme ? "black" : "#f4f4f5");
+  setBackgroundColorAsync(isDarkColorScheme ? "black" : "#f4f4f5").catch(
+    (error) => {
+      console.error("Error setting background color", error);
+    },
+  );
 
   cssInterop(Dropdown, {
     className: "style",

@@ -69,11 +69,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    (async () => {
+    void (async () => {
       try {
         const stored = await AsyncStorage.getItem(STORAGE_KEY);
         if (stored) {
-          const parsed = JSON.parse(stored);
+          const parsed = JSON.parse(stored) as Settings;
           const updated = { ...defaultSettings, ...parsed };
           setSettingsState(updated);
           staticSettings = updated;
@@ -92,7 +92,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
 
       staticSettings = updated;
 
-      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated)).catch((e) => {
+        console.warn("Failed to save settings", e);
+      });
       return updated;
     });
   };

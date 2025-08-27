@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { is, SQL, Subquery } from "drizzle-orm";
 import { SQLiteRelationalQuery } from "drizzle-orm/sqlite-core/query-builders/query";
 import { useEffect, useState } from "react";

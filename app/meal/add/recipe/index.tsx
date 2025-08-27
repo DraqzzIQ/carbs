@@ -38,7 +38,7 @@ export default function RecipeScreen() {
   }, [recipeEntriesQueryError]);
 
   useEffect(() => {
-    (async () => {
+    void (async () => {
       if (!edit) {
         return;
       }

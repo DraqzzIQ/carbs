@@ -107,7 +107,7 @@ export default function AddToMealScreen() {
     return navigation.addListener("focus", () => {
       setBarCodeScannerOpen(false);
       if (!hasPermission) {
-        (async () => {
+        void (async () => {
           await requestPermission();
         })();
       }
@@ -219,7 +219,9 @@ export default function AddToMealScreen() {
       return;
     }
     const handle = setTimeout(() => {
-      performSearch(searchQuery, false);
+      performSearch(searchQuery, false).catch((e) => {
+        console.error("Failed to search products:", e);
+      });
     }, searchDebounceMs);
     return () => clearTimeout(handle);
   }, [searchQuery, performSearch, searchDebounceMs]);
@@ -234,7 +236,9 @@ export default function AddToMealScreen() {
     // Re-run search immediately (respects debounce for typing already done)
     if (searchQuery.trim()) {
       // read from ref inside performSearch
-      performSearch(searchQuery, false);
+      performSearch(searchQuery, false).catch((e) => {
+        console.error("Failed to search products:", e);
+      });
     }
   };
 
@@ -276,7 +280,9 @@ export default function AddToMealScreen() {
     setBarCodeScannerOpen(false);
     setSearchQuery(code);
     // Immediate search: bypass debounce & cache
-    performSearch(code, true);
+    performSearch(code, true).catch((e) => {
+      console.error("Failed to search products:", e);
+    });
   };
 
   return (

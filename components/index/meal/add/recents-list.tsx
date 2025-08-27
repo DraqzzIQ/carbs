@@ -61,9 +61,9 @@ export const RecentsList = ({
   }
 
   return (
-    <FlashList<unknown>
+    <FlashList<Awaited<RecentsQueryType>[number]>
       estimatedItemSize={63}
-      data={recents}
+      data={recents as Awaited<RecentsQueryType>}
       keyExtractor={(item) => item.id.toString()}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 40 }}
@@ -81,7 +81,7 @@ export const RecentsList = ({
           displayDateHeader =
             index === 0 ||
             getDateSlug(
-              getDateIdFromDate(0, new Date(recents[index - 1].updatedAt)),
+              getDateIdFromDate(0, new Date(recents[index - 1].updatedAt!)),
             ) !== currentDate;
         }
         if (enableAlphabetHeader) {
@@ -119,7 +119,7 @@ const Recent = ({
   dateId,
   recipeFoodId,
 }: {
-  recent: RecentsQueryType[number];
+  recent: Awaited<RecentsQueryType>[number];
   mealType: MealType;
   dateId: string;
   recipeFoodId: string | null;
@@ -198,7 +198,9 @@ const Recent = ({
           </Text>
           <TouchableOpacity
             disabled={isLoading}
-            onPress={async () => await onAddPress()}
+            onPress={() => {
+              void onAddPress();
+            }}
           >
             {isLoading ? (
               <View className="animate-spin">

@@ -1,54 +1,83 @@
 import { z } from "zod";
 
-const NutrientsSchema = z.object({
-  energy: z.number(),
-  carb: z.number(),
-  fat: z.number(),
-  protein: z.number(),
-});
+interface Nutrients {
+  energy: number;
+  carb: number;
+  fat: number;
+  protein: number;
+}
 
-const FoodSearchResultSchema = z.object({
-  score: z.number(),
+export interface FoodSearchResultDto {
+  score: number;
+  name: string;
+  productId: string;
+  serving: string;
+  servingQuantity: number;
+  amount: number;
+  baseUnit: string;
+  producer: string | null;
+  isVerified: boolean;
+  nutrients: Nutrients;
+  countries: string[];
+  language: string;
+}
+
+const ApiFoodResultSchema = z.object({
+  score: z.number().optional(),
   name: z.string(),
-  productId: z.string(),
+  product_id: z.string(),
   serving: z.string(),
-  servingQuantity: z.number(),
-  amount: z.number(),
-  baseUnit: z.string(),
-  producer: z.string().nullable(),
-  isVerified: z.boolean(),
-  nutrients: NutrientsSchema,
-  countries: z.array(z.string()),
+  serving_quantity: z.number().optional(),
+  amount: z.number().optional(),
+  base_unit: z.string(),
+  producer: z.string().nullable().optional(),
+  is_verified: z.boolean(),
+  nutrients: z.record(z.number()).optional(),
+  countries: z.array(z.string()).optional(),
   language: z.string(),
 });
-export type FoodSearchResultDto = z.infer<typeof FoodSearchResultSchema>;
+type ApiFoodResult = z.infer<typeof ApiFoodResultSchema>;
 
-function transformApiFoodResult(apiResult: unknown): unknown {
-  const nutrientsMap: Record<string, keyof z.infer<typeof NutrientsSchema>> = {
+function transformApiFoodResult(
+  apiResult: unknown,
+): FoodSearchResultDto | null {
+  const parsed = ApiFoodResultSchema.safeParse(apiResult);
+  if (!parsed.success) {
+    console.error("Failed to parse API food result:", parsed.error);
+    return null;
+  }
+  const api: ApiFoodResult = parsed.data;
+
+  const nutrientsMap: Record<string, keyof Nutrients> = {
     "energy.energy": "energy",
     "nutrient.carb": "carb",
     "nutrient.fat": "fat",
     "nutrient.protein": "protein",
   };
 
-  const nutrients: Record<string, number> = {};
+  const nutrients: Nutrients = {
+    energy: 0,
+    carb: 0,
+    fat: 0,
+    protein: 0,
+  };
   for (const [apiKey, schemaKey] of Object.entries(nutrientsMap)) {
-    nutrients[schemaKey] = apiResult.nutrients?.[apiKey] ?? 0;
+    nutrients[schemaKey] = api.nutrients?.[apiKey] ?? 0;
   }
 
   return {
-    score: apiResult.score ?? 0,
-    name: apiResult.name,
-    productId: apiResult.product_id,
-    serving: apiResult.serving,
-    servingQuantity: apiResult.serving_quantity ?? 1,
-    amount: apiResult.amount ?? 1,
-    baseUnit: apiResult.base_unit,
-    producer: apiResult.producer,
-    isVerified: apiResult.is_verified,
+    score: api.score ?? 0,
+    name: api.name,
+    productId: api.product_id,
+    serving: api.serving,
+    servingQuantity: api.serving_quantity ?? 1,
+    amount: api.amount ?? 1,
+    baseUnit: api.base_unit,
+    producer: api.producer ?? null,
+    isVerified: api.is_verified,
     nutrients,
-    countries: apiResult.countries ?? [],
-    language: apiResult.language,
+    countries: api.countries ?? [],
+    language: api.language,
   };
 }
 
@@ -56,17 +85,6 @@ export function mapApiFoodsSearchResult(
   apiSearchResults: unknown[],
 ): FoodSearchResultDto[] {
   return apiSearchResults
-    .map((searchResult: unknown) => {
-      const mapped = transformApiFoodResult(searchResult);
-      const result = FoodSearchResultSchema.safeParse(mapped);
-      if (!result.success) {
-        console.error("Failed to parse search result:", result.error);
-        return null;
-      }
-      return result.data;
-    })
-    .filter(
-      (item: FoodSearchResultDto | null): item is FoodSearchResultDto =>
-        item !== null,
-    );
+    .map(transformApiFoodResult)
+    .filter((item): item is FoodSearchResultDto => item !== null);
 }

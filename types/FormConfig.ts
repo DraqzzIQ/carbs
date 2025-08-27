@@ -1,5 +1,6 @@
 import { FieldType, FormCategory } from "~/components/index/meal/add/form";
 import { ServingType } from "~/types/ServingType";
+import { StyleProp, ViewStyle } from "react-native";
 
 export const CustomFoodFormConfig = [
   {
@@ -32,7 +33,7 @@ export const CustomFoodFormConfig = [
           type: FieldType.Number,
           allowDecimal: true,
           defaultValue: "100",
-          style: { flex: 0, width: "67%" },
+          style: { flex: 0, width: "67%" } as StyleProp<ViewStyle>,
         },
         {
           key: "unit",
@@ -45,7 +46,7 @@ export const CustomFoodFormConfig = [
       ],
     ],
     defaultVisible: 1,
-    style: { marginBottom: 4 },
+    style: { marginBottom: 4 } as StyleProp<ViewStyle>,
   },
   {
     category: "Serving size",
@@ -57,7 +58,7 @@ export const CustomFoodFormConfig = [
           required: false,
           type: FieldType.Number,
           allowDecimal: true,
-          style: { flex: 0, width: "60%" },
+          style: { flex: 0, width: "60%" } as StyleProp<ViewStyle>,
         },
         {
           key: "serving",
@@ -69,7 +70,7 @@ export const CustomFoodFormConfig = [
       ],
     ],
     defaultVisible: 1,
-    style: { marginBottom: 4 },
+    style: { marginBottom: 4 } as StyleProp<ViewStyle>,
   },
   {
     category: "Basic nutrition",
@@ -478,7 +479,7 @@ export const CustomFoodFormConfig = [
 export const QuickEntryFormConfig = [
   {
     category: "Quick Entry",
-    style: { paddingTop: 22 },
+    style: { paddingTop: 22 } as StyleProp<ViewStyle>,
     titleStyle: 2,
     fields: [
       {
@@ -527,7 +528,7 @@ export const QuickEntryFormConfig = [
 export const RecipeFormConfig = [
   {
     category: "Recipe",
-    style: { paddingTop: 22 },
+    style: { paddingTop: 22 } as StyleProp<ViewStyle>,
     titleStyle: 2,
     fields: [
       {
@@ -558,12 +559,12 @@ export function enrichFormConfigWithDefaultValues(
       if (Array.isArray(item)) {
         return item.map((field) => ({
           ...field,
-          defaultValue: defaultValues[field.key] || field.defaultValue || "",
+          defaultValue: (defaultValues[field.key] || field.defaultValue) ?? "",
         }));
       } else {
         return {
           ...item,
-          defaultValue: defaultValues[item.key] || item.defaultValue || "",
+          defaultValue: (defaultValues[item.key] || item.defaultValue) ?? "",
         };
       }
     }),

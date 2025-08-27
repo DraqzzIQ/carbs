@@ -165,7 +165,9 @@ function getMealData(
   meals: MealDetailsQueryType,
   mealType: MealType,
 ): { calories: number; carbs: number; protein: number; fat: number } {
-  const filteredMeals = meals.filter((meal) => meal.mealType === mealType);
+  const filteredMeals = meals.filter(
+    (meal) => meal.mealType === mealType.toString(),
+  );
   const result = { calories: 0, carbs: 0, protein: 0, fat: 0 };
   filteredMeals.forEach((meal) => {
     const quantity = meal.servingQuantity * meal.amount;

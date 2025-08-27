@@ -76,7 +76,9 @@ export const RecipeFoodComponents = ({
                       kcal
                     </Text>
                     <TouchableOpacity
-                      onPress={async () => deleteRecipeEntry(entry.id)}
+                      onPress={() => {
+                        void deleteRecipeEntry(entry.id);
+                      }}
                     >
                       <XCircleIcon className="h-6 w-6 text-primary" />
                     </TouchableOpacity>

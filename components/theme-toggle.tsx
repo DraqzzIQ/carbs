@@ -11,7 +11,9 @@ export function ThemeToggle() {
   function toggleColorScheme() {
     const newTheme = isDarkColorScheme ? "light" : "dark";
     setColorScheme(newTheme);
-    setAndroidNavigationBar(newTheme);
+    setAndroidNavigationBar(newTheme).catch((e) => {
+      console.log("Failed to set navigation bar color", e);
+    });
   }
 
   return (

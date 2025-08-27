@@ -66,7 +66,7 @@ export default function ProductDetailScreen() {
   const [amount, setAmount] = useState<number>(
     params.amount ? parseFloat(params.amount) : 1,
   );
-  const [serving, setServing] = useState<string>(params.serving || "Gram");
+  const [serving, setServing] = useState<string>(params.serving ?? "Gram");
   const [mealType, setMealType] = useState<MealType>(
     params.mealName as MealType,
   );
@@ -75,12 +75,12 @@ export default function ProductDetailScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      (async () => handleEffect())();
+      void handleEffect();
     }, []),
   );
 
   useEffect(() => {
-    (async () => handleEffect())();
+    void handleEffect();
   }, [edit, params.productId]);
 
   // i hate this
@@ -194,6 +194,55 @@ export default function ProductDetailScreen() {
     return undefined;
   }, [edit, meal, params.serving, params.amount, recipeEntry]);
 
+  const handleSubmit = useCallback(async () => {
+    if (food === undefined) {
+      return;
+    }
+    setIsLoading(true);
+    if (edit) {
+      await (params.recipeEntryId
+        ? editRecipeEntry(
+            Number(params.recipeEntryId),
+            servingQuantity,
+            amount,
+            serving,
+          )
+        : updateMeal(meal!.id, servingQuantity, amount, serving, mealType));
+    } else {
+      await (isRecipeFood
+        ? addRecipeEntry(
+            params.recipeFoodId!,
+            food.id,
+            servingQuantity,
+            amount,
+            serving,
+            food,
+          )
+        : addFoodToMeal(
+            mealType,
+            food.id,
+            servingQuantity,
+            amount,
+            serving,
+            params.dateId,
+            food,
+          ));
+    }
+    router.dismiss();
+  }, [
+    edit,
+    params.recipeEntryId,
+    servingQuantity,
+    amount,
+    serving,
+    meal,
+    mealType,
+    isRecipeFood,
+    params.recipeFoodId,
+    food,
+    params.dateId,
+  ]);
+
   return (
     <KeyboardShift>
       <Stack.Screen
@@ -285,44 +334,8 @@ export default function ProductDetailScreen() {
             baseUnit={food.baseUnit}
           />
           <FloatingActionButton
-            onPress={async () => {
-              setIsLoading(true);
-              if (edit) {
-                await (params.recipeEntryId
-                  ? editRecipeEntry(
-                      Number(params.recipeEntryId),
-                      servingQuantity,
-                      amount,
-                      serving,
-                    )
-                  : updateMeal(
-                      meal!.id,
-                      servingQuantity,
-                      amount,
-                      serving,
-                      mealType,
-                    ));
-              } else {
-                await (isRecipeFood
-                  ? addRecipeEntry(
-                      params.recipeFoodId!,
-                      food.id,
-                      servingQuantity,
-                      amount,
-                      serving,
-                      food,
-                    )
-                  : addFoodToMeal(
-                      mealType,
-                      food.id,
-                      servingQuantity,
-                      amount,
-                      serving,
-                      params.dateId,
-                      food,
-                    ));
-              }
-              router.dismiss();
+            onPress={() => {
+              void handleSubmit();
             }}
             bottom="bottom-20"
             loading={isLoading}

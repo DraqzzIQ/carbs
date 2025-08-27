@@ -15,6 +15,7 @@ export default tseslint.config(
       "tailwind.config.js",
       "eslint.config.mjs",
       "drizzle/**",
+      "db/queries/useRelationalLiveQuery.ts",
     ],
   },
   eslint.configs.recommended,

@@ -19,7 +19,7 @@ export const NumericInput = ({
   selectTextOnFocus,
   ...rest
 }: NumericInputProps) => {
-  const [text, setText] = useState(defaultValue || "");
+  const [text, setText] = useState(defaultValue ?? "");
   const [selection, setSelection] = useState<{ start: number; end: number }>({
     start: 0,
     end: text.length,
@@ -27,7 +27,7 @@ export const NumericInput = ({
   const [focused, setFocused] = useState(false);
 
   useEffect(() => {
-    setText(defaultValue || "");
+    setText(defaultValue ?? "");
   }, [defaultValue]);
 
   const onTextChange = (text: string) => {
@@ -39,7 +39,7 @@ export const NumericInput = ({
     text = text.replace(pattern, "");
 
     if (allowNegative && text.includes("-")) {
-      text = (text[0] === "-" ? "-" : "") + text.replace(/-/g, "");
+      text = (text.startsWith("-") ? "-" : "") + text.replace(/-/g, "");
     }
 
     if (allowDecimal) {

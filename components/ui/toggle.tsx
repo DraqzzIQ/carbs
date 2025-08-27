@@ -55,7 +55,6 @@ function Toggle({
   size,
   ...props
 }: TogglePrimitive.RootProps &
-  VariantProps<typeof toggleVariants> &
   VariantProps<typeof toggleVariants> & {
     ref?: React.RefObject<TogglePrimitive.RootRef>;
   }) {

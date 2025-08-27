@@ -53,6 +53,7 @@ export default function FoodDbCountryScreen() {
             Select database country
           </CardTitle>
           <Dropdown
+            // @ts-expect-error dynamically generated props via cssInterop
             className="rounded-xl border-2 border-border p-2"
             containerClassName="border-2 border-border bg-secondary rounded-xl"
             placeholderClassName="text-muted-foreground"

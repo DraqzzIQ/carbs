@@ -31,10 +31,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
-import {
-  BarcodeCreatorView,
-  BarcodeFormat,
-} from "react-native-barcode-creator";
+import { BarcodeCreatorView } from "react-native-barcode-creator";
 
 interface HeaderOptionProps {
   foodId: string;
@@ -64,7 +61,7 @@ export const HeaderOptions = ({
 
   useEffect(() => {
     if (!foodId) return;
-    (async () => {
+    void (async () => {
       setIsFavorite(await getIsFavorite(foodId));
     })();
   }, [foodId]);
@@ -80,10 +77,25 @@ export const HeaderOptions = ({
 
   if (isDeleted) return null;
 
+  const firstEan = eans.at(0);
+  const isValidEan =
+    typeof firstEan === "string" && BARCODE_LENGTHS.includes(firstEan.length);
+  const barcodeFormat: string | null = isValidEan
+    ? firstEan.length === 8
+      ? "EAN8"
+      : firstEan.length === 12
+        ? "UPCA"
+        : "EAN13"
+    : null;
+
   return (
     <>
       <View className="flex-row gap-5">
-        <TouchableOpacity onPress={onPressFavorite}>
+        <TouchableOpacity
+          onPress={() => {
+            void onPressFavorite();
+          }}
+        >
           <HeartIcon
             className={`h-8 w-8 text-primary ${isFavorite ? "fill-primary" : ""}`}
           />
@@ -145,8 +157,8 @@ export const HeaderOptions = ({
               <Text>Cancel</Text>
             </AlertDialogCancel>
             <AlertDialogAction
-              onPress={async () => {
-                await deleteCustomFood(foodId);
+              onPress={() => {
+                void deleteCustomFood(foodId);
                 router.dismiss();
               }}
             >
@@ -160,21 +172,14 @@ export const HeaderOptions = ({
           <DialogHeader>
             <DialogTitle className="mb-2 text-center">Barcode</DialogTitle>
             <DialogDescription>
-              {eans.length === 0 ||
-              !BARCODE_LENGTHS.includes(eans[0].length) ? (
+              {!isValidEan || !barcodeFormat || !firstEan ? (
                 <Text className="text-center text-muted-foreground">
                   No barcode available for this product.
                 </Text>
               ) : (
                 <BarcodeCreatorView
-                  format={
-                    eans[0].length === 8
-                      ? BarcodeFormat.EAN8
-                      : eans[0].length === 12
-                        ? BarcodeFormat.UPCA
-                        : BarcodeFormat.EAN13
-                  }
-                  value={eans[0]}
+                  format={barcodeFormat}
+                  value={firstEan}
                   style={{ width: 280, height: 80 }}
                   background={"#ffffff"}
                   foregroundColor={"#000000"}

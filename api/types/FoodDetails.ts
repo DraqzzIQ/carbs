@@ -91,6 +91,7 @@ export function mapApiFoodDetails(
   productId: string,
 ): FoodDetailsDto | null {
   const result = FoodDetailsSchema.safeParse({
+    // @ts-expect-error let zod handle validation
     ...apiFood,
     id: productId,
     is_custom: false,

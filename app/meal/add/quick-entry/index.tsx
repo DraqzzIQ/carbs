@@ -30,7 +30,7 @@ export default function QuickEntryScreen() {
     useState<FormCategory[]>(QuickEntryFormConfig);
 
   useEffect(() => {
-    (async () => {
+    void (async () => {
       if (!edit) {
         return;
       }
