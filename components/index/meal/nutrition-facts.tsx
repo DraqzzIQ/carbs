@@ -167,10 +167,12 @@ interface NutritionHeaderItem {
   key: string;
   title: string;
 }
+
 interface NutritionValueItem {
   type: "item";
   key: NutrientKey;
 }
+
 type NutritionDataItem = NutritionHeaderItem | NutritionValueItem;
 
 interface NutritionFactsProps {
@@ -192,16 +194,23 @@ export const NutritionFacts = ({ foods, className }: NutritionFactsProps) => {
 
   const totalNutrition = useMemo<NutrientTotals>(() => {
     const totals = buildEmptyTotals();
-    for (const food of foods) {
-      const quantity = food.servingQuantity * food.amount;
-      for (const key of NUTRIENT_KEYS) {
-        const sourceKey = SOURCE_KEY_ALIAS[key] ?? key;
+    const quantities = foods.map((f) => f.servingQuantity * f.amount);
+
+    for (const key of NUTRIENT_KEYS) {
+      const sourceKey = SOURCE_KEY_ALIAS[key] ?? key;
+      const unit = totals[key].unit;
+      const multiplier = UNIT_MULTIPLIER[unit] || 1;
+
+      let sum = 0;
+      for (let i = 0; i < foods.length; i++) {
+        const food = foods[i];
         // @ts-expect-error please stop complaining
-        const raw = food[sourceKey] as number;
+        const raw = food[sourceKey] as number | undefined;
         if (raw == null) continue;
-        const multiplier = UNIT_MULTIPLIER[totals[key].unit] || 1;
-        totals[key].value += raw * quantity * multiplier;
+        sum += raw * quantities[i];
       }
+
+      totals[key].value = sum * multiplier;
     }
     return totals;
   }, [foods]);

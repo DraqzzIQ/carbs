@@ -17,6 +17,10 @@ export default tseslint.config(
       "drizzle/**",
       "db/queries/useRelationalLiveQuery.ts",
     ],
+    plugins: ["react-compiler"],
+    rules: {
+      "react-compiler/react-compiler": "error",
+    },
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
