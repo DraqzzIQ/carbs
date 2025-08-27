@@ -13,7 +13,7 @@ import {
   streaks,
 } from "~/db/schema";
 import { and, asc, eq, isNull, like, ne } from "drizzle-orm";
-import { formatNumber, isBaseUnit } from "~/utils/formatting";
+import { isBaseUnit, roundToInt } from "~/utils/formatting";
 import { inArray } from "drizzle-orm/sql/expressions/conditions";
 import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
 import { ServingType } from "~/types/ServingType";
@@ -211,6 +211,26 @@ export async function addFavorite(
   }
 }
 
+export async function updateFavorite(
+  foodId: string,
+  servingQuantity: number,
+  amount: number,
+  serving: string,
+) {
+  try {
+    await db
+      .update(favorites)
+      .set({
+        amount: amount,
+        servingQuantity: servingQuantity,
+        serving: serving,
+      })
+      .where(eq(favorites.foodId, foodId));
+  } catch (error) {
+    console.error(`Error updating favorite for food ID ${foodId}:`, error);
+  }
+}
+
 export async function addCustomFood(food: Food) {
   try {
     await db.insert(foods).values(food);
@@ -224,6 +244,21 @@ export async function updateCustomFood(food: Food) {
     await db.update(foods).set(food).where(eq(foods.id, food.id));
   } catch (error) {
     console.error(`Error updating custom food with ID ${food.id}:`, error);
+  }
+}
+
+export async function updateRecipeProps(
+  foodId: string,
+  name: string,
+  recipeServingQuantity: number,
+) {
+  try {
+    await db
+      .update(foods)
+      .set({ name, recipeServingQuantity })
+      .where(eq(foods.id, foodId));
+  } catch (error) {
+    console.error(`Error updating recipe props for food ID ${foodId}:`, error);
   }
 }
 
@@ -536,10 +571,8 @@ export async function updateRecipeServings(
           totalWeight > 0
             ? [
                 {
-                  amount: Number(
-                    formatNumber(
-                      totalWeight / (recipeFood?.recipeServingQuantity ?? 1),
-                    ),
+                  amount: roundToInt(
+                    totalWeight / (recipeFood?.recipeServingQuantity ?? 1),
                   ),
                   serving: ServingType.Serving,
                 },

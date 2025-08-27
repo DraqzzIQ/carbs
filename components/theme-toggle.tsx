@@ -12,7 +12,7 @@ export function ThemeToggle() {
     const newTheme = isDarkColorScheme ? "light" : "dark";
     setColorScheme(newTheme);
     setAndroidNavigationBar(newTheme).catch((e) => {
-      console.log("Failed to set navigation bar color", e);
+      console.error("Failed to set navigation bar color", e);
     });
   }
 

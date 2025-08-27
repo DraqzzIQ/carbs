@@ -30,7 +30,7 @@ import { BarcodeScanner } from "~/components/index/meal/add/barcode-scanner";
 import { useSettings } from "~/contexts/AppSettingsContext";
 import { getIsLocalSearchType, SearchFilterType } from "~/types/SearchFilter";
 
-export default function AddToMealScreen() {
+export default function AddScreen() {
   const params = useLocalSearchParams();
   const mealName = params.mealName as string;
   const dateId = params.dateId as string;
@@ -156,8 +156,8 @@ export default function AddToMealScreen() {
           query,
           scanned,
           !isLocalSearchType
-            ? undefined
-            : effectiveSearchFilter == SearchFilterType.RECIPES,
+            ? !recipeFoodId
+            : effectiveSearchFilter === SearchFilterType.RECIPES,
         );
         const [remote, local] = await Promise.all([
           remotePromise,
@@ -207,7 +207,7 @@ export default function AddToMealScreen() {
         }
       }
     },
-    [dateId, mealName],
+    [dateId, mealName, recipeFoodId],
   );
 
   // Debounced search effect (keyboard input)

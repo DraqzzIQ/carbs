@@ -31,7 +31,10 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
-import { BarcodeCreatorView } from "react-native-barcode-creator";
+import {
+  BarcodeCreatorView,
+  BarcodeFormat,
+} from "react-native-barcode-creator";
 
 interface HeaderOptionProps {
   foodId: string;
@@ -80,12 +83,12 @@ export const HeaderOptions = ({
   const firstEan = eans.at(0);
   const isValidEan =
     typeof firstEan === "string" && BARCODE_LENGTHS.includes(firstEan.length);
-  const barcodeFormat: string | null = isValidEan
+  const barcodeFormat: unknown = isValidEan
     ? firstEan.length === 8
-      ? "EAN8"
+      ? BarcodeFormat.EAN8
       : firstEan.length === 12
-        ? "UPCA"
-        : "EAN13"
+        ? BarcodeFormat.UPCA
+        : BarcodeFormat.EAN13
     : null;
 
   return (
@@ -128,7 +131,7 @@ export const HeaderOptions = ({
                 </Text>
               </View>
             </DropdownMenuItem>
-            {!isRecipe && (
+            {!isCustom && (
               <DropdownMenuItem onPress={() => setBarcodeOpen(true)}>
                 <View className="flex-row gap-2">
                   <BarcodeIcon className="h-6 w-6 text-primary" />
@@ -178,6 +181,7 @@ export const HeaderOptions = ({
                 </Text>
               ) : (
                 <BarcodeCreatorView
+                  // @ts-expect-error react-native-barcode-creator missing types
                   format={barcodeFormat}
                   value={firstEan}
                   style={{ width: 280, height: 80 }}

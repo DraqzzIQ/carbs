@@ -16,10 +16,11 @@ import {
   addCustomFood,
   getCustomFood,
   getIsFavorite,
-  removeFavorite,
   updateCustomFood,
+  updateFavorite,
 } from "~/utils/querying";
 import { Card, CardTitle } from "~/components/ui/card";
+import { getDefaultServing } from "~/utils/serving";
 
 export default function CustomFoodScreen() {
   const params = useLocalSearchParams();
@@ -43,7 +44,7 @@ export default function CustomFoodScreen() {
             );
             setFormConfig(
               enrichFormConfigWithDefaultValues(
-                formConfig,
+                CustomFoodFormConfig,
                 foodToFormValues(fetchedFood),
               ),
             );
@@ -53,7 +54,7 @@ export default function CustomFoodScreen() {
         }
       })();
     }
-  }, [edit, formConfig]);
+  }, [edit]);
 
   const onSubmit = useCallback(
     async (values: Record<string, string>) => {
@@ -73,11 +74,23 @@ export default function CustomFoodScreen() {
         }
       }
       if (await getIsFavorite(food.id)) {
-        await removeFavorite(food.id);
+        const serving =
+          food.servings.length > 0
+            ? food.servings[0]
+            : {
+                amount: 1,
+                serving: getDefaultServing(food.baseUnit).toLowerCase(),
+              };
+        await updateFavorite(
+          food.id,
+          serving.amount === 1 ? 100 : 1,
+          serving.amount,
+          serving.serving,
+        );
       }
       router.dismiss();
     },
-    [barcode, edit, foodId],
+    [edit, foodId, barcode],
   );
 
   return (

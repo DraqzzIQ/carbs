@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   addCustomFood,
   getCustomFood,
-  updateCustomFood,
+  updateRecipeProps,
   updateRecipeServings,
 } from "~/utils/querying";
 import { Food } from "~/db/schema";
@@ -63,28 +63,6 @@ export default function RecipeScreen() {
     }
   }, [food]);
 
-  const onSubmit = useCallback(
-    async (values: Record<string, string>) => {
-      if (!edit) {
-        const newFood = createRecipeFood(
-          values.name,
-          Number(values.servingQuantity) || 1,
-        );
-        await addCustomFood(newFood);
-        setFoodId(newFood.id);
-        setFood(newFood);
-        setEdit(true);
-      } else {
-        food!.name = values.name;
-        food!.recipeServingQuantity = Number(values.servingQuantity) || 1;
-        await updateCustomFood(food!);
-        await updateRecipeServings(food!.id, totalWeight);
-        router.dismiss();
-      }
-    },
-    [edit, food],
-  );
-
   const onAddIngredient = useCallback(() => {
     router.navigate({
       pathname: "/meal/add",
@@ -128,6 +106,30 @@ export default function RecipeScreen() {
       return acc;
     }, initial);
   }, [recipeEntries]);
+
+  const onSubmit = useCallback(
+    async (values: Record<string, string>) => {
+      if (!edit) {
+        const newFood = createRecipeFood(
+          values.name,
+          Number(values.servingQuantity) || 1,
+        );
+        await addCustomFood(newFood);
+        setFoodId(newFood.id);
+        setFood(newFood);
+        setEdit(true);
+      } else {
+        await updateRecipeProps(
+          food!.id,
+          values.name,
+          Number(values.servingQuantity) || 1,
+        );
+        await updateRecipeServings(food!.id, totalWeight);
+        router.dismiss();
+      }
+    },
+    [edit, food, totalWeight],
+  );
 
   return (
     <KeyboardShift>
