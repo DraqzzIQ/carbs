@@ -24,7 +24,7 @@ import { getServingUnitLabel } from "~/utils/serving";
 import { FoodTabs } from "~/components/index/meal/add/food-tabs";
 import { MealType } from "~/types/MealType";
 import { FlashList } from "@shopify/flash-list";
-import { getIsLocalSearchType, SearchFilterType } from "~/types/SearchFilter";
+import { SearchFilterType } from "~/types/SearchFilter";
 import { SearchFilterToggle } from "~/components/index/meal/add/search-filter-toggle";
 
 interface SearchProductsProps {
@@ -73,18 +73,6 @@ export const SearchProducts = ({
     },
     [searchFilter, onSetSearchFilter],
   );
-
-  const filteredProducts = getIsLocalSearchType(searchFilter)
-    ? products
-    : products.filter((product) => {
-        if (searchFilter === SearchFilterType.FAVORITES) {
-          return favorites.has(product.productId);
-        }
-        if (searchFilter === SearchFilterType.RECENTS) {
-          return recents.has(product.productId);
-        }
-        return true;
-      });
 
   return displayFoodTabs ? (
     <FoodTabs
@@ -149,7 +137,7 @@ export const SearchProducts = ({
             Try a different search
           </Text>
         </View>
-      ) : filteredProducts.length === 0 ? (
+      ) : products.length === 0 ? (
         <View
           className="mt-10 flex-1 items-center"
           onTouchStart={() => Keyboard.dismiss()}
@@ -166,7 +154,7 @@ export const SearchProducts = ({
           estimatedItemSize={120}
           className="mt-2"
           extraData={{ recents, favorites }}
-          data={filteredProducts}
+          data={products}
           keyExtractor={(item) => item.productId}
           showsVerticalScrollIndicator={false}
           onScrollBeginDrag={() => Keyboard.dismiss()}
@@ -217,6 +205,13 @@ function SearchProduct({
     setLoading(true);
     await onAddProduct(product);
     setLoading(false);
+  }
+
+  // search api returns quantity and amount as 100 in some cases,
+  // probably for '100 (unit)' type of servings
+  if (product.servingQuantity === 100 && product.amount === 100) {
+    product.amount = 1;
+    product.servingQuantity = 100;
   }
 
   return (

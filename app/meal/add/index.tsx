@@ -243,14 +243,6 @@ export default function AddScreen() {
   };
 
   async function onAddProduct(searchResult: FoodSearchResultDto) {
-    // search api returns quantity and amount as 100 in some cases,
-    // probably for '100 (unit)' type of servings
-    let servingQuantity = searchResult.servingQuantity;
-    let amount = searchResult.amount;
-    if (searchResult.servingQuantity === 100 && searchResult.amount === 100) {
-      servingQuantity = 100;
-      amount = 1;
-    }
     const food =
       searchResult.score === -1
         ? await getCustomFood(searchResult.productId)
@@ -260,16 +252,16 @@ export default function AddScreen() {
       ? addRecipeEntry(
           recipeFoodId,
           searchResult.productId,
-          servingQuantity,
-          amount,
+          searchResult.servingQuantity,
+          searchResult.amount,
           searchResult.serving,
           food,
         )
       : addFoodToMeal(
           mealName as MealType,
           searchResult.productId,
-          servingQuantity,
-          amount,
+          searchResult.servingQuantity,
+          searchResult.amount,
           searchResult.serving,
           dateId,
           food,
