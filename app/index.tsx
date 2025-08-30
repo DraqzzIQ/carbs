@@ -1,12 +1,12 @@
 import { AppState, View, ScrollView } from "react-native";
 import { useSettings } from "~/contexts/AppSettingsContext";
-import { Header } from "~/components/index/header";
+import { HeaderRight } from "~/components/index/headerRight";
 import { Summary } from "~/components/index/summary";
 import { Meals } from "~/components/index/meals";
 import { useRelationalLiveQuery } from "~/db/queries/useRelationalLiveQuery";
 import { getDateIdFromDate, offsetDateIdByDays } from "~/utils/formatting";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import { getDateSlug } from "~/utils/formatting";
 import { runOnJS } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -17,6 +17,7 @@ import { db } from "~/db/client";
 import { fluidIntake } from "~/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { WaterTracker } from "~/components/index/water-tracker";
+import { HeaderLeft } from "~/components/index/header-left";
 
 export default function Screen() {
   const {
@@ -84,11 +85,11 @@ export default function Screen() {
   };
 
   const panGesture = Gesture.Pan()
-    .activeOffsetX([-50, 50])
+    .activeOffsetX([-40, 40])
     .onEnd((event) => {
-      if (event.translationX < -50) {
+      if (event.translationX < -40) {
         runOnJS(onSwipe)("left");
-      } else if (event.translationX > 50) {
+      } else if (event.translationX > 40) {
         runOnJS(onSwipe)("right");
       }
     });
@@ -119,45 +120,54 @@ export default function Screen() {
   //endregion
 
   return (
-    <ScrollView className="bg-secondary" showsVerticalScrollIndicator={false}>
-      <GestureDetector gesture={panGesture}>
-        <View className="h-full w-full items-center">
-          <View className="w-full max-w-xl flex-1 items-center p-4 text-primary">
-            <Header dateSlug={dateString} dateId={currentDayId} />
-            <View className="w-full">
-              <Summary
-                currentDayMeals={currentDayMeals}
-                maxCalories={maxCalories}
-                maxCarbs={maxCarbs}
-                maxProtein={maxProtein}
-                maxFat={maxFat}
-                fluidIntake={totalFluidIntake}
-                maxFluidIntake={maxFluidIntake}
-                waterTrackerEnabled={waterTrackerEnabled}
-              />
-              <Meals
-                dateId={currentDayId}
-                currentDayMeals={currentDayMeals}
-                maxBreakfast={maxBreakfast}
-                maxLunch={maxLunch}
-                maxDinner={maxDinner}
-                maxSnacks={maxSnacks}
-                displaySnacks={displaySnacks}
-              />
-              {waterTrackerEnabled && (
-                <WaterTracker
-                  dateId={currentDayId}
-                  fluidIntake={fluidIntakeResult}
+    <>
+      <Stack.Screen
+        options={{
+          headerRight: () => <HeaderRight />,
+          headerLeft: () => (
+            <HeaderLeft dateSlug={dateString} dateId={currentDayId} />
+          ),
+        }}
+      />
+      <ScrollView className="bg-secondary" showsVerticalScrollIndicator={false}>
+        <GestureDetector gesture={panGesture}>
+          <View className="h-full w-full items-center">
+            <View className="w-full max-w-xl flex-1 items-center p-4 text-primary">
+              <View className="w-full">
+                <Summary
+                  currentDayMeals={currentDayMeals}
+                  maxCalories={maxCalories}
+                  maxCarbs={maxCarbs}
+                  maxProtein={maxProtein}
+                  maxFat={maxFat}
+                  fluidIntake={totalFluidIntake}
+                  maxFluidIntake={maxFluidIntake}
+                  waterTrackerEnabled={waterTrackerEnabled}
                 />
-              )}
-              <NutritionFacts
-                foods={mapMealsToNutritionFacts(currentDayMeals)}
-                className="mt-8"
-              />
+                <Meals
+                  dateId={currentDayId}
+                  currentDayMeals={currentDayMeals}
+                  maxBreakfast={maxBreakfast}
+                  maxLunch={maxLunch}
+                  maxDinner={maxDinner}
+                  maxSnacks={maxSnacks}
+                  displaySnacks={displaySnacks}
+                />
+                {waterTrackerEnabled && (
+                  <WaterTracker
+                    dateId={currentDayId}
+                    fluidIntake={fluidIntakeResult}
+                  />
+                )}
+                <NutritionFacts
+                  foods={mapMealsToNutritionFacts(currentDayMeals)}
+                  className="mt-8"
+                />
+              </View>
             </View>
           </View>
-        </View>
-      </GestureDetector>
-    </ScrollView>
+        </GestureDetector>
+      </ScrollView>
+    </>
   );
 }

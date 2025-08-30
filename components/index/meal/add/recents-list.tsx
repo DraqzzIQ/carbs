@@ -149,14 +149,18 @@ const Recent = ({
     setIsLoading(false);
   }, [mealType, recent, dateId, recipeFoodId]);
 
+  let serving = recent.serving;
+  let servingQuantity = recent.servingQuantity;
+  let amount = recent.amount;
+
   if (!recent.servingQuantity) {
     const servingValues = getDefaultValuesForServing(
       recent.food.servings,
       recent.food.baseUnit,
     );
-    recent.serving = servingValues.serving;
-    recent.servingQuantity = servingValues.servingQuantity;
-    recent.amount = servingValues.amount;
+    serving = servingValues.serving;
+    servingQuantity = servingValues.servingQuantity;
+    amount = servingValues.amount;
   }
 
   return (
@@ -168,9 +172,9 @@ const Recent = ({
             productId: recent.foodId,
             dateId: dateId,
             mealName: mealType,
-            serving: recent.serving,
-            amount: recent.amount,
-            servingQuantity: recent.servingQuantity,
+            serving: serving,
+            amount: amount,
+            servingQuantity: servingQuantity,
             custom: recent.food.isCustom ? "true" : "false",
             recipeFoodId: recipeFoodId ?? undefined,
           },

@@ -11,9 +11,9 @@
     "web": "expo start -c --web",
     "clean": "rm -rf .expo node_modules",
     "postinstall": "npx tailwindcss -i ./global.css -o ./node_modules/.cache/nativewind/global.css",
-    "eslint": "eslint .",
+    "eslint": "eslint . --cache",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsgo --noEmit",
     "lint": "npm run eslint && npm run format && npm run typecheck"
   },
   "dependencies": {
@@ -36,6 +36,7 @@
     "@rn-primitives/tooltip": "~1.1.0",
     "@rn-primitives/types": "~1.1.0",
     "@shopify/flash-list": "1.7.6",
+    "@typescript/native-preview": "^7.0.0-dev.20250828.1",
     "babel-plugin-inline-import": "^3.0.0",
     "babel-plugin-react-compiler": "^19.0.0-beta-af1b7da-20250417",
     "class-variance-authority": "^0.7.1",
@@ -63,7 +64,8 @@
     "nativewind": "^4.1.23",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-native": "0.79.5",
+    "react-native": "0.79.6",
+    "react-native-android-widget": "^0.17.1",
     "react-native-barcode-creator": "github:DraqzzIQ/react-native-barcode-creator#master",
     "react-native-element-dropdown": "^2.12.4",
     "react-native-gesture-handler": "~2.24.0",
@@ -90,7 +92,6 @@
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
-    "typescript": "~5.8.3",
     "typescript-eslint": "^8.40.0"
   },
   "private": true

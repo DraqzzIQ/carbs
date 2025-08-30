@@ -64,12 +64,15 @@ export default function QuickEntryScreen() {
           console.error("Food is undefined, cannot update meal.");
           return;
         }
-        food.name = description;
-        food.energy = Number(energy);
-        food.carb = Number(carb);
-        food.protein = Number(protein);
-        food.fat = Number(fat);
-        await updateCustomFood(food);
+        const updatedFood: Food = {
+          ...food,
+          name: description,
+          energy: Number(energy),
+          carb: Number(carb),
+          protein: Number(protein),
+          fat: Number(fat),
+        };
+        await updateCustomFood(updatedFood);
         await updateMeal(mealId, 1, 1, "Gram", mealType);
       } else {
         const addedFood: Food = {

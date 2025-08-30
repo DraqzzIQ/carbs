@@ -69,6 +69,7 @@ export default function RootLayout() {
   }, [success, error]);
 
   if (__DEV__) {
+    // eslint-disable-next-line react-compiler/react-compiler
     useDrizzleStudio(expoDb);
   }
 
@@ -110,7 +111,11 @@ export default function RootLayout() {
               <Stack.Screen
                 name="index"
                 options={{
-                  headerShown: false,
+                  headerShown: true,
+                  title: "",
+                  headerStyle: {
+                    backgroundColor: isDarkColorScheme ? "black" : "white",
+                  },
                 }}
               />
               <Stack.Screen

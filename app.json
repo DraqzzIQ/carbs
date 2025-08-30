@@ -7,9 +7,7 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "icon": {
@@ -24,14 +22,13 @@
       }
     },
     "android": {
+      "edgeToEdgeEnabled": false,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive_icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.draqzziq.betteryazio",
-      "permissions": [
-        "android.permission.CAMERA"
-      ]
+      "permissions": ["android.permission.CAMERA"]
     },
     "plugins": [
       "expo-router",
@@ -62,7 +59,26 @@
       ],
       "expo-localization",
       "expo-sqlite",
-      "react-native-legal"
+      "react-native-legal",
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "Streak",
+              "label": "Streaks",
+              "minWidth": "50dp",
+              "minHeight": "50dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "description": "Track daily to keep your streak!",
+              "previewImage": "./assets/widget-preview/streak.png",
+              "updatePeriodMillis": 1800000,
+              "resizeMode": "horizontal|vertical"
+            }
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

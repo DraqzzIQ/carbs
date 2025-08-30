@@ -209,9 +209,9 @@ function SearchProduct({
 
   // search api returns quantity and amount as 100 in some cases,
   // probably for '100 (unit)' type of servings
+  let amount = product.amount;
   if (product.servingQuantity === 100 && product.amount === 100) {
-    product.amount = 1;
-    product.servingQuantity = 100;
+    amount = 1;
   }
 
   return (
@@ -264,20 +264,14 @@ function SearchProduct({
         <View className="flex-row items-center">
           <Text className="text-primary">
             {product.servingQuantity}{" "}
-            {getServingUnitLabel(
-              product.serving,
-              product.amount,
-              product.baseUnit,
-            )}
+            {getServingUnitLabel(product.serving, amount, product.baseUnit)}
           </Text>
           {isRecent && <HistoryIcon className="ml-1 h-4 w-4 text-primary" />}
           {isFavorite && <HeartIcon className="ml-1 h-4 w-4 text-primary" />}
           <View className="flex-grow" />
           <Text className="text-primary">
             {formatNumber(
-              product.nutrients.energy *
-                product.amount *
-                product.servingQuantity,
+              product.nutrients.energy * amount * product.servingQuantity,
             )}{" "}
             kcal
           </Text>
@@ -287,9 +281,7 @@ function SearchProduct({
           <View className="items-center">
             <Text className="text-primary">
               {formatNumber(
-                product.nutrients.carb *
-                  product.amount *
-                  product.servingQuantity,
+                product.nutrients.carb * amount * product.servingQuantity,
                 1,
               )}{" "}
               g
@@ -300,9 +292,7 @@ function SearchProduct({
           <View className="items-center">
             <Text className="text-primary">
               {formatNumber(
-                product.nutrients.protein *
-                  product.amount *
-                  product.servingQuantity,
+                product.nutrients.protein * amount * product.servingQuantity,
                 1,
               )}{" "}
               g
@@ -313,9 +303,7 @@ function SearchProduct({
           <View className="items-center">
             <Text className="text-primary">
               {formatNumber(
-                product.nutrients.fat *
-                  product.amount *
-                  product.servingQuantity,
+                product.nutrients.fat * amount * product.servingQuantity,
                 1,
               )}{" "}
               g

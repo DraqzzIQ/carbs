@@ -3,6 +3,7 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import prettier from "eslint-config-prettier";
+import reactCompiler from "eslint-plugin-react-compiler";
 
 export default tseslint.config(
   {
@@ -17,10 +18,6 @@ export default tseslint.config(
       "drizzle/**",
       "db/queries/useRelationalLiveQuery.ts",
     ],
-    plugins: ["react-compiler"],
-    rules: {
-      "react-compiler/react-compiler": "error",
-    },
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -34,5 +31,26 @@ export default tseslint.config(
       },
     },
   },
+  {
+    files: ["**/*.{jsx,tsx}"],
+    plugins: {
+      "react-compiler": reactCompiler,
+    },
+    rules: {
+      "react-compiler/react-compiler": "error",
+    },
+  },
+  {
+    files: [
+      "android/**",
+      "ios/**",
+      "drizzle/**",
+      "db/queries/useRelationalLiveQuery.ts",
+    ],
+    rules: {
+      "react-compiler/react-compiler": "off",
+    },
+  },
+
   prettier,
 );
