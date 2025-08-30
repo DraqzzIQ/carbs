@@ -12,7 +12,7 @@ import {
   recipeEntries,
   streaks,
 } from "~/db/schema";
-import { and, asc, eq, isNull, like, ne } from "drizzle-orm";
+import { and, asc, eq, isNull, like, ne, sql } from "drizzle-orm";
 import { isBaseUnit, roundToInt } from "~/utils/formatting";
 import { inArray } from "drizzle-orm/sql/expressions/conditions";
 import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
@@ -24,6 +24,33 @@ export async function removeFoodFromMeal(mealId: number) {
     await db.delete(meals).where(and(eq(meals.id, mealId)));
   } catch (error) {
     console.error(`Error removing meal with ID ${mealId}:`, error);
+  }
+}
+
+export async function getTotalCaloriesForDayAndMeal(
+  dateId: string,
+  meal?: MealType,
+): Promise<number> {
+  try {
+    const result = await db
+      .select({
+        totalCalories: sql<number>`SUM(${meals.amount} * ${meals.servingQuantity} * ${foods.energy})`,
+      })
+      .from(meals)
+      .innerJoin(foods, eq(meals.foodId, foods.id))
+      .where(
+        and(
+          eq(meals.dateId, dateId),
+          meal ? eq(meals.mealType, meal) : undefined,
+        ),
+      );
+    return result[0].totalCalories ?? 0;
+  } catch (error) {
+    console.error(
+      `Error calculating total calories for dateId ${dateId}:`,
+      error,
+    );
+    return 0;
   }
 }
 

@@ -4,7 +4,7 @@
     "slug": "better-yazio",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "myapp",
+    "scheme": "carbs",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "assetBundlePatterns": ["**/*"],
@@ -66,15 +66,34 @@
           "widgets": [
             {
               "name": "Streak",
-              "label": "Streaks",
-              "minWidth": "50dp",
-              "minHeight": "50dp",
+              "label": "Streak",
+              "minWidth": "40dp",
+              "minHeight": "40dp",
               "targetCellWidth": 2,
               "targetCellHeight": 2,
               "description": "Track daily to keep your streak!",
               "previewImage": "./assets/widget-preview/streak.png",
-              "updatePeriodMillis": 1800000,
               "resizeMode": "horizontal|vertical"
+            },
+            {
+              "name": "Calories",
+              "label": "Calories",
+              "minWidth": "250dp",
+              "minHeight": "40dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 1,
+              "description": "Overview of your calories",
+              "previewImage": "./assets/widget-preview/streak.png"
+            },
+            {
+              "name": "Meals",
+              "label": "Meals",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "description": "Quick access to your meals",
+              "previewImage": "./assets/widget-preview/streak.png"
             }
           ]
         }

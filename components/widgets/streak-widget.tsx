@@ -1,4 +1,7 @@
 "use no memo";
+import { WidgetColors } from "~/components/widgets/widget-colors";
+import { FlameSvg } from "~/components/widgets/svgs";
+
 import React from "react";
 import {
   FlexWidget,
@@ -11,13 +14,22 @@ interface StreakWidgetProps {
   streakCount: number;
   height: number;
   width: number;
+  darkMode: boolean;
 }
 
 export function StreakWidget({
   streakCount,
   height,
   width,
+  darkMode,
 }: StreakWidgetProps) {
+  const bgColor = darkMode
+    ? WidgetColors.DarkBgColor
+    : WidgetColors.LightBgColor;
+  const textColor = darkMode
+    ? WidgetColors.DarkFgColor
+    : WidgetColors.LightFgColor;
+
   const minSize = Math.min(width, height);
   let fontSize = Math.max(16, Math.round(minSize / 3.5));
   fontSize -= streakCount.toString().length * 2;
@@ -36,13 +48,12 @@ export function StreakWidget({
         style={{
           height: minSize,
           width: minSize,
-          backgroundColor: "#ffffff",
+          backgroundColor: bgColor,
           borderRadius: minSize / 2,
         }}
       >
         <SvgWidget
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
-          svg={require("../../assets/widgets/flame.svg")}
+          svg={FlameSvg(textColor)}
           style={{ height: "match_parent", width: "match_parent" }}
         />
         <FlexWidget
@@ -58,11 +69,11 @@ export function StreakWidget({
             style={{
               fontSize: fontSize,
               fontWeight: "bold",
-              color: "#000000",
+              color: textColor,
               height: "match_parent",
               width: "match_parent",
               textAlign: "center",
-              marginTop: minSize * 0.415,
+              marginTop: minSize * 0.42,
             }}
           />
         </FlexWidget>

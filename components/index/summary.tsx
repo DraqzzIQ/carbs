@@ -27,34 +27,17 @@ export const Summary = ({
   maxFluidIntake,
   waterTrackerEnabled,
 }: SummaryProps) => {
-  const calories = useMemo(() => {
-    return currentDayMeals.reduce((acc, meal) => {
-      const mealCalories =
-        meal.servingQuantity * meal.food.energy * meal.amount;
-      return acc + mealCalories;
-    }, 0);
-  }, [currentDayMeals]);
-
-  const fat = useMemo(() => {
-    return currentDayMeals.reduce((acc, meal) => {
-      const mealFat = meal.servingQuantity * meal.food.fat * meal.amount;
-      return acc + mealFat;
-    }, 0);
-  }, [currentDayMeals]);
-
-  const protein = useMemo(() => {
-    return currentDayMeals.reduce((acc, meal) => {
-      const mealProtein =
-        meal.servingQuantity * meal.food.protein * meal.amount;
-      return acc + mealProtein;
-    }, 0);
-  }, [currentDayMeals]);
-
-  const carbs = useMemo(() => {
-    return currentDayMeals.reduce((acc, meal) => {
-      const mealCarbs = meal.servingQuantity * meal.food.carb * meal.amount;
-      return acc + mealCarbs;
-    }, 0);
+  const { calories, fat, protein, carbs } = useMemo(() => {
+    return currentDayMeals.reduce(
+      (acc, meal) => {
+        acc.calories += meal.servingQuantity * meal.food.energy * meal.amount;
+        acc.fat += meal.servingQuantity * meal.food.fat * meal.amount;
+        acc.protein += meal.servingQuantity * meal.food.protein * meal.amount;
+        acc.carbs += meal.servingQuantity * meal.food.carb * meal.amount;
+        return acc;
+      },
+      { calories: 0, fat: 0, protein: 0, carbs: 0 },
+    );
   }, [currentDayMeals]);
 
   return (
