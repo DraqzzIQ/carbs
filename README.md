@@ -60,17 +60,18 @@ This project is not affiliated with or endorsed by the owners of the proprietary
 Use at your own risk.
 
 ## Galerie
-<img src="./screenshots/1.jpg" width="300">
-<img src="./screenshots/2.jpg" width="300">
-<img src="./screenshots/3.jpg" width="300">
-<img src="./screenshots/4.jpg" width="300">
-<img src="./screenshots/5.jpg" width="300">
-<img src="./screenshots/6.jpg" width="300">
+<p float="left">
+  <img src="./screenshots/1.jpg" width="300">
+  <img src="./screenshots/2.jpg" width="300">
+  <img src="./screenshots/3.jpg" width="300">
+  <img src="./screenshots/4.jpg" width="300">
+  <img src="./screenshots/5.jpg" width="300">
+  <img src="./screenshots/6.jpg" width="300">
 
-Widgets
+  Widgets
 
-<img src="./screenshots/7.jpg" width="300">
-
+  <img src="./screenshots/7.jpg" width="300">
+</p>
 
 
 ## License
