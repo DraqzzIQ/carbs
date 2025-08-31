@@ -89,9 +89,15 @@ export default function RootLayout() {
     });
 
     // Check for updates
-    if (isUpdateAvailable()) {
-      setDialogOpen(true);
-    }
+    isUpdateAvailable()
+      .then((updateAvailable) => {
+        if (updateAvailable) {
+          setDialogOpen(true);
+        }
+      })
+      .catch((error) => {
+        console.error("Error checking for updates", error);
+      });
   }, []);
 
   if (__DEV__) {
