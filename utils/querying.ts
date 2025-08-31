@@ -1,5 +1,5 @@
 import { MealType } from "~/types/MealType";
-import { yazioGetFoodDetails } from "~/api/yazio";
+import { yzGetFoodDetails } from "~/api/yz";
 import { FoodDetailsDto, ServingDto } from "~/api/types/FoodDetails";
 import { db } from "~/db/client";
 import {
@@ -96,7 +96,7 @@ export async function addFoodToMeal(
 export async function getAndSaveFood(
   foodId: string,
 ): Promise<Food | undefined> {
-  const food = (await yazioGetFoodDetails(foodId)) ?? undefined;
+  const food = (await yzGetFoodDetails(foodId)) ?? undefined;
   if (!food) {
     console.error(`Couldn't find Product with ID ${foodId}.`);
     return undefined;

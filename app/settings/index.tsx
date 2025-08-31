@@ -249,14 +249,12 @@ export default function SettingsScreen() {
             <Card className="m-1 mt-4 p-2">
               <TouchableOpacity
                 onPress={() => {
-                  void Linking.openURL(
-                    "https://github.com/DraqzzIQ/better-yazio",
-                  );
+                  void Linking.openURL("https://github.com/DraqzzIQ/carbs");
                 }}
               >
                 <View className="flex-row items-center justify-between">
                   <View>
-                    <Text className="text-xl font-bold">Better Yazio</Text>
+                    <Text className="text-xl font-bold">Carbs</Text>
                     <Text className="font-semibold">
                       Version: {Application.nativeApplicationVersion}
                     </Text>

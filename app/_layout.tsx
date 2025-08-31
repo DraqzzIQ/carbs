@@ -25,7 +25,6 @@ import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { cssInterop } from "nativewind";
 import { Dropdown } from "react-native-element-dropdown";
-import { requestWidgetUpdate } from "react-native-android-widget";
 import { requestAllWidgetsUpdate } from "~/components/widgets/widget-task-handler";
 
 const LIGHT_THEME: Theme = {

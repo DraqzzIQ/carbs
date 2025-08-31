@@ -6,9 +6,9 @@ import { getLocales } from "expo-localization";
 import { getStaticSettings } from "~/contexts/AppSettingsContext";
 import { mapApiFoodDetails, FoodDetailsDto } from "~/api/types/FoodDetails";
 
-const BASE_URL = "https://yzapi.yazio.com/v20/";
+const BASE_URL = atob("aHR0cHM6Ly95emFwaS55YXppby5jb20vdjIwLw==");
 
-const yazioRequest = (
+const yzRequest = (
   endpoint: string,
   queryParams?: Record<string, string>,
   options?: { signal?: AbortSignal },
@@ -34,15 +34,11 @@ const yazioRequest = (
   });
 };
 
-export const yazioSearchFoods = async (
+export const yzSearchFoods = async (
   searchQuery: string,
   options?: { signal?: AbortSignal },
 ): Promise<FoodSearchResultDto[]> => {
-  const request = yazioRequest(
-    "products/search",
-    { query: searchQuery },
-    options,
-  );
+  const request = yzRequest("products/search", { query: searchQuery }, options);
 
   const response = await fetch(request);
 
@@ -55,10 +51,10 @@ export const yazioSearchFoods = async (
   return mapApiFoodsSearchResult(data as unknown[]);
 };
 
-export const yazioGetFoodDetails = async (
+export const yzGetFoodDetails = async (
   productId: string,
 ): Promise<FoodDetailsDto | null> => {
-  const request = yazioRequest(`products/${productId}`);
+  const request = yzRequest(`products/${productId}`);
 
   const response = await fetch(request);
 

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "BetterYazio",
-    "slug": "better-yazio",
+    "name": "Carbs",
+    "slug": "carbs",
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "carbs",
@@ -15,7 +15,7 @@
         "light": "./assets/images/ios_light.png",
         "tinted": "./assets/images/ios_tinted.png"
       },
-      "bundleIdentifier": "com.draqzziq.betteryazio",
+      "bundleIdentifier": "com.draqzziq.carbs",
       "infoPlist": {
         "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera.",
         "ITSAppUsesNonExemptEncryption": false
@@ -27,7 +27,7 @@
         "foregroundImage": "./assets/images/adaptive_icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.draqzziq.betteryazio",
+      "package": "com.draqzziq.carbs",
       "permissions": ["android.permission.CAMERA"]
     },
     "plugins": [

@@ -11,7 +11,7 @@ import { useCameraPermission } from "react-native-vision-camera";
 import { Input } from "~/components/ui/input";
 import { SearchProducts } from "~/components/index/meal/add/search-products";
 import { FoodSearchResultDto } from "~/api/types/FoodSearchResultDto";
-import { yazioSearchFoods } from "~/api/yazio";
+import { yzSearchFoods } from "~/api/yz";
 import { KeyboardShift } from "~/components/keyboard-shift";
 import { FloatingActionButton } from "~/components/floating-action-button";
 import {
@@ -154,7 +154,7 @@ export default function AddScreen() {
         const isLocalSearchType = getIsLocalSearchType(effectiveSearchFilter);
         const remotePromise = isLocalSearchType
           ? Promise.resolve<FoodSearchResultDto[]>([])
-          : yazioSearchFoods(query, { signal: controller.signal });
+          : yzSearchFoods(query, { signal: controller.signal });
 
         const localPromise = queryCustomFoods(
           query,
