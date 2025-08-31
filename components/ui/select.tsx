@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as SelectPrimitive from "@rn-primitives/select";
 import * as React from "react";
 import { Platform, StyleSheet, View } from "react-native";

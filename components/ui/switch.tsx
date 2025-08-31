@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as SwitchPrimitives from "@rn-primitives/switch";
 import * as React from "react";
 import { Platform } from "react-native";

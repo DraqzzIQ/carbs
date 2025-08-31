@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as AlertDialogPrimitive from "@rn-primitives/alert-dialog";
 import * as React from "react";
 import { Platform, View, type ViewProps } from "react-native";

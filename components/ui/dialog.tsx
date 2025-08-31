@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as DialogPrimitive from "@rn-primitives/dialog";
 import * as React from "react";
 import { Platform, StyleSheet, View, type ViewProps } from "react-native";

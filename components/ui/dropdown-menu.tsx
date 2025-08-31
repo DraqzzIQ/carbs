@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as DropdownMenuPrimitive from "@rn-primitives/dropdown-menu";
 import * as React from "react";
 import {

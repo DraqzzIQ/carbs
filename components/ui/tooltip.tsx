@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as TooltipPrimitive from "@rn-primitives/tooltip";
 import * as React from "react";
 import { Platform, StyleSheet } from "react-native";
