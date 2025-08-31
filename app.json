@@ -73,7 +73,8 @@
               "targetCellHeight": 2,
               "description": "Track daily to keep your streak!",
               "previewImage": "./assets/widget-preview/streak.png",
-              "resizeMode": "horizontal|vertical"
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
             },
             {
               "name": "Calories",
@@ -83,7 +84,8 @@
               "targetCellWidth": 4,
               "targetCellHeight": 1,
               "description": "Overview of your calories",
-              "previewImage": "./assets/widget-preview/streak.png"
+              "previewImage": "./assets/widget-preview/calories.png",
+              "updatePeriodMillis": 1800000
             },
             {
               "name": "Meals",
@@ -93,7 +95,8 @@
               "targetCellWidth": 4,
               "targetCellHeight": 2,
               "description": "Quick access to your meals",
-              "previewImage": "./assets/widget-preview/streak.png"
+              "previewImage": "./assets/widget-preview/meals.png",
+              "updatePeriodMillis": 1800000
             }
           ]
         }

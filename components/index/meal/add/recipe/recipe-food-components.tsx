@@ -15,6 +15,7 @@ import { formatNumber } from "~/utils/formatting";
 import React from "react";
 import { NutritionFacts } from "~/components/index/meal/nutrition-facts";
 import { router } from "expo-router";
+import { requestAllWidgetsUpdate } from "~/components/widgets/widget-task-handler";
 
 interface RecipeFoodComponentsProps {
   onAddIngredient: () => void;
@@ -78,6 +79,7 @@ export const RecipeFoodComponents = ({
                     <TouchableOpacity
                       onPress={() => {
                         void deleteRecipeEntry(entry.id);
+                        void requestAllWidgetsUpdate();
                       }}
                     >
                       <XCircleIcon className="h-6 w-6 text-primary" />

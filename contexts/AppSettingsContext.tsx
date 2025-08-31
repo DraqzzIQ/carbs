@@ -58,6 +58,19 @@ const defaultSettings: Settings = {
 let staticSettings: Settings = defaultSettings;
 export const getStaticSettings = () => staticSettings;
 
+export async function getCurrentSettings(): Promise<Settings> {
+  try {
+    const stored = await AsyncStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored) as Settings;
+      return { ...defaultSettings, ...parsed };
+    }
+  } catch (e) {
+    console.error("Failed to load settings", e);
+  }
+  return defaultSettings;
+}
+
 const SettingsContext = createContext<SettingsContextType | undefined>(
   undefined,
 );

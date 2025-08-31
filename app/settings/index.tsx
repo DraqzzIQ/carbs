@@ -26,6 +26,8 @@ import {
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
 import { useState } from "react";
+import { requestWidgetUpdate } from "react-native-android-widget";
+import { renderMealsWidget } from "~/components/widgets/widget-task-handler";
 
 export default function SettingsScreen() {
   const {
@@ -90,7 +92,15 @@ export default function SettingsScreen() {
               <Text className="text-lg">Snack</Text>
               <Switch
                 checked={displaySnacks}
-                onCheckedChange={(v) => setSettings({ displaySnacks: v })}
+                onCheckedChange={(v) => {
+                  setSettings({ displaySnacks: v });
+                  requestWidgetUpdate({
+                    widgetName: "Meals",
+                    renderWidget: (widgetInfo) => renderMealsWidget(widgetInfo),
+                  }).catch((e) => {
+                    console.error("Failed to update widget:", e);
+                  });
+                }}
               />
             </View>
             {displaySnacks && (

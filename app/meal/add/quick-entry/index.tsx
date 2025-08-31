@@ -17,6 +17,7 @@ import {
   enrichFormConfigWithDefaultValues,
   QuickEntryFormConfig,
 } from "~/types/FormConfig";
+import { requestAllWidgetsUpdate } from "~/components/widgets/widget-task-handler";
 
 export default function QuickEntryScreen() {
   const params = useLocalSearchParams();
@@ -98,6 +99,7 @@ export default function QuickEntryScreen() {
         );
       }
 
+      await requestAllWidgetsUpdate();
       router.dismiss();
     },
     [edit, food, mealId, mealType, dateId],

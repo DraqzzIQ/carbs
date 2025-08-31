@@ -25,6 +25,8 @@ import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { cssInterop } from "nativewind";
 import { Dropdown } from "react-native-element-dropdown";
+import { requestWidgetUpdate } from "react-native-android-widget";
+import { requestAllWidgetsUpdate } from "~/components/widgets/widget-task-handler";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -67,6 +69,13 @@ export default function RootLayout() {
     }
     console.info("Successfully ran migrations");
   }, [success, error]);
+
+  useEffect(() => {
+    // Request widget update on app load
+    requestAllWidgetsUpdate().catch((error) => {
+      console.error("Error requesting widget update", error);
+    });
+  }, []);
 
   if (__DEV__) {
     // eslint-disable-next-line react-compiler/react-compiler

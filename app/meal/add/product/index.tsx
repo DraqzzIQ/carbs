@@ -36,6 +36,7 @@ import { ProductDetailsLoadingSkeleton } from "~/components/index/meal/add/produ
 import { HeaderOptions } from "~/components/index/meal/add/product/header-options";
 import { getDefaultServing } from "~/utils/serving";
 import { isBaseUnit } from "~/utils/formatting";
+import { requestAllWidgetsUpdate } from "~/components/widgets/widget-task-handler";
 
 export default function ProductDetailScreen() {
   const params = useLocalSearchParams<{
@@ -228,6 +229,7 @@ export default function ProductDetailScreen() {
             food,
           ));
     }
+    await requestAllWidgetsUpdate();
     router.dismiss();
   }, [
     edit,

@@ -20,6 +20,7 @@ import { FrequentsQueryType } from "~/db/queries/frequentsQuery";
 import { FavoritesQueryType } from "~/db/queries/favoritesQuery";
 import { RecentsQueryType } from "~/db/queries/recentsQuery";
 import { CustomQueryType } from "~/db/queries/customQuery";
+import { requestAllWidgetsUpdate } from "~/components/widgets/widget-task-handler";
 
 interface RecentsListProps {
   query:
@@ -147,6 +148,7 @@ const Recent = ({
           recent.food,
         ));
     setIsLoading(false);
+    await requestAllWidgetsUpdate();
   }, [mealType, recent, dateId, recipeFoodId]);
 
   let serving = recent.serving;

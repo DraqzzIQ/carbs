@@ -21,6 +21,7 @@ import {
 } from "~/utils/querying";
 import { Card, CardTitle } from "~/components/ui/card";
 import { getDefaultServing } from "~/utils/serving";
+import { requestAllWidgetsUpdate } from "~/components/widgets/widget-task-handler";
 
 export default function CustomFoodScreen() {
   const params = useLocalSearchParams();
@@ -63,6 +64,7 @@ export default function CustomFoodScreen() {
         food.id = foodId!;
         try {
           await updateCustomFood(food);
+          await requestAllWidgetsUpdate();
         } catch (error) {
           console.error("Error updating custom food:", error);
         }

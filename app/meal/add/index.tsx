@@ -29,11 +29,15 @@ import { Text } from "~/components/ui/text";
 import { BarcodeScanner } from "~/components/index/meal/add/barcode-scanner";
 import { useSettings } from "~/contexts/AppSettingsContext";
 import { getIsLocalSearchType, SearchFilterType } from "~/types/SearchFilter";
+import { getDateIdFromDate } from "~/utils/formatting";
+import { requestAllWidgetsUpdate } from "~/components/widgets/widget-task-handler";
 
 export default function AddScreen() {
   const params = useLocalSearchParams();
   const mealName = params.mealName as string;
-  const dateId = params.dateId as string;
+  const dateId = params.dateId
+    ? (params.dateId as string)
+    : getDateIdFromDate();
   const recipeFoodId = params.recipeFoodId
     ? (params.recipeFoodId as string)
     : null;
@@ -266,6 +270,8 @@ export default function AddScreen() {
           dateId,
           food,
         ));
+
+    await requestAllWidgetsUpdate();
   }
 
   const onScan = (code: string) => {

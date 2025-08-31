@@ -7,19 +7,27 @@ export function FlameSvg(color: string) {
 export function makeCircularProgressSvg(
   percent: number,
   textColor = "#ffffff",
-  size = 150,
-  stroke = 15,
-  trackColor = "#b6b6b6",
+  size = 180,
+  stroke = 20,
+  trackColor = "#e0e0e0",
   progressColor = "#3b90ff",
   showPercentText = true,
+  progressWiderBy = 2, // extra thickness for the progress arc
 ): string {
-  const p = percent;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const dash = (p / 100) * c;
-  const gap = c - dash;
+  const p = Math.max(0, Math.min(100, percent));
+
+  // Track geometry
+  const rTrack = (size - stroke) / 2;
   const cx = size / 2;
   const cy = size / 2;
+
+  // Progress geometry (wider stroke, reduced radius to avoid clipping)
+  const delta = Math.max(0, progressWiderBy);
+  const progressStroke = stroke + delta;
+  const rProgress = Math.max(0, rTrack - delta / 2);
+  const cProgress = 2 * Math.PI * rProgress;
+  const dash = (p / 100) * cProgress;
+  const gap = cProgress - dash;
 
   const textEl = showPercentText
     ? `<text
@@ -32,7 +40,7 @@ export function makeCircularProgressSvg(
         dominant-baseline="middle"
         alignment-baseline="middle"
         dy=".35em"
-     >${Math.round(p)}%</text>`
+     >${Math.round(percent)}%</text>`
     : "";
 
   return `
@@ -41,20 +49,20 @@ export function makeCircularProgressSvg(
   <circle
     cx="${cx}"
     cy="${cy}"
-    r="${r}"
+    r="${rTrack}"
     fill="none"
     stroke="${trackColor}"
     stroke-width="${stroke}"
   />
   
-  <!-- Progress Arc -->
+  <!-- Progress Arc (slightly wider) -->
   <circle
     cx="${cx}"
     cy="${cy}"
-    r="${r}"
+    r="${rProgress}"
     fill="none"
     stroke="${progressColor}"
-    stroke-width="${stroke}"
+    stroke-width="${progressStroke}"
     stroke-dasharray="${dash} ${gap}"
     stroke-linecap="round"
   />

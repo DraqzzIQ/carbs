@@ -25,6 +25,7 @@ import { MacroHeader } from "~/components/index/meal/macro-header";
 import { formatFoodSubtitle } from "~/utils/serving";
 import { NutritionFacts } from "~/components/index/meal/nutrition-facts";
 import { mapMealsToNutritionFacts } from "~/utils/mapMealsToNutritionFacts";
+import { requestAllWidgetsUpdate } from "~/components/widgets/widget-task-handler";
 
 interface MealDetailProps {
   dateId: string;
@@ -116,6 +117,7 @@ const RightAction = ({
         className="w-full rounded-lg bg-[#ff526b] pr-4"
         onPress={() => {
           void removeFoodFromMeal(mealId);
+          void requestAllWidgetsUpdate();
         }}
       >
         <View className="flex-grow" />

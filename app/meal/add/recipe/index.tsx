@@ -18,6 +18,7 @@ import { createRecipeFood } from "~/utils/defaultFood";
 import { MacroHeader } from "~/components/index/meal/macro-header";
 import { useRelationalLiveQuery } from "~/db/queries/useRelationalLiveQuery";
 import { recipeEntriesQuery } from "~/db/queries/recipeEntriesQuery";
+import { requestAllWidgetsUpdate } from "~/components/widgets/widget-task-handler";
 
 export default function RecipeScreen() {
   const params = useLocalSearchParams();
