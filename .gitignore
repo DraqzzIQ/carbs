@@ -42,8 +42,6 @@ expo-env.d.ts
 
 .idea/
 
-nativewind-env.d.ts
-
 /android
 /ios
 *.keystore
