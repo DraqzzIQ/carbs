@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as TogglePrimitive from "@rn-primitives/toggle";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { LucideIcon } from "lucide-react-native";

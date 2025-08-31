@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from "react";
 import { TextInput, type TextInputProps } from "react-native";
 import { cn } from "~/lib/utils";

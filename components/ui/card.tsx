@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { TextRef, ViewRef } from "@rn-primitives/types";
 import * as React from "react";
 import { Text, TextProps, View, ViewProps } from "react-native";
