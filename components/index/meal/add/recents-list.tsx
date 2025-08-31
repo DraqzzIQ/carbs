@@ -187,20 +187,12 @@ const Recent = ({
         <View className="flex w-2/3 flex-grow">
           <Text className="text-xl text-primary">{recent.food.name}</Text>
           <Text className="text-base text-primary">
-            {formatFoodSubtitle(
-              recent.food,
-              recent.serving,
-              recent.servingQuantity,
-              recent.amount,
-            )}
+            {formatFoodSubtitle(recent.food, serving, servingQuantity, amount)}
           </Text>
         </View>
         <View className="flex-row items-center">
           <Text className="mr-2 text-primary">
-            {formatNumber(
-              recent.food.energy * recent.amount * recent.servingQuantity,
-            )}{" "}
-            kcal
+            {formatNumber(recent.food.energy * amount * servingQuantity)} kcal
           </Text>
           <TouchableOpacity
             disabled={isLoading}
