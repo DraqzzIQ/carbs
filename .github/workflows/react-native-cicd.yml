@@ -83,7 +83,7 @@ jobs:
         run: |
           cd android
           sed -i -e 's/^org\.gradle\.jvmargs=.*/org.gradle.jvmargs=-Xmx5120m -XX:MaxMetaspaceSize=1024m/' -e 's/^reactNativeArchitectures=.*/reactNativeArchitectures=armeabi-v7a,arm64-v8a/' gradle.properties
-  
+
       - name: 📱 Build Production APK
         if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'prod-apk' || github.event_name == 'push'
         run: |
@@ -112,7 +112,7 @@ jobs:
           path: |
             android/app/build/outputs/apk/release/app-release.apk
           retention-days: 7
-          
+
       - name: 📝 Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:

@@ -8,7 +8,7 @@ import {
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { View, StatusBar as ReactStatusBar } from "react-native";
+import { View, StatusBar as ReactStatusBar, Linking } from "react-native";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { ThemeToggle } from "~/components/theme-toggle";
@@ -20,12 +20,24 @@ import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "~/drizzle/migrations";
 import "expo-dev-client";
 import { db, expoDb } from "~/db/client";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { cssInterop } from "nativewind";
 import { Dropdown } from "react-native-element-dropdown";
 import { requestAllWidgetsUpdate } from "~/components/widgets/widget-task-handler";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
+import { Text } from "~/components/ui/text";
+import { Button } from "~/components/ui/button";
+import { isUpdateAvailable } from "~/utils/update";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -46,6 +58,7 @@ export default function RootLayout() {
   const { colorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
   const { success, error } = useMigrations(db, migrations);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useLayoutEffect(() => {
     if (hasMounted.current) {
@@ -74,6 +87,11 @@ export default function RootLayout() {
     requestAllWidgetsUpdate().catch((error) => {
       console.error("Error requesting widget update", error);
     });
+
+    // Check for updates
+    if (isUpdateAvailable()) {
+      setDialogOpen(true);
+    }
   }, []);
 
   if (__DEV__) {
@@ -231,6 +249,35 @@ export default function RootLayout() {
                 }}
               />
             </Stack>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle className="mb-2 text-center">
+                    Update Available
+                  </DialogTitle>
+                  <DialogDescription>
+                    A new version of Carbs is available. Please update to the
+                    latest version for the best experience.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">
+                      <Text>Close</Text>
+                    </Button>
+                  </DialogClose>
+                  <Button
+                    onPress={() =>
+                      void Linking.openURL(
+                        "https://github.com/DraqzzIQ/carbs/releases/latest",
+                      )
+                    }
+                  >
+                    <Text>Update</Text>
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </View>
           <PortalHost />
         </ThemeProvider>
