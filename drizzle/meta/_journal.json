@@ -1,0 +1,118 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1747847341721,
+      "tag": "0000_illegal_rafael_vega",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1749908348129,
+      "tag": "0001_freezing_mandarin",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1750033084607,
+      "tag": "0002_eager_proudstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1750036233174,
+      "tag": "0003_thick_giant_girl",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1750116516451,
+      "tag": "0004_melodic_grandmaster",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1750805939365,
+      "tag": "0005_natural_bulldozer",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1751820763350,
+      "tag": "0006_absurd_iron_monger",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1751844551170,
+      "tag": "0007_petite_husk",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1752592398845,
+      "tag": "0008_yummy_jocasta",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1752596122164,
+      "tag": "0009_cloudy_guardian",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1755644279249,
+      "tag": "0010_true_silver_sable",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1755735829285,
+      "tag": "0011_unknown_princess_powerful",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1755737904167,
+      "tag": "0012_change-date-format",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1755896858938,
+      "tag": "0013_certain_bastion",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1755981355566,
+      "tag": "0014_wide_lethal_legion",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "6",
+      "when": 1756649043755,
+      "tag": "0015_thankful_khan",
+      "breakpoints": true
+    }
+  ]
+}

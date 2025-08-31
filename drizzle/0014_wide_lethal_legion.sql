@@ -1,0 +1,1 @@
+ALTER TABLE `foods` ADD `recipe_serving_quantity` integer;

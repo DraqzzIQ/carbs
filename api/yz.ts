@@ -1,0 +1,68 @@
+import {
+  FoodSearchResultDto,
+  mapApiFoodsSearchResult,
+} from "~/api/types/FoodSearchResultDto";
+import { getLocales } from "expo-localization";
+import { getStaticSettings } from "~/contexts/AppSettingsContext";
+import { mapApiFoodDetails, FoodDetailsDto } from "~/api/types/FoodDetails";
+
+const BASE_URL = atob("aHR0cHM6Ly95emFwaS55YXppby5jb20vdjIwLw==");
+
+const yzRequest = (
+  endpoint: string,
+  queryParams?: Record<string, string>,
+  options?: { signal?: AbortSignal },
+): Request => {
+  const url = new URL(endpoint, BASE_URL);
+
+  const locales = getLocales();
+  url.searchParams.append("countries", getStaticSettings().countryCode);
+  url.searchParams.append("locales", locales[0].languageTag);
+
+  // why tf would they even need this?
+  url.searchParams.append("sex", "male");
+
+  if (queryParams) {
+    Object.entries(queryParams).forEach(([key, value]) =>
+      url.searchParams.append(key, value),
+    );
+  }
+
+  return new Request(url.toString(), {
+    method: "GET",
+    signal: options?.signal,
+  });
+};
+
+export const yzSearchFoods = async (
+  searchQuery: string,
+  options?: { signal?: AbortSignal },
+): Promise<FoodSearchResultDto[]> => {
+  const request = yzRequest("products/search", { query: searchQuery }, options);
+
+  const response = await fetch(request);
+
+  if (!response.ok) {
+    console.error(`Failed to fetch products: ${response.status}`);
+    return [];
+  }
+
+  const data: unknown = await response.json();
+  return mapApiFoodsSearchResult(data as unknown[]);
+};
+
+export const yzGetFoodDetails = async (
+  productId: string,
+): Promise<FoodDetailsDto | null> => {
+  const request = yzRequest(`products/${productId}`);
+
+  const response = await fetch(request);
+
+  if (!response.ok) {
+    console.error(`Failed to fetch product details: ${response.status}`);
+    return null;
+  }
+
+  const data: unknown = await response.json();
+  return mapApiFoodDetails(data, productId);
+};

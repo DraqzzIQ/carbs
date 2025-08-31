@@ -1,0 +1,572 @@
+import { FieldType, FormCategory } from "~/components/index/meal/add/form";
+import { ServingType } from "~/types/ServingType";
+import { StyleProp, ViewStyle } from "react-native";
+
+export const CustomFoodFormConfig = [
+  {
+    category: "About",
+    fields: [
+      {
+        key: "name",
+        label: "Name",
+        required: true,
+        type: FieldType.Text,
+      },
+      {
+        key: "producer",
+        label: "Producer / Brand (optional)",
+        required: false,
+        type: FieldType.Text,
+      },
+    ],
+    defaultVisible: 2,
+    style: { marginBottom: 4 },
+  },
+  {
+    category: "Values per",
+    fields: [
+      [
+        {
+          key: "valuesPer",
+          label: "Values per (g/ml/oz/fl oz)",
+          required: true,
+          type: FieldType.Number,
+          allowDecimal: true,
+          defaultValue: "100",
+          style: { flex: 0, width: "67%" } as StyleProp<ViewStyle>,
+        },
+        {
+          key: "unit",
+          label: "Select Unit",
+          required: true,
+          type: FieldType.Select,
+          options: ["g", "ml", "oz", "fl oz"],
+          defaultValue: "g",
+        },
+      ],
+    ],
+    defaultVisible: 1,
+    style: { marginBottom: 4 } as StyleProp<ViewStyle>,
+  },
+  {
+    category: "Serving size",
+    fields: [
+      [
+        {
+          key: "amount",
+          label: "Amount (g/ml/oz/fl oz)",
+          required: false,
+          type: FieldType.Number,
+          allowDecimal: true,
+          style: { flex: 0, width: "60%" } as StyleProp<ViewStyle>,
+        },
+        {
+          key: "serving",
+          label: "Select serving",
+          required: false,
+          type: FieldType.Select,
+          options: Object.values(ServingType),
+        },
+      ],
+    ],
+    defaultVisible: 1,
+    style: { marginBottom: 4 } as StyleProp<ViewStyle>,
+  },
+  {
+    category: "Basic nutrition",
+    fields: [
+      {
+        key: "energy",
+        label: "Energy (kcal)",
+        required: true,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "carb",
+        label: "Total Carbs (g)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "sugar",
+        label: "Sugar (g)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "dietaryFiber",
+        label: "Dietary Fiber (g)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "protein",
+        label: "Protein (g)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "salt",
+        label: "Salt (g)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "fat",
+        label: "Total Fat (g)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "saturatedFat",
+        label: "Saturated Fat (g)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "monoUnsaturatedFat",
+        label: "Mono Unsaturated Fat (g)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "polyUnsaturatedFat",
+        label: "Poly Unsaturated Fat (g)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "transFat",
+        label: "Trans Fat (g)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+    ],
+    defaultVisible: 8,
+  },
+  {
+    category: "Vitamins (optional)",
+    fields: [
+      {
+        key: "vitaminC",
+        label: "Vitamin C (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "vitaminD",
+        label: "Vitamin D (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "vitaminA",
+        label: "Vitamin A (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "vitaminB1",
+        label: "Vitamin B1 [Thiamin] (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "vitaminB2",
+        label: "Vitamin B2 [Riboflavin] (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "vitaminB3",
+        label: "Vitamin B3 [Niacin] (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "vitaminB5",
+        label: "Vitamin B5 [Pantothenic Acid] (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "vitaminB6",
+        label: "Vitamin B6 (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "vitaminB7",
+        label: "Vitamin B7 [Biotin] (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "vitaminB11",
+        label: "Vitamin B11 [Folic Acid / Folate] (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "vitaminB12",
+        label: "Vitamin B12 (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "vitaminE",
+        label: "Vitamin E (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "vitaminK",
+        label: "Vitamin K (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+    ],
+    defaultVisible: 2,
+  },
+  {
+    category: "Minerals (optional)",
+    fields: [
+      {
+        key: "calcium",
+        label: "Calcium (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "iron",
+        label: "Iron (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "arsenic",
+        label: "Arsenic (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "boron",
+        label: "Boron (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "biotin",
+        label: "Biotin (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "choline",
+        label: "Choline (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "chlorine",
+        label: "Chlorine (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "chrome",
+        label: "Chrome (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "cobalt",
+        label: "Cobalt (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "copper",
+        label: "Copper (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "fluoride",
+        label: "Fluoride (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "fluorine",
+        label: "Fluorine (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "iodine",
+        label: "Iodine (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "magnesium",
+        label: "Magnesium (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "manganese",
+        label: "Manganese (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "molybdenum",
+        label: "Molybdenum (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "phosphorus",
+        label: "Phosphorus (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "potassium",
+        label: "Potassium (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "rubidium",
+        label: "Rubidium (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "selenium",
+        label: "Selenium (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "silicon",
+        label: "Silicon (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "sulfur",
+        label: "Sulfur (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "tin",
+        label: "Tin (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "vanadium",
+        label: "Vanadium (µg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "sodium",
+        label: "Sodium (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "zinc",
+        label: "Zinc (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+    ],
+    defaultVisible: 2,
+  },
+  {
+    category: "Other (optional)",
+    fields: [
+      {
+        key: "water",
+        label: "Calcium (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "alcohol",
+        label: "Alcohol (mL)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "cholesterol",
+        label: "Cholesterol (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+      {
+        key: "sodium",
+        label: "Sodium (mg)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+      },
+    ],
+    defaultVisible: 4,
+  },
+];
+
+export const QuickEntryFormConfig = [
+  {
+    category: "Quick Entry",
+    style: { paddingTop: 22 } as StyleProp<ViewStyle>,
+    titleStyle: 2,
+    fields: [
+      {
+        key: "description",
+        label: "Description",
+        required: true,
+        type: FieldType.Text,
+      },
+      {
+        key: "energy",
+        label: "Energy (kcal)",
+        required: true,
+        type: FieldType.Number,
+        allowDecimal: true,
+        allowNegative: true,
+      },
+      {
+        key: "carb",
+        label: "Carbs (g)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+        allowNegative: true,
+      },
+      {
+        key: "protein",
+        label: "Protein (g)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+        allowNegative: true,
+      },
+      {
+        key: "fat",
+        label: "Fat (g)",
+        required: false,
+        type: FieldType.Number,
+        allowDecimal: true,
+        allowNegative: true,
+      },
+    ],
+    defaultVisible: 5,
+  },
+];
+
+export const RecipeFormConfig = [
+  {
+    category: "Recipe",
+    style: { paddingTop: 22 } as StyleProp<ViewStyle>,
+    titleStyle: 2,
+    fields: [
+      {
+        key: "name",
+        label: "Recipe name",
+        required: true,
+        type: FieldType.Text,
+      },
+      {
+        key: "servingQuantity",
+        label: "Number of servings",
+        required: true,
+        type: FieldType.Number,
+        defaultValue: "1",
+      },
+    ],
+    defaultVisible: 2,
+  },
+];
+
+export function enrichFormConfigWithDefaultValues(
+  formConfig: FormCategory[],
+  defaultValues: Record<string, string>,
+): FormCategory[] {
+  return formConfig.map((category) => ({
+    ...category,
+    fields: category.fields.map((item) => {
+      if (Array.isArray(item)) {
+        return item.map((field) => ({
+          ...field,
+          defaultValue: (defaultValues[field.key] || field.defaultValue) ?? "",
+        }));
+      } else {
+        return {
+          ...item,
+          defaultValue: (defaultValues[item.key] || item.defaultValue) ?? "",
+        };
+      }
+    }),
+  }));
+}

@@ -1,35 +1,34 @@
 {
   "expo": {
-    "name": "BetterYazio",
-    "slug": "better-yazio",
+    "name": "Carbs",
+    "slug": "carbs",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "myapp",
+    "scheme": "carbs",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "icon": {
-        "dark": "./assets/images/ios-dark.png",
-        "light": "./assets/images/ios-light.png",
-        "tinted": "./assets/images/ios-tinted.png"
+        "dark": "./assets/images/ios_dark.png",
+        "light": "./assets/images/ios_light.png",
+        "tinted": "./assets/images/ios_tinted.png"
       },
-      "bundleIdentifier": "com.draqzziq.betteryazio"
+      "bundleIdentifier": "com.draqzziq.carbs",
+      "infoPlist": {
+        "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "edgeToEdgeEnabled": false,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/adaptive_icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.draqzziq.betteryazio"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "package": "com.draqzziq.carbs",
+      "permissions": ["android.permission.CAMERA"]
     },
     "plugins": [
       "expo-router",
@@ -37,9 +36,9 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#ffffff",
-          "image": "./assets/images/splash-icon-light.png",
+          "image": "./assets/images/splash_icon_dark.png",
           "dark": {
-            "image": "./assets/images/splash-icon-dark.png",
+            "image": "./assets/images/splash_icon_light.png",
             "backgroundColor": "#000000"
           },
           "imageWidth": 200
@@ -50,10 +49,62 @@
         {
           "launchMode": "most-recent"
         }
+      ],
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
+          "enableCodeScanner": true
+        }
+      ],
+      "expo-localization",
+      "expo-sqlite",
+      "react-native-legal",
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "Streak",
+              "label": "Streak",
+              "minWidth": "40dp",
+              "minHeight": "40dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "description": "Track daily to keep your streak!",
+              "previewImage": "./assets/widget-preview/streak.png",
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "Calories",
+              "label": "Calories",
+              "minWidth": "250dp",
+              "minHeight": "40dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 1,
+              "description": "Overview of your calories",
+              "previewImage": "./assets/widget-preview/calories.png",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "Meals",
+              "label": "Meals",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "description": "Quick access to your meals",
+              "previewImage": "./assets/widget-preview/meals.png",
+              "updatePeriodMillis": 1800000
+            }
+          ]
+        }
       ]
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "reactCompiler": true
     },
     "extra": {
       "router": {
