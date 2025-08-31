@@ -59,14 +59,14 @@ jobs:
       - name: 📦 Install dependencies
         run: yarn install
 
-      - name: 🧪 Run TypeScript check
-        run: yarn tsc
-
       - name: 🧹 Run ESLint
-        run: yarn lint
+        run: yarn run eslint
 
       - name: 🎨 Run Prettier check
-        run: yarn format:check
+        run: yarn run format
+
+      - name: 🧪 Run TypeScript check
+        run: yarn run typecheck
 
   build-and-release:
     needs: test
