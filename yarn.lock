@@ -7382,7 +7382,7 @@ react-native-android-widget@^0.17.1:
 
 "react-native-barcode-creator@https://github.com/DraqzzIQ/react-native-barcode-creator.git#master":
   version "0.1.8"
-  resolved "git+ssh://git@github.com/DraqzzIQ/react-native-barcode-creator.git#1af7b45b7830d4230a7d8f0c9e5513e581774c9a"
+  resolved "https://github.com/DraqzzIQ/react-native-barcode-creator.git#1af7b45b7830d4230a7d8f0c9e5513e581774c9a"
 
 react-native-css-interop@0.1.22:
   version "0.1.22"
