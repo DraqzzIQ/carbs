@@ -15,7 +15,6 @@ on:
         type: choice
         description: "Build type to run"
         options:
-          - dev
           - prod-apk
           - all
 
@@ -85,12 +84,6 @@ jobs:
           cd android
           sed -i -e 's/^org\.gradle\.jvmargs=.*/org.gradle.jvmargs=-Xmx5120m -XX:MaxMetaspaceSize=1024m/' -e 's/^reactNativeArchitectures=.*/reactNativeArchitectures=armeabi-v7a,arm64-v8a/' gradle.properties
   
-      - name: 📱 Build Development APK
-        if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'dev' || github.event_name == 'push'
-        run: |
-          cd android
-          ./gradlew assembleDebug
-
       - name: 📱 Build Production APK
         if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'prod-apk' || github.event_name == 'push'
         run: |
@@ -117,18 +110,15 @@ jobs:
         with:
           name: app-builds
           path: |
-            android/app/build/outputs/apk/debug/app-debug.apk
             android/app/build/outputs/apk/release/app-release.apk
           retention-days: 7
           
       - name: 📝 Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          draft: true
           name: "Release v${{ steps.build-info.outputs.version }}-${{ steps.build-info.outputs.build_number }}"
           tag_name: "v${{ steps.build-info.outputs.version }}-${{ steps.build-info.outputs.build_number }}"
           files: |
-            android/app/build/outputs/apk/debug/app-debug.apk
             android/app/build/outputs/apk/release/app-release.apk
           body_path: changelog.md
         env:
