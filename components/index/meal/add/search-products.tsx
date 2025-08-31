@@ -94,20 +94,20 @@ export const SearchProducts = ({
         />
         <SearchFilterToggle
           selectedSearchFilter={searchFilter}
-          searchFilter={SearchFilterType.FAVORITES}
-          onSetSearchFilter={setSearchFilterWrapper}
-          content="Favorites"
-          icon={(className) => {
-            return <HeartIcon className={className} />;
-          }}
-        />
-        <SearchFilterToggle
-          selectedSearchFilter={searchFilter}
           searchFilter={SearchFilterType.RECENTS}
           onSetSearchFilter={setSearchFilterWrapper}
           content="Recents"
           icon={(className) => {
             return <HistoryIcon className={className} />;
+          }}
+        />
+        <SearchFilterToggle
+          selectedSearchFilter={searchFilter}
+          searchFilter={SearchFilterType.FAVORITES}
+          onSetSearchFilter={setSearchFilterWrapper}
+          content="Favorites"
+          icon={(className) => {
+            return <HeartIcon className={className} />;
           }}
         />
         <SearchFilterToggle
