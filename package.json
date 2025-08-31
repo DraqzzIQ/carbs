@@ -66,7 +66,7 @@
     "react-dom": "19.0.0",
     "react-native": "0.79.6",
     "react-native-android-widget": "^0.17.1",
-    "react-native-barcode-creator": "github:DraqzzIQ/react-native-barcode-creator#master",
+    "react-native-barcode-creator": "https://github.com/DraqzzIQ/react-native-barcode-creator.git#master",
     "react-native-element-dropdown": "^2.12.4",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-legal": "^1.5.2",
