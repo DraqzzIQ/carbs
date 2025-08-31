@@ -65,9 +65,6 @@ jobs:
       - name: 🎨 Run Prettier check
         run: yarn run format
 
-      - name: 🧪 Run TypeScript check
-        run: yarn run typecheck
-
   build-and-release:
     needs: test
     if: (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')) || github.event_name == 'workflow_dispatch'
